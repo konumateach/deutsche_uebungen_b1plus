@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動詞コロケーションテスト B1+レベル</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 700px; margin: 0 auto; }
+  header { margin-bottom: 1.5rem; }
+  header h1 { font-size: 21px; font-weight: 500; margin-bottom: 4px; }
+  header p { font-size: 14px; color: #666; }
+  .set-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
+  .set-btn { padding: 6px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 13px; font-family: inherit; transition: background 0.15s; }
+  .set-btn:hover { background: #f0f0f0; }
+  .set-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .progress-bar-wrap { background: #ddd; border-radius: 4px; height: 4px; margin-bottom: 6px; }
+  .progress-bar { background: #185FA5; height: 4px; border-radius: 4px; transition: width 0.3s; }
+  .progress-text { font-size: 13px; color: #666; margin-bottom: 1.2rem; }
+  .card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 1.5rem; margin-bottom: 1rem; }
+  .question-num { font-size: 12px; color: #999; margin-bottom: 8px; }
+  .question-text { font-size: 19px; font-weight: 500; margin-bottom: 6px; line-height: 1.7; font-family: "Segoe UI", "Candara", sans-serif; white-space: pre-line; }
+  .question-ex { font-size: 17px; color: #555; margin-bottom: 1.2rem; line-height: 1.6; font-family: "Segoe UI", "Candara", sans-serif; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { text-align: left; padding: 10px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 16px; font-family: "Segoe UI", "Candara", sans-serif; font-weight: 500; transition: background 0.15s, border-color 0.15s; }
+  .option-btn:hover:not(:disabled) { background: #f0f0f0; border-color: #999; }
+  .option-btn.correct { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn.wrong   { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+  .option-btn.reveal  { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn:disabled { cursor: default; }
+  .feedback { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.7; display: none; font-family: "Segoe UI", "Candara", sans-serif; }
+  .feedback.correct { background: #e1f5ee; color: #085041; display: block; }
+  .feedback.wrong    { background: #fcebeb; color: #791f1f; display: block; }
+  .hint-btn { margin-top: 10px; font-size: 13px; color: #185FA5; background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; text-decoration: underline; }
+  .hint-text { font-size: 13px; color: #666; margin-top: 6px; display: none; }
+  .next-btn { margin-top: 1.25rem; padding: 10px 20px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; display: none; }
+  .next-btn:hover { background: #333; }
+  .result-card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 2rem; text-align: center; display: none; }
+  .result-card h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+  .score-big { font-size: 48px; font-weight: 500; color: #185FA5; margin: 1rem 0; }
+  .score-msg { font-size: 15px; color: #555; margin-bottom: 1.5rem; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .restart-btn { padding: 10px 24px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .restart-btn:hover { background: #333; }
+  .next-set-btn { padding: 10px 24px; border-radius: 8px; background: #185FA5; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .next-set-btn:hover { background: #0c447c; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>動詞コロケーションテスト　B1+レベル</h1>
+    <p>空欄に入る前置詞を選びなさい。（各テスト10問）</p>
+  </header>
+  <div style="margin-bottom:1rem;"><a href="index.html" style="display:inline-block;padding:7px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fafafa;color:#1a1a18;text-decoration:none;font-size:13px;font-family:inherit;">← ポータルに戻る</a></div>
+  <div class="set-nav" id="set-nav"></div>
+  <div id="quiz-area">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar" style="width:10%"></div></div>
+    <div class="progress-text" id="prog-text"></div>
+    <div class="card" id="q-card">
+      <div class="question-num" id="q-num"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="question-ex" id="q-ex"></div>
+      <div class="options" id="q-options"></div>
+      <button class="hint-btn" id="hint-btn" onclick="showHint()">ヒントを見る</button>
+      <div class="hint-text" id="hint-text"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題 →</button>
+    </div>
+  </div>
+  <div class="result-card" id="result-card">
+    <h2 id="result-title"></h2>
+    <div class="score-big" id="score-display"></div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="btn-row">
+      <button class="restart-btn" onclick="restart()">このテストをもう一度</button>
+      <button class="next-set-btn" id="next-set-btn" onclick="goNextSet()">次のテストへ →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// 形式: { de: "動詞表現", ja: "日本語の意味", ex: "例文（空欄あり）", opts: ["前置詞1",...], ans: 正解index, hint: "ヒント", exp: "解説" }
+const sets = [
+  {
+    label: "テストA",
+    questions: [
+      { de:"arbeiten _____ +D", ja:"〜に取り組む", ex:"Sie arbeitet _____ einem neuen Projekt.", opts:["auf","an","mit","für"], ans:1, hint:"〜に取り組む・携わる。an +Dativ の形。", exp:"arbeiten an +D＝〜に取り組む。an は Dativ 支配。" },
+      { de:"zweifeln _____ +D", ja:"〜を疑う", ex:"Ich zweifle _____ seiner Ehrlichkeit.", opts:["über","von","an","in"], ans:2, hint:"〜を疑う。an +Dativ の形。", exp:"zweifeln an +D＝〜を疑う。an は Dativ 支配。" },
+      { de:"warten _____ +A", ja:"〜を待つ", ex:"Wir warten _____ den Bus.", opts:["auf","an","nach","für"], ans:0, hint:"〜を待つ。auf +Akkusativ の形。", exp:"warten auf +A＝〜を待つ。auf は Akkusativ 支配。" },
+      { de:"sorgen _____ +A", ja:"〜の世話をする", ex:"Sie sorgt _____ ihre alte Mutter.", opts:["an","um","von","für"], ans:3, hint:"〜の世話をする。für +Akkusativ の形。", exp:"sorgen für +A＝〜の世話をする。für は Akkusativ 支配。" },
+      { de:"beginnen _____ +D", ja:"〜を始める", ex:"Wir beginnen _____ der Arbeit.", opts:["über","mit","zu","an"], ans:1, hint:"〜を始める。mit +Dativ の形。", exp:"beginnen mit +D＝〜を始める。mit は Dativ 支配。" },
+      { de:"abhängen _____ +D", ja:"〜に依存する・かかっている", ex:"Es hängt _____ der Situation ab.", opts:["auf","nach","von","mit"], ans:2, hint:"〜に依存する。von +Dativ の形。", exp:"abhängen von +D＝〜に依存する・かかっている。von は Dativ 支配。" },
+      { de:"sich freuen _____ +A", ja:"〜を楽しみにしている（未来）", ex:"Ich freue mich _____ den Urlaub.", opts:["auf","über","an","für"], ans:0, hint:"〜を楽しみにしている（未来）。auf +Akkusativ の形。", exp:"sich freuen auf +A＝〜を楽しみにしている（未来）。auf は Akkusativ 支配。sich freuen über（現在・過去の出来事を喜ぶ）との区別に注意。" },
+      { de:"sich erinnern _____ +A", ja:"〜を思い出す・覚えている", ex:"Ich erinnere mich gut _____ ihn.", opts:["von","an","über","bei"], ans:1, hint:"〜を思い出す・覚えている。an +Akkusativ の形。", exp:"sich erinnern an +A＝〜を思い出す・覚えている。an は Akkusativ 支配。" },
+      { de:"sich interessieren _____ +A", ja:"〜に興味がある", ex:"Er interessiert sich _____ Geschichte.", opts:["an","über","zu","für"], ans:3, hint:"〜に興味がある。für +Akkusativ の形。", exp:"sich interessieren für +A＝〜に興味がある。für は Akkusativ 支配。" },
+      { de:"sich erholen _____ +D", ja:"〜から回復する・気分転換する", ex:"Er erholt sich _____ der Krankheit.", opts:["aus","über","von","gegen"], ans:2, hint:"〜から回復する。von +Dativ の形。", exp:"sich erholen von +D＝〜から回復する・気分転換する。von は Dativ 支配。" },
+    ]
+  },
+  {
+    label: "テストB",
+    questions: [
+      { de:"leiden _____ +D", ja:"（病気・問題に）苦しむ", ex:"Er leidet _____ einer chronischen Krankheit.", opts:["unter","für","an","von"], ans:2, hint:"（病気などに）苦しむ。an +Dativ の形。", exp:"leiden an +D＝（病気・問題に）苦しむ。an は Dativ 支配。" },
+      { de:"reagieren _____ +A", ja:"〜に反応する", ex:"Er reagierte nicht _____ meine E-Mail.", opts:["auf","gegen","an","zu"], ans:0, hint:"〜に反応する。auf +Akkusativ の形。", exp:"reagieren auf +A＝〜に反応する。auf は Akkusativ 支配。" },
+      { de:"kämpfen _____ +A", ja:"〜のために戦う・奮闘する", ex:"Er kämpft _____ seine Rechte.", opts:["gegen","für","mit","an"], ans:1, hint:"〜のために戦う。für +Akkusativ の形。", exp:"kämpfen für +A＝〜のために戦う・奮闘する。für は Akkusativ 支配。" },
+      { de:"rechnen _____ +D", ja:"〜を見込む・予期する", ex:"Ich rechne _____ Verzögerungen.", opts:["an","auf","von","mit"], ans:3, hint:"〜を見込む。mit +Dativ の形。", exp:"rechnen mit +D＝〜を見込む・予期する。mit は Dativ 支配。" },
+      { de:"denken _____ +A", ja:"〜のことを考える・思い出す", ex:"Ich denke oft _____ meine Kindheit.", opts:["an","über","von","bei"], ans:0, hint:"〜のことを考える・思い出す。an +Akkusativ の形。", exp:"denken an +A＝〜のことを考える・思い出す。an は Akkusativ 支配。" },
+      { de:"suchen _____ +D", ja:"〜を探す", ex:"Sie sucht _____ einer Lösung.", opts:["für","an","nach","um"], ans:2, hint:"〜を探す。nach +Dativ の形。", exp:"suchen nach +D＝〜を探す。nach は Dativ 支配。" },
+      { de:"sich vorbereiten _____ +A", ja:"〜に備える・準備する", ex:"Er bereitet sich _____ die Prüfung vor.", opts:["für","auf","an","zu"], ans:1, hint:"〜に備える。auf +Akkusativ の形。", exp:"sich vorbereiten auf +A＝〜に備える・準備する。auf は Akkusativ 支配。" },
+      { de:"sich beteiligen _____ +D", ja:"〜に参加する・関与する", ex:"Er beteiligt sich _____ der Diskussion.", opts:["an","bei","mit","in"], ans:0, hint:"〜に参加する。an +Dativ の形。", exp:"sich beteiligen an +D＝〜に参加する・関与する。an は Dativ 支配。" },
+      { de:"sich entscheiden _____ +A", ja:"〜を選ぶ・決める", ex:"Sie entschied sich _____ den Zug.", opts:["gegen","an","zu","für"], ans:3, hint:"〜を選ぶ・決める。für +Akkusativ の形。", exp:"sich entscheiden für +A＝〜を選ぶ・決める。für は Akkusativ 支配。" },
+      { de:"sich fürchten _____ +D", ja:"〜を恐れる", ex:"Das Kind fürchtet sich _____ dem Hund.", opts:["gegen","an","vor","von"], ans:2, hint:"〜を恐れる。vor +Dativ の形。", exp:"sich fürchten vor +D＝〜を恐れる。vor は Dativ 支配。" },
+    ]
+  },
+  {
+    label: "テストC",
+    questions: [
+      { de:"teilnehmen _____ +D", ja:"〜に参加する", ex:"Sie nimmt _____ dem Seminar teil.", opts:["bei","an","mit","in"], ans:1, hint:"〜に参加する。an +Dativ の形。", exp:"teilnehmen an +D＝〜に参加する。an は Dativ 支配。" },
+      { de:"antworten _____ +A", ja:"〜に答える・返答する", ex:"Bitte antworten Sie _____ meine Frage.", opts:["an","zu","auf","mit"], ans:2, hint:"〜に答える。auf +Akkusativ の形。", exp:"antworten auf +A＝〜に答える・返答する。auf は Akkusativ 支配。" },
+      { de:"eintreten _____ +A", ja:"〜を支持する・擁護する", ex:"Die Organisation tritt _____ Menschenrechte ein.", opts:["für","gegen","an","auf"], ans:0, hint:"〜を支持する・擁護する。für +Akkusativ の形。", exp:"eintreten für +A＝〜を支持する・擁護する。für は Akkusativ 支配。" },
+      { de:"umgehen _____ +D", ja:"〜を扱う・付き合う", ex:"Er kann gut _____ Kindern umgehen.", opts:["an","gegen","zu","mit"], ans:3, hint:"〜を扱う・付き合う。mit +Dativ の形。", exp:"umgehen mit +D＝〜を扱う・付き合う。mit は Dativ 支配。" },
+      { de:"fragen _____ +D", ja:"〜について尋ねる", ex:"Er fragte _____ dem Weg.", opts:["über","nach","an","von"], ans:1, hint:"〜について尋ねる。nach +Dativ の形。", exp:"fragen nach +D＝〜について尋ねる。nach は Dativ 支配。" },
+      { de:"sich konzentrieren _____ +A", ja:"〜に集中する", ex:"Ich muss mich _____ die Arbeit konzentrieren.", opts:["an","für","auf","mit"], ans:2, hint:"〜に集中する。auf +Akkusativ の形。", exp:"sich konzentrieren auf +A＝〜に集中する。auf は Akkusativ 支配。" },
+      { de:"sich gewöhnen _____ +A", ja:"〜に慣れる", ex:"Er gewöhnte sich schnell _____ das Klima.", opts:["an","mit","auf","von"], ans:0, hint:"〜に慣れる。an +Akkusativ の形。", exp:"sich gewöhnen an +A＝〜に慣れる。an は Akkusativ 支配。" },
+      { de:"sich einsetzen _____ +A", ja:"〜のために尽力する", ex:"Sie setzt sich _____ Umweltschutz ein.", opts:["an","um","gegen","für"], ans:3, hint:"〜のために尽力する。für +Akkusativ の形。", exp:"sich einsetzen für +A＝〜のために尽力する。für は Akkusativ 支配。" },
+      { de:"sich unterscheiden _____ +D", ja:"〜と異なる", ex:"Dieses Modell unterscheidet sich _____ alten.", opts:["gegen","von","über","an"], ans:1, hint:"〜と異なる。von +Dativ の形。", exp:"sich unterscheiden von +D＝〜と異なる。von は Dativ 支配。" },
+      { de:"sich bewerben _____ +A", ja:"〜に応募する・志願する", ex:"Er bewirbt sich _____ die Stelle.", opts:["für","an","um","auf"], ans:2, hint:"〜に応募する。um +Akkusativ の形。", exp:"sich bewerben um +A＝〜に応募する・志願する。um は Akkusativ 支配。" },
+    ]
+  },
+  {
+    label: "テストD",
+    questions: [
+      { de:"sterben _____ +D", ja:"〜で死ぬ（病気など）", ex:"Er starb _____ einem Herzinfarkt.", opts:["von","durch","an","bei"], ans:2, hint:"〜で死ぬ（病気など）。an +Dativ の形。", exp:"sterben an +D＝〜で死ぬ（病気など）。an は Dativ 支配。" },
+      { de:"verzichten _____ +A", ja:"〜を断念する", ex:"Sie verzichtet _____ Zucker.", opts:["an","auf","von","für"], ans:1, hint:"〜を断念する。auf +Akkusativ の形。", exp:"verzichten auf +A＝〜を断念する。auf は Akkusativ 支配。" },
+      { de:"danken _____ +A", ja:"〜に感謝する", ex:"Ich danke Ihnen _____ Ihre Hilfe.", opts:["für","an","von","über"], ans:0, hint:"〜に感謝する。für +Akkusativ の形。", exp:"danken für +A＝〜に感謝する。für は Akkusativ 支配。" },
+      { de:"vergleichen _____ +D", ja:"〜と比較する", ex:"Man sollte sich nicht _____ anderen vergleichen.", opts:["gegen","zu","über","mit"], ans:3, hint:"〜と比較する。mit +Dativ の形。", exp:"vergleichen mit +D＝〜と比較する。mit は Dativ 支配。" },
+      { de:"gehören _____ +D", ja:"〜に属する・〜の一部である", ex:"Das gehört _____ meinen Aufgaben.", opts:["für","zu","an","nach"], ans:1, hint:"〜に属する。zu +Dativ の形。", exp:"gehören zu +D＝〜に属する・〜の一部である。zu は Dativ 支配。" },
+      { de:"sich beziehen _____ +A", ja:"〜に言及する・関係する", ex:"Das bezieht sich _____ unsere Vereinbarung.", opts:["an","von","auf","zu"], ans:2, hint:"〜に言及する・関係する。auf +Akkusativ の形。", exp:"sich beziehen auf +A＝〜に言及する・関係する。auf は Akkusativ 支配。" },
+      { de:"sich orientieren _____ +D", ja:"〜を基準にする・参考にする", ex:"Wir orientieren uns _____ den Regeln.", opts:["an","auf","nach","mit"], ans:0, hint:"〜を基準にする。an +Dativ の形。", exp:"sich orientieren an +D＝〜を基準にする・参考にする。an は Dativ 支配。" },
+      { de:"sich kümmern _____ +A", ja:"〜の面倒を見る・気にかける", ex:"Wer kümmert sich _____ die Kinder?", opts:["für","an","von","um"], ans:3, hint:"〜の面倒を見る・気にかける。um +Akkusativ の形。", exp:"sich kümmern um +A＝〜の面倒を見る・気にかける。um は Akkusativ 支配。" },
+      { de:"sich freuen _____ +A", ja:"〜を喜ぶ（現在・過去の出来事）", ex:"Sie freut sich _____ das Geschenk.", opts:["auf","über","an","von"], ans:1, hint:"〜を喜ぶ（現在・過去の出来事）。über +Akkusativ の形。", exp:"sich freuen über +A＝〜を喜ぶ（現在・過去の出来事）。über は Akkusativ 支配。sich freuen auf（未来を楽しみにする）との区別に注意。" },
+      { de:"sich wehren _____ +A", ja:"〜に抵抗する・防衛する", ex:"Er wehrte sich _____ die Vorwürfe.", opts:["vor","an","gegen","von"], ans:2, hint:"〜に抵抗する。gegen +Akkusativ の形。", exp:"sich wehren gegen +A＝〜に抵抗する・防衛する。gegen は Akkusativ 支配。" },
+    ]
+  },
+  {
+    label: "テストE",
+    questions: [
+      { de:"glauben _____ +A", ja:"〜を信じる", ex:"Sie glaubt _____ ihre Fähigkeiten.", opts:["für","an","über","von"], ans:1, hint:"〜を信じる。an +Akkusativ の形。", exp:"glauben an +A＝〜を信じる。an は Akkusativ 支配。" },
+      { de:"achten _____ +A", ja:"〜に注意を払う", ex:"Achten Sie _____ die Verkehrsregeln.", opts:["an","für","auf","mit"], ans:2, hint:"〜に注意を払う。auf +Akkusativ の形。", exp:"achten auf +A＝〜に注意を払う。auf は Akkusativ 支配。" },
+      { de:"sprechen _____ +A", ja:"〜について話す", ex:"Wir sprachen _____ das Problem.", opts:["über","gegen","an","mit"], ans:0, hint:"〜について話す。über +Akkusativ または von +Dativ の形。", exp:"sprechen über +A / von +D＝〜について話す。über は Akkusativ 支配。" },
+      { de:"aufhören _____ +D", ja:"〜をやめる", ex:"Er hat _____ dem Rauchen aufgehört.", opts:["zu","an","von","mit"], ans:3, hint:"〜をやめる。mit +Dativ の形。", exp:"aufhören mit +D＝〜をやめる。mit は Dativ 支配。" },
+      { de:"appellieren _____ +A", ja:"〜に訴えかける・呼びかける", ex:"Der Politiker appellierte _____ die Bürger.", opts:["bei","an","zu","gegen"], ans:1, hint:"〜に訴えかける。an +Akkusativ の形。", exp:"appellieren an +A＝〜に訴えかける・呼びかける。an は Akkusativ 支配。" },
+      { de:"sich verlassen _____ +A", ja:"〜を頼りにする・信頼する", ex:"Auf ihn kann man sich verlassen.", opts:["an","für","auf","mit"], ans:2, hint:"〜を頼りにする。auf +Akkusativ の形。", exp:"sich verlassen auf +A＝〜を頼りにする・信頼する。auf は Akkusativ 支配。" },
+      { de:"sich wenden _____ +A", ja:"〜に相談する・連絡する", ex:"Bitte wenden Sie sich _____ den Kundendienst.", opts:["an","zu","für","über"], ans:0, hint:"〜に相談する。an +Akkusativ の形。", exp:"sich wenden an +A＝〜に相談する・連絡する。an は Akkusativ 支配。" },
+      { de:"sich ärgern _____ +A", ja:"〜に腹を立てる", ex:"Ich ärgere mich _____ seine Aussage.", opts:["von","an","gegen","über"], ans:3, hint:"〜に腹を立てる。über +Akkusativ の形。", exp:"sich ärgern über +A＝〜に腹を立てる。über は Akkusativ 支配。" },
+      { de:"sich handeln _____ +A", ja:"〜のことである・〜が問題だ", ex:"Es handelt sich _____ einen Irrtum.", opts:["an","um","mit","über"], ans:1, hint:"〜のことである。um +Akkusativ の形。", exp:"sich handeln um +A＝〜のことである・〜が問題だ。um は Akkusativ 支配。" },
+      { de:"sich beschäftigen _____ +D", ja:"〜に取り組む・関わる", ex:"Ich beschäftige mich _____ dem Thema.", opts:["an","auf","mit","gegen"], ans:2, hint:"〜に取り組む。mit +Dativ の形。", exp:"sich beschäftigen mit +D＝〜に取り組む・関わる。mit は Dativ 支配。" },
+    ]
+  },
+  {
+    label: "テストF",
+    questions: [
+      { de:"schreiben _____ +A", ja:"〜に（手紙などを）書く", ex:"Er schreibt einen Brief _____ seinen Freund.", opts:["zu","für","an","über"], ans:2, hint:"〜に（手紙などを）書く。an +Akkusativ の形。", exp:"schreiben an +A＝〜に（手紙などを）書く。an は Akkusativ 支配。" },
+      { de:"hinweisen _____ +A", ja:"〜を指摘する", ex:"Er wies _____ einen Fehler hin.", opts:["auf","an","von","für"], ans:0, hint:"〜を指摘する。auf +Akkusativ の形。", exp:"hinweisen auf +A＝〜を指摘する。auf は Akkusativ 支配。" },
+      { de:"berichten _____ +A", ja:"〜について報告する・伝える", ex:"Die Zeitung berichtete _____ den Unfall.", opts:["an","gegen","mit","über"], ans:3, hint:"〜について報告する。über +Akkusativ または von +Dativ の形。", exp:"berichten über +A / von +D＝〜について報告する・伝える。über は Akkusativ 支配。" },
+      { de:"sich spezialisieren _____ +A", ja:"〜を専門とする", ex:"Sie hat sich _____ Steuerrecht spezialisiert.", opts:["für","auf","an","mit"], ans:1, hint:"〜を専門とする。auf +Akkusativ の形。", exp:"sich spezialisieren auf +A＝〜を専門とする。auf は Akkusativ 支配。" },
+      { de:"sich unterhalten _____ +D", ja:"〜と話す", ex:"Wir unterhielten uns _____ ihr über Reisen.", opts:["an","über","mit","zu"], ans:2, hint:"〜と話す。mit +Dativ の形。", exp:"sich unterhalten mit +D (über +A)＝〜と（〜について）話す。mit は Dativ 支配。" },
+      { de:"sich auswirken _____ +A", ja:"〜に影響を及ぼす", ex:"Das wirkt sich _____ die Gesundheit aus.", opts:["auf","an","von","gegen"], ans:0, hint:"〜に影響を及ぼす。auf +Akkusativ の形。", exp:"sich auswirken auf +A＝〜に影響を及ぼす。auf は Akkusativ 支配。" },
+      { de:"sich abfinden _____ +D", ja:"〜に折り合いをつける", ex:"Er hat sich _____ der Situation abgefunden.", opts:["gegen","an","von","mit"], ans:3, hint:"〜に折り合いをつける。mit +Dativ の形。", exp:"sich abfinden mit +D＝〜に折り合いをつける。mit は Dativ 支配。" },
+      { de:"sich beschweren _____ +A", ja:"〜について苦情を言う", ex:"Er beschwerte sich _____ den Service.", opts:["gegen","über","an","von"], ans:1, hint:"〜について苦情を言う。über +Akkusativ の形。", exp:"sich beschweren über +A＝〜について苦情を言う。über は Akkusativ 支配。" },
+      { de:"sich treffen _____ +D", ja:"〜と会う・待ち合わせる", ex:"Ich treffe mich heute _____ einem Freund.", opts:["an","auf","mit","über"], ans:2, hint:"〜と会う。mit +Dativ の形。", exp:"sich treffen mit +D＝〜と会う・待ち合わせる。mit は Dativ 支配。" },
+      { de:"sich wundern _____ +A", ja:"〜に驚く・不思議に思う", ex:"Ich wundere mich _____ seine Reaktion.", opts:["über","an","von","gegen"], ans:0, hint:"〜に驚く。über +Akkusativ の形。", exp:"sich wundern über +A＝〜に驚く・不思議に思う。über は Akkusativ 支配。" },
+    ]
+  }
+];
+
+let currentSet = 0;
+let current = 0;
+let score = 0;
+let answered = false;
+
+function initSetNav() {
+  const nav = document.getElementById('set-nav');
+  sets.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'set-btn' + (i === 0 ? ' active' : '');
+    btn.textContent = s.label;
+    btn.onclick = () => selectSet(i);
+    nav.appendChild(btn);
+  });
+}
+
+function selectSet(idx) {
+  currentSet = idx;
+  current = 0; score = 0; answered = false;
+  document.querySelectorAll('.set-btn').forEach((b, i) => {
+    b.className = 'set-btn' + (i === idx ? ' active' : '');
+  });
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  render();
+}
+
+function render() {
+  const qs = sets[currentSet].questions;
+  const q = qs[current];
+  const total = qs.length;
+  document.getElementById('q-num').textContent = `問${current+1}`;
+  document.getElementById('q-text').textContent = q.de + '　「' + q.ja + '」';
+  document.getElementById('q-ex').textContent = q.ex;
+  document.getElementById('prog-bar').style.width = `${((current+1)/total)*100}%`;
+  document.getElementById('prog-text').textContent = `問${current+1} / ${total}`;
+  document.getElementById('hint-text').style.display = 'none';
+  document.getElementById('hint-text').textContent = q.hint;
+  document.getElementById('hint-btn').style.display = 'inline';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('next-btn').style.display = 'none';
+  answered = false;
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.onclick = () => select(i);
+    opts.appendChild(btn);
+  });
+}
+
+function showHint() {
+  const ht = document.getElementById('hint-text');
+  ht.style.display = ht.style.display === 'none' ? 'block' : 'none';
+}
+
+function select(i) {
+  if (answered) return;
+  answered = true;
+  const q = sets[currentSet].questions[current];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+  document.getElementById('hint-btn').style.display = 'none';
+  document.getElementById('hint-text').style.display = 'none';
+  const fb = document.getElementById('feedback');
+  if (i === q.ans) {
+    score++;
+    btns[i].classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = '✓ 正解！　' + q.exp;
+  } else {
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('reveal');
+    fb.className = 'feedback wrong';
+    fb.textContent = '✗ 不正解。　' + q.exp;
+  }
+  const nb = document.getElementById('next-btn');
+  nb.style.display = 'block';
+  nb.textContent = current + 1 < sets[currentSet].questions.length ? '次の問題 →' : '結果を見る';
+}
+
+function nextQuestion() {
+  current++;
+  if (current < sets[currentSet].questions.length) {
+    render();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const rc = document.getElementById('result-card');
+  rc.style.display = 'block';
+  const total = sets[currentSet].questions.length;
+  const pct = Math.round(score / total * 100);
+  document.getElementById('result-title').textContent = sets[currentSet].label + '　終了';
+  document.getElementById('score-display').textContent = `${score} / ${total}`;
+  let msg = '';
+  if (pct >= 90) msg = '素晴らしい！ほぼ完璧です。';
+  else if (pct >= 70) msg = 'よくできました。間違えた表現を復習しましょう。';
+  else if (pct >= 50) msg = 'もう少しです。リストを見直してから再挑戦しましょう。';
+  else msg = '動詞コロケーションリストをもう一度確認してから再挑戦しましょう。';
+  document.getElementById('score-msg').textContent = `正答率 ${pct}%　${msg}`;
+  const nb = document.getElementById('next-set-btn');
+  if (currentSet < sets.length - 1) {
+    nb.style.display = 'inline-block';
+    nb.textContent = sets[currentSet + 1].label + 'へ →';
+  } else {
+    nb.style.display = 'none';
+  }
+}
+
+function restart() {
+  current = 0; score = 0;
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  render();
+}
+
+function goNextSet() { selectSet(currentSet + 1); }
+
+initSetNav();
+render();
+</script>
+</body>
+</html>
