@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抽象名詞テスト B2レベル（日→独）</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 700px; margin: 0 auto; }
+  header { margin-bottom: 1.5rem; }
+  header h1 { font-size: 21px; font-weight: 500; margin-bottom: 4px; }
+  header p { font-size: 14px; color: #666; }
+  .set-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .set-btn { padding: 6px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 13px; font-family: inherit; transition: background 0.15s; }
+  .set-btn:hover { background: #f0f0f0; }
+  .set-btn.random-btn { border-color: #185FA5; color: #185FA5; }
+  .set-btn.random-btn.active { background: #185FA5; color: #fff; border-color: #185FA5; }
+  .set-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .progress-bar-wrap { background: #ddd; border-radius: 4px; height: 4px; margin-bottom: 6px; }
+  .progress-bar { background: #185FA5; height: 4px; border-radius: 4px; transition: width 0.3s; }
+  .progress-text { font-size: 13px; color: #666; margin-bottom: 1.2rem; }
+  .card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 1.5rem; margin-bottom: 1rem; }
+  .question-num { font-size: 12px; color: #999; margin-bottom: 8px; }
+  .question-text { font-size: 17px; font-weight: 500; margin-bottom: 1.25rem; line-height: 1.5; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { text-align: left; padding: 10px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 15px; font-family: "Segoe UI", "Candara", sans-serif; transition: background 0.15s, border-color 0.15s; }
+  .option-btn:hover:not(:disabled) { background: #f0f0f0; border-color: #999; }
+  .option-btn.correct { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn.wrong   { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+  .option-btn.reveal  { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn:disabled { cursor: default; }
+  .feedback { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.6; display: none; }
+  .feedback.correct { background: #e1f5ee; color: #085041; display: block; }
+  .feedback.wrong    { background: #fcebeb; color: #791f1f; display: block; }
+  .hint-btn { margin-top: 10px; font-size: 13px; color: #185FA5; background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; text-decoration: underline; }
+  .hint-text { font-size: 13px; color: #666; margin-top: 6px; display: none; }
+  .next-btn { margin-top: 1.25rem; padding: 10px 20px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; display: none; }
+  .next-btn:hover { background: #333; }
+  .result-card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 2rem; text-align: center; display: none; }
+  .result-card h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+  .score-big { font-size: 48px; font-weight: 500; color: #185FA5; margin: 1rem 0; }
+  .score-msg { font-size: 15px; color: #555; margin-bottom: 1.5rem; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .restart-btn { padding: 10px 24px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .restart-btn:hover { background: #333; }
+  .next-set-btn { padding: 10px 24px; border-radius: 8px; background: #185FA5; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .next-set-btn:hover { background: #0c447c; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>抽象名詞テスト　B2レベル</h1>
+    <p>日本語の意味に合うドイツ語名詞を選びなさい。（各テスト20問）</p>
+  </header>
+  <div style="margin-bottom:1rem;"><a href="index.html" style="display:inline-block;padding:7px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fafafa;color:#1a1a18;text-decoration:none;font-size:13px;font-family:inherit;">← ポータルに戻る</a></div>
+  <div class="set-nav" id="set-nav"></div>
+  <div id="quiz-area">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar" style="width:5%"></div></div>
+    <div class="progress-text" id="prog-text"></div>
+    <div class="card">
+      <div class="question-num" id="q-num"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <button class="hint-btn" id="hint-btn" onclick="showHint()">ヒントを見る</button>
+      <div class="hint-text" id="hint-text"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題 →</button>
+    </div>
+  </div>
+  <div class="result-card" id="result-card">
+    <h2 id="result-title"></h2>
+    <div class="score-big" id="score-display"></div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="btn-row">
+      <button class="restart-btn" onclick="restart()">このテストをもう一度</button>
+      <button class="next-set-btn" id="next-set-btn" onclick="goNextSet()">次のテストへ →</button>
+    </div>
+  </div>
+</div>
+<script>
+const sets = [
+  { label:"テストA", questions:[
+    { q:"「態度・姿勢・立場」を意味するドイツ語名詞はどれか。", opts:["die Haltung","die Weltanschauung","die Prämisse","die Norm"], ans:0, hint:"eine klare Haltung einnehmen（明確な立場をとる）の形でよく使う。", exp:"die Haltung（-，-en）＝態度・姿勢・立場。eine klare Haltung einnehmen（明確な立場をとる）。" },
+    { q:"「世界観」を意味するドイツ語名詞はどれか。", opts:["das Paradigma","die Ideologie","die Weltanschauung","das Ideal"], ans:2, hint:"Welt（世界）＋ Anschauung（見方）からなる複合名詞。", exp:"die Weltanschauung（-，-en）＝世界観。eine konservative Weltanschauung vertreten（保守的な世界観を持つ）。" },
+    { q:"「原則・原理」を意味するドイツ語名詞はどれか。", opts:["die These","das Prinzip","die Moral","die Norm"], ans:1, hint:"an einem Prinzip festhalten（原則を守る）の形でよく使う。", exp:"das Prinzip（-s，-ien）＝原則・原理。an einem Prinzip festhalten（原則を守る）。" },
+    { q:"「規範・基準」を意味するドイツ語名詞はどれか。", opts:["die Norm","das Ideal","die Prämisse","die Haltung"], ans:0, hint:"gesellschaftliche Normen（社会的規範）の形でよく使う。", exp:"die Norm（-，-en）＝規範・基準。gesellschaftliche Normen in Frage stellen（社会的規範を問い直す）。" },
+    { q:"「理想」を意味するドイツ語名詞はどれか。", opts:["die These","die Moral","die Ideologie","das Ideal"], ans:3, hint:"einem Ideal nachjagen（理想を追い求める）の形でよく使う。", exp:"das Ideal（-s，-e）＝理想。einem Ideal nachjagen（理想を追い求める）。" },
+    { q:"「イデオロギー・思想体系」を意味するドイツ語名詞はどれか。", opts:["die Ideologie","das Paradigma","die Norm","die Weltanschauung"], ans:0, hint:"einer Ideologie anhängen（イデオロギーに傾倒する）の形でよく使う。", exp:"die Ideologie（-，-n）＝イデオロギー・思想体系。einer Ideologie anhängen（イデオロギーに傾倒する）。" },
+    { q:"「パラダイム・思考の枠組み」を意味するドイツ語名詞はどれか。", opts:["die Prämisse","die Weltanschauung","das Paradigma","das Ideal"], ans:2, hint:"ein Paradigma überwinden（パラダイムを乗り越える）の形でよく使う。ギリシャ語由来。", exp:"das Paradigma（-s，-men）＝パラダイム・思考の枠組み。ein Paradigma überwinden（パラダイムを乗り越える）。" },
+    { q:"「前提・大前提」を意味するドイツ語名詞はどれか。", opts:["die Norm","die Prämisse","die Haltung","die These"], ans:1, hint:"von falschen Prämissen ausgehen（誤った前提から出発する）の形でよく使う。", exp:"die Prämisse（-，-n）＝前提・大前提。von falschen Prämissen ausgehen（誤った前提から出発する）。" },
+    { q:"「命題・主張」を意味するドイツ語名詞はどれか。", opts:["die These","die Moral","das Prinzip","die Ideologie"], ans:0, hint:"eine These aufstellen und belegen（命題を立てて論証する）の形でよく使う。", exp:"die These（-，-n）＝命題・主張。eine These aufstellen und belegen（命題を立てて論証する）。" },
+    { q:"「道徳・倫理」を意味するドイツ語名詞はどれか。", opts:["das Ideal","die Norm","die Moral","das Paradigma"], ans:2, hint:"moralische Grundsätze verletzen（道徳的原則を犯す）の形でよく使う。", exp:"die Moral（-，-en）＝道徳・倫理。moralische Grundsätze verletzen（道徳的原則を犯す）。" },
+    { q:"「論拠・議論」を意味するドイツ語名詞はどれか。", opts:["die Hypothese","das Argument","die Objektivität","die Evidenz"], ans:1, hint:"ein überzeugendes Argument liefern（説得力ある論拠を示す）の形でよく使う。", exp:"das Argument（-s，-e）＝論拠・議論。ein überzeugendes Argument liefern（説得力ある論拠を示す）。" },
+    { q:"「仮説」を意味するドイツ語名詞はどれか。", opts:["die Schlussfolgerung","die Hypothese","die Praxis","die Evidenz"], ans:1, hint:"eine Hypothese aufstellen und testen（仮説を立てて検証する）の形でよく使う。", exp:"die Hypothese（-，-n）＝仮説。eine Hypothese aufstellen und testen（仮説を立てて検証する）。" },
+    { q:"「結論・推論」を意味するドイツ語名詞はどれか。", opts:["die Objektivität","die Theorie","die Schlussfolgerung","die Ambiguität"], ans:2, hint:"eine voreilige Schlussfolgerung ziehen（早まった結論を出す）の形でよく使う。", exp:"die Schlussfolgerung（-，-en）＝結論・推論。eine voreilige Schlussfolgerung ziehen（早まった結論を出す）。" },
+    { q:"「実践・現場・慣行」を意味するドイツ語名詞はどれか。", opts:["die Praxis","die Theorie","die Evidenz","die Subjektivität"], ans:0, hint:"Theorie und Praxis in Einklang bringen（理論と実践を一致させる）の形でよく使う。", exp:"die Praxis（-，Praxen）＝実践・現場・慣行。Theorie und Praxis in Einklang bringen（理論と実践を一致させる）。" },
+    { q:"「理論」を意味するドイツ語名詞はどれか。", opts:["die Ambiguität","die Praxis","die Theorie","die Objektivität"], ans:2, hint:"eine Theorie widerlegen（理論を反証する）の形でよく使う。", exp:"die Theorie（-，-n）＝理論。eine Theorie widerlegen（理論を反証する）。" },
+    { q:"「矛盾・反論」を意味するドイツ語名詞はどれか。", opts:["die Evidenz","der Widerspruch","die Subjektivität","die Objektivität"], ans:1, hint:"in Widerspruch zu etw. stehen（〜と矛盾している）の形でよく使う。", exp:"der Widerspruch（-s，Widersprüche）＝矛盾・反論。in Widerspruch zu etw. stehen（〜と矛盾している）。" },
+    { q:"「客観性」を意味するドイツ語名詞はどれか。", opts:["die Ambiguität","die Objektivität","die Subjektivität","die Evidenz"], ans:1, hint:"wissenschaftliche Objektivität wahren（科学的客観性を保つ）の形でよく使う。", exp:"die Objektivität（-，-）＝客観性。wissenschaftliche Objektivität wahren（科学的客観性を保つ）。" },
+    { q:"「主観性」を意味するドイツ語名詞はどれか。", opts:["die Objektivität","die Hypothese","die Subjektivität","die Theorie"], ans:2, hint:"die Subjektivität des Urteils eingestehen（判断の主観性を認める）の形でよく使う。", exp:"die Subjektivität（-，-）＝主観性。die Subjektivität des Urteils eingestehen（判断の主観性を認める）。" },
+    { q:"「根拠・証拠・エビデンス」を意味するドイツ語名詞はどれか。", opts:["die Schlussfolgerung","die Praxis","die Evidenz","die Ambiguität"], ans:2, hint:"empirische Evidenz vorlegen（実証的根拠を提示する）の形でよく使う。", exp:"die Evidenz（-，-en）＝根拠・証拠・エビデンス。empirische Evidenz vorlegen（実証的根拠を提示する）。" },
+    { q:"「曖昧性・多義性」を意味するドイツ語名詞はどれか。", opts:["die Objektivität","die Ambiguität","die Theorie","der Widerspruch"], ans:1, hint:"mit Ambiguität produktiv umgehen（曖昧さを積極的に扱う）の形でよく使う。", exp:"die Ambiguität（-，-en）＝曖昧性・多義性。mit Ambiguität produktiv umgehen（曖昧さを積極的に扱う）。" },
+  ]},
+  { label:"テストB", questions:[
+    { q:"「権力・力」を意味するドイツ語名詞はどれか。", opts:["die Autorität","die Macht","die Struktur","die Hierarchie"], ans:1, hint:"Macht ausüben（権力を行使する）の形でよく使う。", exp:"die Macht（-，Mächte）＝権力・力。Macht ausüben und Macht missbrauchen（権力を行使し、権力を乱用する）。" },
+    { q:"「権威・権限」を意味するドイツ語名詞はどれか。", opts:["die Legitimität","die Autorität","die Macht","die Institution"], ans:1, hint:"die Autorität des Staates in Frage stellen（国家の権威を問い直す）の形でよく使う。", exp:"die Autorität（-，-en）＝権威・権限。die Autorität des Staates in Frage stellen（国家の権威を問い直す）。" },
+    { q:"「制度・機関」を意味するドイツ語名詞はどれか。", opts:["die Transparenz","die Institution","die Hierarchie","der Konsens"], ans:1, hint:"demokratische Institutionen stärken（民主的機関を強化する）の形でよく使う。", exp:"die Institution（-，-en）＝制度・機関。demokratische Institutionen stärken（民主的機関を強化する）。" },
+    { q:"「構造」を意味するドイツ語名詞はどれか。", opts:["die Struktur","der Mechanismus","die Macht","die Rechenschaft"], ans:0, hint:"bestehende Strukturen aufbrechen（既存の構造を打破する）の形でよく使う。", exp:"die Struktur（-，-en）＝構造。bestehende Strukturen aufbrechen（既存の構造を打破する）。" },
+    { q:"「メカニズム・仕組み」を意味するドイツ語名詞はどれか。", opts:["die Hierarchie","die Transparenz","der Mechanismus","die Legitimität"], ans:2, hint:"einen Kontrollmechanismus einführen（管理メカニズムを導入する）の形でよく使う。", exp:"der Mechanismus（-，-men）＝メカニズム・仕組み。einen Kontrollmechanismus einführen（管理メカニズムを導入する）。" },
+    { q:"「階層・ヒエラルキー」を意味するドイツ語名詞はどれか。", opts:["die Rechenschaft","die Hierarchie","der Konsens","die Autorität"], ans:1, hint:"starre Hierarchien abbauen（硬直した階層を解消する）の形でよく使う。", exp:"die Hierarchie（-，-n）＝階層・ヒエラルキー。starre Hierarchien abbauen（硬直した階層を解消する）。" },
+    { q:"「正当性」を意味するドイツ語名詞はどれか。", opts:["die Struktur","die Legitimität","die Transparenz","die Institution"], ans:1, hint:"die Legitimität einer Entscheidung anzweifeln（決定の正当性を疑う）の形でよく使う。", exp:"die Legitimität（-，-）＝正当性。die Legitimität einer Entscheidung anzweifeln（決定の正当性を疑う）。" },
+    { q:"「透明性」を意味するドイツ語名詞はどれか。", opts:["die Rechenschaft","der Konsens","die Transparenz","die Macht"], ans:2, hint:"mehr Transparenz im Verfahren fordern（手続きの透明性を求める）の形でよく使う。", exp:"die Transparenz（-，-）＝透明性。mehr Transparenz im Verfahren fordern（手続きの透明性を求める）。" },
+    { q:"「説明責任・報告義務」を意味するドイツ語名詞はどれか。", opts:["die Transparenz","die Hierarchie","die Rechenschaft","die Legitimität"], ans:2, hint:"Rechenschaft ablegen müssen（説明責任を果たさなければならない）の形でよく使う。", exp:"die Rechenschaft（-，-）＝説明責任・報告義務。Rechenschaft ablegen müssen（説明責任を果たさなければならない）。" },
+    { q:"「合意・コンセンサス」を意味するドイツ語名詞はどれか。", opts:["der Konsens","die Struktur","die Autorität","der Mechanismus"], ans:0, hint:"einen breiten Konsens erzielen（広いコンセンサスを達成する）の形でよく使う。", exp:"der Konsens（-es，-e）＝合意・コンセンサス。einen breiten Konsens erzielen（広いコンセンサスを達成する）。" },
+    { q:"「変容・変革（構造的）」を意味するドイツ語名詞はどれか。", opts:["die Krise","der Wandel","der Übergang","die Kontinuität"], ans:1, hint:"einem tiefgreifenden Wandel unterliegen（深い変革にさらされる）の形でよく使う。", exp:"der Wandel（-s，-）＝変容・変革（構造的）。einem tiefgreifenden Wandel unterliegen（深い変革にさらされる）。" },
+    { q:"「変換・転換・トランスフォーメーション」を意味するドイツ語名詞はどれか。", opts:["die Transformation","der Bruch","die Stagnation","der Rückschlag"], ans:0, hint:"eine digitale Transformation durchlaufen（デジタル転換を経る）の形でよく使う。", exp:"die Transformation（-，-en）＝変換・転換。eine digitale Transformation durchlaufen（デジタル転換を経る）。" },
+    { q:"「移行・過渡期」を意味するドイツ語名詞はどれか。", opts:["der Impuls","die Krise","der Übergang","die Eskalation"], ans:2, hint:"in einer Phase des Übergangs stehen（移行期にある）の形でよく使う。", exp:"der Übergang（-s，Übergänge）＝移行・過渡期。in einer Phase des Übergangs stehen（移行期にある）。" },
+    { q:"「危機」を意味するドイツ語名詞はどれか。", opts:["der Wandel","die Krise","die Stagnation","der Bruch"], ans:1, hint:"eine Krise bewältigen（危機を乗り越える）の形でよく使う。", exp:"die Krise（-，-n）＝危機。eine Krise bewältigen（危機を乗り越える）。" },
+    { q:"「断絶・決裂・亀裂」を意味するドイツ語名詞はどれか。", opts:["der Rückschlag","der Bruch","die Eskalation","die Kontinuität"], ans:1, hint:"ein historischer Bruch mit der Vergangenheit（過去との歴史的断絶）の形でよく使う。", exp:"der Bruch（-s，Brüche）＝断絶・決裂・亀裂。ein historischer Bruch mit der Vergangenheit（過去との歴史的断絶）。" },
+    { q:"「継続性・連続性」を意味するドイツ語名詞はどれか。", opts:["die Kontinuität","der Wandel","der Impuls","die Transformation"], ans:0, hint:"die Kontinuität der Politik wahren（政策の継続性を保つ）の形でよく使う。", exp:"die Kontinuität（-，-en）＝継続性・連続性。die Kontinuität der Politik wahren（政策の継続性を保つ）。" },
+    { q:"「後退・挫折・逆風」を意味するドイツ語名詞はどれか。", opts:["die Eskalation","die Stagnation","der Rückschlag","die Krise"], ans:2, hint:"einen schweren Rückschlag erleiden（重大な後退を被る）の形でよく使う。", exp:"der Rückschlag（-s，Rückschläge）＝後退・挫折・逆風。einen schweren Rückschlag erleiden（重大な後退を被る）。" },
+    { q:"「エスカレーション・拡大」を意味するドイツ語名詞はどれか。", opts:["der Übergang","die Eskalation","der Bruch","der Wandel"], ans:1, hint:"eine Eskalation des Konflikts verhindern（紛争のエスカレーションを防ぐ）の形でよく使う。", exp:"die Eskalation（-，-en）＝エスカレーション・拡大。eine Eskalation des Konflikts verhindern（紛争のエスカレーションを防ぐ）。" },
+    { q:"「停滞」を意味するドイツ語名詞はどれか。", opts:["die Stagnation","die Kontinuität","die Krise","der Rückschlag"], ans:0, hint:"aus einer wirtschaftlichen Stagnation herausfinden（経済的停滞から抜け出す）の形でよく使う。", exp:"die Stagnation（-，-en）＝停滞。aus einer wirtschaftlichen Stagnation herausfinden（経済的停滞から抜け出す）。" },
+    { q:"「衝動・刺激・推進力」を意味するドイツ語名詞はどれか。", opts:["der Bruch","der Impuls","die Transformation","die Eskalation"], ans:1, hint:"einen neuen Impuls geben（新たな推進力を与える）の形でよく使う。", exp:"der Impuls（-es，-e）＝衝動・刺激・推進力。einen neuen Impuls geben（新たな推進力を与える）。" },
+  ]},
+  { label:"テストC", questions:[
+    { q:"「緊張・張力・葛藤」を意味するドイツ語名詞はどれか。", opts:["die Spannung","die Abhängigkeit","die Solidarität","die Rivalität"], ans:0, hint:"soziale Spannungen abbauen（社会的緊張を緩和する）の形でよく使う。", exp:"die Spannung（-，-en）＝緊張・張力・葛藤。soziale Spannungen abbauen（社会的緊張を緩和する）。" },
+    { q:"「依存（性）」を意味するドイツ語名詞はどれか。", opts:["die Kooperation","die Abhängigkeit","die Interdependenz","die Konkurrenz"], ans:1, hint:"eine strukturelle Abhängigkeit überwinden（構造的依存を克服する）の形でよく使う。", exp:"die Abhängigkeit（-，-en）＝依存（性）。eine strukturelle Abhängigkeit überwinden（構造的依存を克服する）。" },
+    { q:"「独立性・自立」を意味するドイツ語名詞はどれか。", opts:["die Solidarität","die Rivalität","die Unabhängigkeit","die Polarisierung"], ans:2, hint:"die Unabhängigkeit der Justiz garantieren（司法の独立性を保証する）の形でよく使う。", exp:"die Unabhängigkeit（-，-）＝独立性・自立。die Unabhängigkeit der Justiz garantieren（司法の独立性を保証する）。" },
+    { q:"「連帯」を意味するドイツ語名詞はどれか。", opts:["die Interdependenz","die Kompromissbereitschaft","die Solidarität","die Abhängigkeit"], ans:2, hint:"Solidarität mit Betroffenen zeigen（被影響者との連帯を示す）の形でよく使う。", exp:"die Solidarität（-，-）＝連帯。Solidarität mit Betroffenen zeigen（被影響者との連帯を示す）。" },
+    { q:"「対抗・ライバル関係」を意味するドイツ語名詞はどれか。", opts:["die Rivalität","die Kooperation","die Spannung","die Polarisierung"], ans:0, hint:"eine Rivalität zwischen zwei Lagern（二つの陣営間のライバル関係）の形でよく使う。", exp:"die Rivalität（-，-en）＝対抗・ライバル関係。eine Rivalität zwischen zwei Lagern（二つの陣営間のライバル関係）。" },
+    { q:"「協力・連携（公式・組織的）」を意味するドイツ語名詞はどれか。", opts:["die Konkurrenz","die Unabhängigkeit","die Kooperation","die Solidarität"], ans:2, hint:"eine internationale Kooperation aufbauen（国際協力を構築する）の形でよく使う。", exp:"die Kooperation（-，-en）＝協力・連携（公式・組織的）。eine internationale Kooperation aufbauen（国際協力を構築する）。" },
+    { q:"「競争・競合」を意味するドイツ語名詞はどれか。", opts:["die Polarisierung","die Konkurrenz","die Interdependenz","die Abhängigkeit"], ans:1, hint:"einem starken Konkurrenzdruck ausgesetzt sein（強い競争圧力にさらされている）の形でよく使う。", exp:"die Konkurrenz（-，-en）＝競争・競合。einem starken Konkurrenzdruck ausgesetzt sein（強い競争圧力にさらされている）。" },
+    { q:"「二極化・分極化」を意味するドイツ語名詞はどれか。", opts:["die Rivalität","die Spannung","die Polarisierung","die Kompromissbereitschaft"], ans:2, hint:"eine zunehmende Polarisierung der Gesellschaft（社会の進む二極化）の形でよく使う。", exp:"die Polarisierung（-，-en）＝二極化・分極化。eine zunehmende Polarisierung der Gesellschaft（社会の進む二極化）。" },
+    { q:"「相互依存」を意味するドイツ語名詞はどれか。", opts:["die Interdependenz","die Abhängigkeit","die Kooperation","die Solidarität"], ans:0, hint:"globale Interdependenzen berücksichtigen（グローバルな相互依存を考慮する）の形でよく使う。", exp:"die Interdependenz（-，-en）＝相互依存。globale Interdependenzen berücksichtigen（グローバルな相互依存を考慮する）。" },
+    { q:"「妥協の姿勢・歩み寄り」を意味するドイツ語名詞はどれか。", opts:["die Unabhängigkeit","die Kompromissbereitschaft","die Polarisierung","die Rivalität"], ans:1, hint:"mangelnde Kompromissbereitschaft beklagen（妥協の姿勢の欠如を嘆く）の形でよく使う。", exp:"die Kompromissbereitschaft（-，-）＝妥協の姿勢・歩み寄り。mangelnde Kompromissbereitschaft beklagen（妥協の姿勢の欠如を嘆く）。" },
+    { q:"「判断・判決・評価」を意味するドイツ語名詞はどれか。", opts:["das Urteil","die Konsequenz","die Glaubwürdigkeit","die Gerechtigkeit"], ans:0, hint:"ein vorschnelles Urteil fällen（早まった判断を下す）の形でよく使う。", exp:"das Urteil（-s，-e）＝判断・判決・評価。ein vorschnelles Urteil fällen（早まった判断を下す）。" },
+    { q:"「結果・論理的帰結・一貫性」を意味するドイツ語名詞はどれか。", opts:["die Integrität","die Konsequenz","die Verzerrung","die Verhältnismäßigkeit"], ans:1, hint:"die Konsequenzen des Handelns tragen（行動の結果を引き受ける）の形でよく使う。", exp:"die Konsequenz（-，-en）＝結果・論理的帰結・一貫性。die Konsequenzen des Handelns tragen（行動の結果を引き受ける）。" },
+    { q:"「誠実さ・高潔さ」を意味するドイツ語名詞はどれか。", opts:["die Kompetenz","die Glaubwürdigkeit","die Integrität","das Urteil"], ans:2, hint:"die persönliche Integrität wahren（個人の誠実さを保つ）の形でよく使う。", exp:"die Integrität（-，-）＝誠実さ・高潔さ。die persönliche Integrität wahren（個人の誠実さを保つ）。" },
+    { q:"「信頼性・説得力」を意味するドイツ語名詞はどれか。", opts:["die Gerechtigkeit","die Glaubwürdigkeit","die Verzerrung","die Willkür"], ans:1, hint:"die Glaubwürdigkeit einer Institution（機関の信頼性）の形でよく使う。", exp:"die Glaubwürdigkeit（-，-）＝信頼性・説得力。die Glaubwürdigkeit einer Institution（機関の信頼性）。" },
+    { q:"「均衡性・比例原則」を意味するドイツ語名詞はどれか。", opts:["die Konsequenz","die Verhältnismäßigkeit","die Kompetenz","die Integrität"], ans:1, hint:"den Grundsatz der Verhältnismäßigkeit beachten（比例原則を守る）の形でよく使う。", exp:"die Verhältnismäßigkeit（-，-）＝均衡性・比例原則。den Grundsatz der Verhältnismäßigkeit beachten（比例原則を守る）。" },
+    { q:"「恣意性・専横」を意味するドイツ語名詞はどれか。", opts:["die Willkür","die Gerechtigkeit","das Urteil","die Verzerrung"], ans:0, hint:"staatliche Willkür verhindern（国家の恣意的行為を防ぐ）の形でよく使う。", exp:"die Willkür（-，-）＝恣意性・専横。staatliche Willkür verhindern（国家の恣意的行為を防ぐ）。" },
+    { q:"「正義・公正」を意味するドイツ語名詞はどれか。", opts:["die Glaubwürdigkeit","die Willkür","die Gerechtigkeit","die Verhältnismäßigkeit"], ans:2, hint:"soziale Gerechtigkeit einfordern（社会的正義を求める）の形でよく使う。", exp:"die Gerechtigkeit（-，-）＝正義・公正。soziale Gerechtigkeit einfordern（社会的正義を求める）。" },
+    { q:"「能力・管轄・専門性」を意味するドイツ語名詞はどれか。", opts:["die Konsequenz","die Kompetenz","die Integrität","die Verzerrung"], ans:1, hint:"fachliche Kompetenz unter Beweis stellen（専門的能力を証明する）の形でよく使う。", exp:"die Kompetenz（-，-en）＝能力・管轄・専門性。fachliche Kompetenz unter Beweis stellen（専門的能力を証明する）。" },
+    { q:"「歪曲・偏り・バイアス」を意味するドイツ語名詞はどれか。", opts:["die Willkür","die Gerechtigkeit","die Kompetenz","die Verzerrung"], ans:3, hint:"eine Verzerrung der Wahrnehmung korrigieren（認知の歪みを修正する）の形でよく使う。", exp:"die Verzerrung（-，-en）＝歪曲・偏り・バイアス。eine Verzerrung der Wahrnehmung korrigieren（認知の歪みを修正する）。" },
+    { q:"「知識・知見」を意味するドイツ語名詞はどれか。", opts:["das Wissen","die Expertise","die Komplexität","die Tradition"], ans:0, hint:"Wissen weitergeben und vernetzen（知識を伝え、結びつける）の形でよく使う。", exp:"das Wissen（-s，-）＝知識・知見。Wissen weitergeben und vernetzen（知識を伝え、結びつける）。" },
+  ]},
+  { label:"テストD", questions:[
+    { q:"「無知・知識の欠如」を意味するドイツ語名詞はどれか。", opts:["das Unwissen","das Wissen","die Nuance","die Innovation"], ans:0, hint:"aus Unwissen heraus handeln（無知から行動する）の形でよく使う。", exp:"das Unwissen（-s，-）＝無知・知識の欠如。aus Unwissen heraus handeln（無知から行動する）。" },
+    { q:"「専門知識・エキスパート性」を意味するドイツ語名詞はどれか。", opts:["die Kreativität","die Expertise","die Tradition","der Diskurs"], ans:1, hint:"externe Expertise einbeziehen（外部の専門知識を取り入れる）の形でよく使う。", exp:"die Expertise（-，-n）＝専門知識・エキスパート性。externe Expertise einbeziehen（外部の専門知識を取り入れる）。" },
+    { q:"「伝統・慣習」を意味するドイツ語名詞はどれか。", opts:["die Innovation","die Tradition","die Narration","die Nuance"], ans:1, hint:"eine Tradition pflegen oder brechen（伝統を守るか破るか）の形でよく使う。", exp:"die Tradition（-，-en）＝伝統・慣習。eine Tradition pflegen oder brechen（伝統を守るか破るか）。" },
+    { q:"「革新・イノベーション」を意味するドイツ語名詞はどれか。", opts:["die Kreativität","die Diskurs","die Innovation","das Wissen"], ans:2, hint:"Innovationen vorantreiben（イノベーションを推進する）の形でよく使う。", exp:"die Innovation（-，-en）＝革新・イノベーション。Innovationen vorantreiben（イノベーションを推進する）。" },
+    { q:"「創造性」を意味するドイツ語名詞はどれか。", opts:["die Tradition","die Nuance","die Kreativität","die Expertise"], ans:2, hint:"Kreativität fördern und entfalten（創造性を促進し開花させる）の形でよく使う。", exp:"die Kreativität（-，-）＝創造性。Kreativität fördern und entfalten（創造性を促進し開花させる）。" },
+    { q:"「言説・ディスコース」を意味するドイツ語名詞はどれか。", opts:["die Narration","der Diskurs","die Innovation","die Komplexität"], ans:1, hint:"den öffentlichen Diskurs prägen（公共の言説を形成する）の形でよく使う。", exp:"der Diskurs（-es，-e）＝言説・ディスコース。den öffentlichen Diskurs prägen（公共の言説を形成する）。" },
+    { q:"「物語・語り・ナラティブ」を意味するドイツ語名詞はどれか。", opts:["die Expertise","die Narration","die Tradition","das Unwissen"], ans:1, hint:"eine politische Narration konstruieren（政治的ナラティブを構築する）の形でよく使う。", exp:"die Narration（-，-en）＝物語・語り・ナラティブ。eine politische Narration konstruieren（政治的ナラティブを構築する）。" },
+    { q:"「複雑性」を意味するドイツ語名詞はどれか。", opts:["die Nuance","die Komplexität","die Kreativität","der Diskurs"], ans:1, hint:"die Komplexität eines Problems erfassen（問題の複雑性を把握する）の形でよく使う。", exp:"die Komplexität（-，-en）＝複雑性。die Komplexität eines Problems erfassen（問題の複雑性を把握する）。" },
+    { q:"「ニュアンス・細かな差異」を意味するドイツ語名詞はどれか。", opts:["die Innovation","die Nuance","das Wissen","die Narration"], ans:1, hint:"Nuancen in der Argumentation erkennen（議論の中のニュアンスを見分ける）の形でよく使う。", exp:"die Nuance（-，-n）＝ニュアンス・細かな差異。Nuancen in der Argumentation erkennen（議論の中のニュアンスを見分ける）。" },
+    { q:"「含意・波及効果」を意味するドイツ語名詞はどれか。", opts:["die Auswirkung","die Implikation","die Tendenz","der Faktor"], ans:1, hint:"die Implikationen einer Entscheidung abwägen（決定の含意を検討する）の形でよく使う。", exp:"die Implikation（-，-en）＝含意・波及効果。die Implikationen einer Entscheidung abwägen（決定の含意を検討する）。" },
+    { q:"「影響・波及効果（具体的）」を意味するドイツ語名詞はどれか。", opts:["der Befund","die Tendenz","die Auswirkung","die Implikation"], ans:2, hint:"weitreichende Auswirkungen haben auf（〜に広範な影響を及ぼす）の形でよく使う。", exp:"die Auswirkung（-，-en）＝影響・波及効果（具体的）。weitreichende Auswirkungen haben auf（〜に広範な影響を及ぼす）。" },
+    { q:"「副作用・副次的効果」を意味するドイツ語名詞はどれか。", opts:["die Implikation","der Nebeneffekt","die Ursache","der Zusammenhang"], ans:1, hint:"unerwünschte Nebeneffekte in Kauf nehmen（望ましくない副作用を甘受する）の形でよく使う。", exp:"der Nebeneffekt（-s，-e）＝副作用・副次的効果。unerwünschte Nebeneffekte in Kauf nehmen（望ましくない副作用を甘受する）。" },
+    { q:"「結果・成果・成績」を意味するドイツ語名詞はどれか。", opts:["das Ergebnis","die Ursache","der Faktor","die Perspektive"], ans:0, hint:"zu einem eindeutigen Ergebnis kommen（明確な結果に至る）の形でよく使う。", exp:"das Ergebnis（-ses，-se）＝結果・成果・成績。zu einem eindeutigen Ergebnis kommen（明確な結果に至る）。" },
+    { q:"「所見・調査結果」を意味するドイツ語名詞はどれか。", opts:["der Befund","die Tendenz","die Auswirkung","der Zusammenhang"], ans:0, hint:"empirische Befunde präsentieren（実証的所見を提示する）の形でよく使う。", exp:"der Befund（-s，-e）＝所見・調査結果。empirische Befunde präsentieren（実証的所見を提示する）。" },
+    { q:"「傾向・趨勢」を意味するドイツ語名詞はどれか。", opts:["die Implikation","die Tendenz","der Faktor","das Ergebnis"], ans:1, hint:"eine beunruhigende Tendenz beobachten（懸念される傾向を観察する）の形でよく使う。", exp:"die Tendenz（-，-en）＝傾向・趨勢。eine beunruhigende Tendenz beobachten（懸念される傾向を観察する）。" },
+    { q:"「関連・文脈・つながり」を意味するドイツ語名詞はどれか。", opts:["die Ursache","der Zusammenhang","die Perspektive","der Nebeneffekt"], ans:1, hint:"einen kausalen Zusammenhang herstellen（因果関係を確立する）の形でよく使う。", exp:"der Zusammenhang（-s，Zusammenhänge）＝関連・文脈・つながり。einen kausalen Zusammenhang herstellen（因果関係を確立する）。" },
+    { q:"「原因」を意味するドイツ語名詞はどれか。", opts:["der Befund","die Auswirkung","die Ursache","die Tendenz"], ans:2, hint:"die eigentliche Ursache eines Problems（問題の本当の原因）の形でよく使う。", exp:"die Ursache（-，-n）＝原因。die eigentliche Ursache eines Problems（問題の本当の原因）。" },
+    { q:"「要因・ファクター」を意味するドイツ語名詞はどれか。", opts:["die Perspektive","der Faktor","das Ergebnis","der Zusammenhang"], ans:1, hint:"entscheidende Faktoren berücksichtigen（決定的要因を考慮する）の形でよく使う。", exp:"der Faktor（-s，-en）＝要因・ファクター。entscheidende Faktoren berücksichtigen（決定的要因を考慮する）。" },
+    { q:"「視点・展望・見通し」を意味するドイツ語名詞はどれか。", opts:["der Faktor","die Ursache","der Nebeneffekt","die Perspektive"], ans:3, hint:"eine andere Perspektive einnehmen（別の視点をとる）の形でよく使う。", exp:"die Perspektive（-，-n）＝視点・展望・見通し。eine andere Perspektive einnehmen（別の視点をとる）。" },
+    { q:"「概念・イメージ（認識上の）」を意味するドイツ語名詞はどれか。", opts:["die Nuance","das Konzept","der Diskurs","die Expertise"], ans:1, hint:"ein neues Konzept entwickeln（新たな概念を発展させる）の形でよく使う。", exp:"das Konzept（-s，-e）＝概念・構想・コンセプト。ein neues Konzept entwickeln（新たな概念を発展させる）。" },
+  ]},
+  { label:"テストE", questions:[
+    { q:"「主権・自律性」を意味するドイツ語名詞はどれか。", opts:["die Souveränität","die Hegemonie","die Emanzipation","die Diskriminierung"], ans:0, hint:"die nationale Souveränität wahren（国家主権を守る）の形でよく使う。", exp:"die Souveränität（-，-en）＝主権・自律性。die nationale Souveränität wahren（国家主権を守る）。" },
+    { q:"「覇権・支配的権力」を意味するドイツ語名詞はどれか。", opts:["die Emanzipation","die Hegemonie","die Repression","die Sanktion"], ans:1, hint:"kulturelle Hegemonie ausüben（文化的覇権を行使する）の形でよく使う。", exp:"die Hegemonie（-，-n）＝覇権・支配的権力。kulturelle Hegemonie ausüben（文化的覇権を行使する）。" },
+    { q:"「解放・自立」を意味するドイツ語名詞はどれか。", opts:["die Repression","die Subvention","die Emanzipation","die Souveränität"], ans:2, hint:"die Emanzipation unterdrückter Gruppen（被抑圧集団の解放）の形でよく使う。", exp:"die Emanzipation（-，-en）＝解放・自立。die Emanzipation unterdrückter Gruppen（被抑圧集団の解放）。" },
+    { q:"「差別」を意味するドイツ語名詞はどれか。", opts:["die Diskriminierung","die Repression","die Sanktion","die Prävention"], ans:0, hint:"strukturelle Diskriminierung bekämpfen（構造的差別に立ち向かう）の形でよく使う。", exp:"die Diskriminierung（-，-en）＝差別。strukturelle Diskriminierung bekämpfen（構造的差別に立ち向かう）。" },
+    { q:"「抑圧・弾圧」を意味するドイツ語名詞はどれか。", opts:["die Hegemonie","die Repression","die Emanzipation","die Subvention"], ans:1, hint:"staatliche Repression dokumentieren（国家による弾圧を記録する）の形でよく使う。", exp:"die Repression（-，-en）＝抑圧・弾圧。staatliche Repression dokumentieren（国家による弾圧を記録する）。" },
+    { q:"「制裁・承認（文脈による）」を意味するドイツ語名詞はどれか。", opts:["die Prävention","die Diskriminierung","die Sanktion","die Subvention"], ans:2, hint:"wirtschaftliche Sanktionen verhängen（経済制裁を科す）の形でよく使う。", exp:"die Sanktion（-，-en）＝制裁・承認（文脈による）。wirtschaftliche Sanktionen verhängen（経済制裁を科す）。" },
+    { q:"「予防・防止」を意味するドイツ語名詞はどれか。", opts:["die Sanktion","die Souveränität","die Prävention","die Repression"], ans:2, hint:"Prävention statt Repression betreiben（抑圧の代わりに予防を行う）の形でよく使う。", exp:"die Prävention（-，-en）＝予防・防止。Prävention statt Repression betreiben（抑圧の代わりに予防を行う）。" },
+    { q:"「補助金・助成」を意味するドイツ語名詞はどれか。", opts:["die Subvention","die Emanzipation","die Diskriminierung","die Hegemonie"], ans:0, hint:"staatliche Subventionen abbauen（国家補助金を削減する）の形でよく使う。", exp:"die Subvention（-，-en）＝補助金・助成。staatliche Subventionen abbauen（国家補助金を削減する）。" },
+    { q:"「効率性」を意味するドイツ語名詞はどれか。", opts:["die Effektivität","die Effizienz","die Nachhaltigkeit","die Rentabilität"], ans:1, hint:"die Effizienz eines Systems steigern（システムの効率性を高める）の形でよく使う。", exp:"die Effizienz（-，-en）＝効率性。die Effizienz eines Systems steigern（システムの効率性を高める）。" },
+    { q:"「有効性・実効性」を意味するドイツ語名詞はどれか。", opts:["die Effizienz","die Kapazität","die Effektivität","die Liquidität"], ans:2, hint:"die Effektivität einer Maßnahme bewerten（措置の有効性を評価する）の形でよく使う。", exp:"die Effektivität（-，-en）＝有効性・実効性。die Effektivität einer Maßnahme bewerten（措置の有効性を評価する）。" },
+    { q:"「持続可能性」を意味するドイツ語名詞はどれか。", opts:["die Kapazität","die Nachhaltigkeit","die Rentabilität","die Volatilität"], ans:1, hint:"ökologische Nachhaltigkeit fördern（生態学的持続可能性を促進する）の形でよく使う。", exp:"die Nachhaltigkeit（-，-）＝持続可能性。ökologische Nachhaltigkeit fördern（生態学的持続可能性を促進する）。" },
+    { q:"「能力・容量・収容力」を意味するドイツ語名詞はどれか。", opts:["die Diversifikation","die Kapazität","die Nachhaltigkeit","die Effizienz"], ans:1, hint:"die Kapazitäten eines Systems ausschöpfen（システムの能力を使い切る）の形でよく使う。", exp:"die Kapazität（-，-en）＝能力・容量・収容力。die Kapazitäten eines Systems ausschöpfen（システムの能力を使い切る）。" },
+    { q:"「収益性・採算性」を意味するドイツ語名詞はどれか。", opts:["die Liquidität","die Effektivität","die Rentabilität","die Konsolidierung"], ans:2, hint:"die Rentabilität einer Investition prüfen（投資の収益性を検討する）の形でよく使う。", exp:"die Rentabilität（-，-）＝収益性・採算性。die Rentabilität einer Investition prüfen（投資の収益性を検討する）。" },
+    { q:"「流動性・資金繰り」を意味するドイツ語名詞はどれか。", opts:["die Diversifikation","die Kapazität","die Volatilität","die Liquidität"], ans:3, hint:"die Liquidität eines Unternehmens sichern（企業の流動性を確保する）の形でよく使う。", exp:"die Liquidität（-，-）＝流動性・資金繰り。die Liquidität eines Unternehmens sichern（企業の流動性を確保する）。" },
+    { q:"「変動性・不安定性」を意味するドイツ語名詞はどれか。", opts:["die Volatilität","die Nachhaltigkeit","die Rentabilität","die Effizienz"], ans:0, hint:"die Volatilität der Märkte einkalkulieren（市場の変動性を考慮に入れる）の形でよく使う。", exp:"die Volatilität（-，-）＝変動性・不安定性。die Volatilität der Märkte einkalkulieren（市場の変動性を考慮に入れる）。" },
+    { q:"「多様化・分散」を意味するドイツ語名詞はどれか。", opts:["die Konsolidierung","die Kapazität","die Diversifikation","die Liquidität"], ans:2, hint:"Risiken durch Diversifikation minimieren（多様化によってリスクを最小化する）の形でよく使う。", exp:"die Diversifikation（-，-en）＝多様化・分散。Risiken durch Diversifikation minimieren（多様化によってリスクを最小化する）。" },
+    { q:"「統合・強化・安定化」を意味するドイツ語名詞はどれか。", opts:["die Volatilität","die Effizienz","die Konsolidierung","die Effektivität"], ans:2, hint:"eine Konsolidierung des Marktes beobachten（市場の統合を観察する）の形でよく使う。", exp:"die Konsolidierung（-，-en）＝統合・強化・安定化。eine Konsolidierung des Marktes beobachten（市場の統合を観察する）。" },
+    { q:"「アイデンティティ・同一性」を意味するドイツ語名詞はどれか。", opts:["die Zugehörigkeit","die Identität","die Erinnerung","das Erbe"], ans:1, hint:"die eigene Identität konstruieren（自己のアイデンティティを構築する）の形でよく使う。", exp:"die Identität（-，-en）＝アイデンティティ・同一性。die eigene Identität konstruieren（自己のアイデンティティを構築する）。" },
+    { q:"「帰属意識・所属」を意味するドイツ語名詞はどれか。", opts:["die Identität","die Zugehörigkeit","das Erbe","die Erinnerung"], ans:1, hint:"ein Gefühl der Zugehörigkeit entwickeln（帰属意識を育む）の形でよく使う。", exp:"die Zugehörigkeit（-，-en）＝帰属意識・所属。ein Gefühl der Zugehörigkeit entwickeln（帰属意識を育む）。" },
+    { q:"「記憶・想起」を意味するドイツ語名詞はどれか。", opts:["die Erinnerung","das Erbe","die Identität","die Zugehörigkeit"], ans:0, hint:"kollektive Erinnerung bewahren（集合的記憶を保存する）の形でよく使う。", exp:"die Erinnerung（-，-en）＝記憶・想起。kollektive Erinnerung bewahren（集合的記憶を保存する）。" },
+  ]},
+  { label:"テストF", questions:[
+    { q:"「遺産・継承されたもの」を意味するドイツ語名詞はどれか。", opts:["die Erinnerung","das Erbe","die Zugehörigkeit","die Akkulturation"], ans:1, hint:"ein kulturelles Erbe weitergeben（文化遺産を伝える）の形でよく使う。", exp:"das Erbe（-s，-n）＝遺産・継承されたもの。ein kulturelles Erbe weitergeben（文化遺産を伝える）。" },
+    { q:"「代表・表象・表現」を意味するドイツ語名詞はどれか。", opts:["die Repräsentation","die Assimilation","die Marginalisierung","die Hybridität"], ans:0, hint:"die mediale Repräsentation von Minderheiten（少数派のメディア表象）の形でよく使う。", exp:"die Repräsentation（-，-en）＝代表・表象・表現。die mediale Repräsentation von Minderheiten（少数派のメディア表象）。" },
+    { q:"「周縁化・排除」を意味するドイツ語名詞はどれか。", opts:["die Akkulturation","die Marginalisierung","die Repräsentation","die Assimilation"], ans:1, hint:"die Marginalisierung bestimmter Gruppen überwinden（特定集団の周縁化を克服する）の形でよく使う。", exp:"die Marginalisierung（-，-en）＝周縁化・排除。die Marginalisierung bestimmter Gruppen überwinden（特定集団の周縁化を克服する）。" },
+    { q:"「固定観念化・ステレオタイプ化」を意味するドイツ語名詞はどれか。", opts:["die Repräsentation","die Hybridität","die Stereotypisierung","die Akkulturation"], ans:2, hint:"Stereotypisierungen in der Berichterstattung kritisieren（報道におけるステレオタイプ化を批判する）の形でよく使う。", exp:"die Stereotypisierung（-，-en）＝固定観念化・ステレオタイプ化。Stereotypisierungen in der Berichterstattung kritisieren（報道におけるステレオタイプ化を批判する）。" },
+    { q:"「方法論・研究手法」を意味するドイツ語名詞はどれか。", opts:["die Validität","die Methodik","die Reliabilität","die Generalisierung"], ans:1, hint:"eine rigorose Methodik anwenden（厳密な方法論を適用する）の形でよく使う。", exp:"die Methodik（-，-en）＝方法論・研究手法。eine rigorose Methodik anwenden（厳密な方法論を適用する）。" },
+    { q:"「妥当性」を意味するドイツ語名詞はどれか。", opts:["die Reliabilität","die Validität","die Repräsentativität","die Falsifizierung"], ans:1, hint:"die Validität einer Messung sicherstellen（測定の妥当性を確保する）の形でよく使う。", exp:"die Validität（-，-）＝妥当性。die Validität einer Messung sicherstellen（測定の妥当性を確保する）。" },
+    { q:"「信頼性（測定の）」を意味するドイツ語名詞はどれか。", opts:["die Validität","die Generalisierung","die Reliabilität","die Methodik"], ans:2, hint:"die Reliabilität eines Tests überprüfen（テストの信頼性を確認する）の形でよく使う。", exp:"die Reliabilität（-，-）＝信頼性（測定の）。die Reliabilität eines Tests überprüfen（テストの信頼性を確認する）。" },
+    { q:"「一般化」を意味するドイツ語名詞はどれか。", opts:["die Repräsentativität","die Falsifizierung","die Generalisierung","die Operationalisierung"], ans:2, hint:"unzulässige Generalisierungen vermeiden（不当な一般化を避ける）の形でよく使う。", exp:"die Generalisierung（-，-en）＝一般化。unzulässige Generalisierungen vermeiden（不当な一般化を避ける）。" },
+    { q:"「反証・反証可能性」を意味するドイツ語名詞はどれか。", opts:["die Generalisierung","die Falsifizierung","die Validität","die Reliabilität"], ans:1, hint:"das Prinzip der Falsifizierung nach Popper（ポッパーによる反証原理）の形でよく使う。", exp:"die Falsifizierung（-，-en）＝反証・反証可能性。das Prinzip der Falsifizierung nach Popper（ポッパーによる反証原理）。" },
+    { q:"「帰納・帰納的推論」を意味するドイツ語名詞はどれか。", opts:["die Deduktion","die Generalisierung","die Induktion","die Falsifizierung"], ans:2, hint:"Deduktion und Induktion gegenüberstellen（演繹と帰納を対比する）の形でよく使う。", exp:"die Induktion（-，-en）＝帰納・帰納的推論。Deduktion und Induktion gegenüberstellen（演繹と帰納を対比する）。" },
+    { q:"「演繹・演繹的推論」を意味するドイツ語名詞はどれか。", opts:["die Induktion","die Operationalisierung","die Deduktion","die Methodik"], ans:2, hint:"vom Allgemeinen auf das Besondere schließen（一般から特殊へ推論する）という考え方に対応する。", exp:"die Deduktion（-，-en）＝演繹・演繹的推論。vom Allgemeinen auf das Besondere schließen（一般から特殊へ推論する）。" },
+    { q:"「ダイナミクス・動態」を意味するドイツ語名詞はどれか。", opts:["die Konvergenz","die Dynamik","die Diffusion","die Proliferation"], ans:1, hint:"die Dynamik eines sozialen Prozesses analysieren（社会的プロセスのダイナミクスを分析する）の形でよく使う。", exp:"die Dynamik（-，-en）＝ダイナミクス・動態。die Dynamik eines sozialen Prozesses analysieren（社会的プロセスのダイナミクスを分析する）。" },
+    { q:"「収束・一致・コンバージェンス」を意味するドイツ語名詞はどれか。", opts:["die Divergenz","die Konvergenz","die Akkumulation","die Fragmentierung"], ans:1, hint:"eine Konvergenz der Meinungen feststellen（意見の収束を確認する）の形でよく使う。", exp:"die Konvergenz（-，-en）＝収束・一致・コンバージェンス。eine Konvergenz der Meinungen feststellen（意見の収束を確認する）。" },
+    { q:"「乖離・分岐・ダイバージェンス」を意味するドイツ語名詞はどれか。", opts:["die Konvergenz","die Homogenisierung","die Divergenz","die Dynamik"], ans:2, hint:"eine wachsende Divergenz beobachten（拡大する乖離を観察する）の形でよく使う。", exp:"die Divergenz（-，-en）＝乖離・分岐・ダイバージェンス。eine wachsende Divergenz beobachten（拡大する乖離を観察する）。" },
+    { q:"「普及・拡散・浸透」を意味するドイツ語名詞はどれか。", opts:["die Proliferation","die Diffusion","die Akkumulation","die Konvergenz"], ans:1, hint:"die Diffusion von Innovationen untersuchen（イノベーションの普及を研究する）の形でよく使う。", exp:"die Diffusion（-，-en）＝普及・拡散・浸透。die Diffusion von Innovationen untersuchen（イノベーションの普及を研究する）。" },
+    { q:"「蓄積・集積」を意味するドイツ語名詞はどれか。", opts:["die Fragmentierung","die Akkumulation","die Diffusion","die Divergenz"], ans:1, hint:"eine Akkumulation von Kapital und Wissen（資本と知識の蓄積）の形でよく使う。", exp:"die Akkumulation（-，-en）＝蓄積・集積。eine Akkumulation von Kapital und Wissen（資本と知識の蓄積）。" },
+    { q:"「断片化・細分化」を意味するドイツ語名詞はどれか。", opts:["die Diffusion","die Heterogenität","die Fragmentierung","die Homogenisierung"], ans:2, hint:"die Fragmentierung des Mediensystems（メディアシステムの断片化）の形でよく使う。", exp:"die Fragmentierung（-，-en）＝断片化・細分化。die Fragmentierung des Mediensystems（メディアシステムの断片化）。" },
+    { q:"「均質化」を意味するドイツ語名詞はどれか。", opts:["die Heterogenität","die Homogenisierung","die Fragmentierung","die Akkumulation"], ans:1, hint:"eine globale Homogenisierung der Kultur（文化のグローバルな均質化）の形でよく使う。", exp:"die Homogenisierung（-，-en）＝均質化。eine globale Homogenisierung der Kultur（文化のグローバルな均質化）。" },
+    { q:"「異質性・多様性（構成上の）」を意味するドイツ語名詞はどれか。", opts:["die Homogenisierung","die Konvergenz","die Heterogenität","die Diffusion"], ans:2, hint:"die Heterogenität einer Gesellschaft als Stärke sehen（社会の異質性を強みとして見る）の形でよく使う。", exp:"die Heterogenität（-，-en）＝異質性・多様性（構成上の）。die Heterogenität einer Gesellschaft als Stärke sehen（社会の異質性を強みとして見る）。" },
+    { q:"「補完性原則・下位委任」を意味するドイツ語名詞はどれか。", opts:["die Deduktion","die Subsidiarität","die Operationalisierung","die Validität"], ans:1, hint:"das Prinzip der Subsidiarität in der EU anwenden（EUにおける補完性原則を適用する）の形でよく使う。", exp:"die Subsidiarität（-，-en）＝補完性原則・下位委任。das Prinzip der Subsidiarität in der EU anwenden（EUにおける補完性原則を適用する）。" },
+  ]},
+];
+
+const RANDOM_LABEL = "ランダム";
+const RANDOM_COUNT = 20;
+
+function getAllQuestions() {
+  const all = [];
+  sets.forEach(s => { if (s.label !== RANDOM_LABEL) s.questions.forEach(q => all.push(q)); });
+  return all;
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function buildRandomSet() {
+  const all = shuffle(getAllQuestions());
+  const picked = all.slice(0, Math.min(RANDOM_COUNT, all.length));
+  const idx = sets.findIndex(s => s.label === RANDOM_LABEL);
+  const randomSet = { label: RANDOM_LABEL, questions: picked };
+  if (idx >= 0) sets[idx] = randomSet;
+  else sets.push(randomSet);
+}
+buildRandomSet();
+
+let currentSet = 0, current = 0, score = 0, answered = false;
+
+function initSetNav() {
+  const nav = document.getElementById('set-nav');
+  sets.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'set-btn' + (s.label === RANDOM_LABEL ? ' random-btn' : '') + (i === 0 ? ' active' : '');
+    btn.textContent = s.label;
+    btn.onclick = () => selectSet(i);
+    nav.appendChild(btn);
+  });
+}
+
+function selectSet(idx) {
+  if (sets[idx] && sets[idx].label === RANDOM_LABEL) buildRandomSet();
+  currentSet = idx; current = 0; score = 0; answered = false;
+  document.querySelectorAll('.set-btn').forEach((b, i) => {
+    b.className = 'set-btn' + (sets[i].label === RANDOM_LABEL ? ' random-btn' : '') + (i === idx ? ' active' : '');
+  });
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  render();
+}
+
+function render() {
+  const qs = sets[currentSet].questions;
+  const q = qs[current];
+  document.getElementById('q-num').textContent = `問${current+1}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('prog-bar').style.width = `${((current+1)/qs.length)*100}%`;
+  document.getElementById('prog-text').textContent = `問${current+1} / ${qs.length}`;
+  document.getElementById('hint-text').style.display = 'none';
+  document.getElementById('hint-text').textContent = q.hint;
+  document.getElementById('hint-btn').style.display = 'inline';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('next-btn').style.display = 'none';
+  answered = false;
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.onclick = () => select(i);
+    opts.appendChild(btn);
+  });
+}
+
+function showHint() {
+  const ht = document.getElementById('hint-text');
+  ht.style.display = ht.style.display === 'none' ? 'block' : 'none';
+}
+
+function select(i) {
+  if (answered) return;
+  answered = true;
+  const q = sets[currentSet].questions[current];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+  document.getElementById('hint-btn').style.display = 'none';
+  document.getElementById('hint-text').style.display = 'none';
+  const fb = document.getElementById('feedback');
+  if (i === q.ans) {
+    score++;
+    btns[i].classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = '✓ 正解！　' + q.exp;
+  } else {
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('reveal');
+    fb.className = 'feedback wrong';
+    fb.textContent = '✗ 不正解。　' + q.exp;
+  }
+  const nb = document.getElementById('next-btn');
+  nb.style.display = 'block';
+  nb.textContent = current + 1 < sets[currentSet].questions.length ? '次の問題 →' : '結果を見る';
+}
+
+function nextQuestion() {
+  current++;
+  if (current < sets[currentSet].questions.length) render();
+  else showResult();
+}
+
+function showResult() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const rc = document.getElementById('result-card');
+  rc.style.display = 'block';
+  const total = sets[currentSet].questions.length;
+  const pct = Math.round(score / total * 100);
+  document.getElementById('result-title').textContent = sets[currentSet].label + '　終了';
+  document.getElementById('score-display').textContent = `${score} / ${total}`;
+  let msg = pct >= 90 ? '素晴らしい！ほぼ完璧です。' : pct >= 70 ? 'よくできました。間違えた語を復習しましょう。' : pct >= 50 ? 'もう少しです。リストを見直してから再挑戦しましょう。' : '語彙リストをもう一度確認してから再挑戦しましょう。';
+  document.getElementById('score-msg').textContent = `正答率 ${pct}%　${msg}`;
+  const nb = document.getElementById('next-set-btn');
+  if (currentSet < sets.length - 1) { nb.style.display = 'inline-block'; nb.textContent = sets[currentSet + 1].label + 'へ →'; }
+  else nb.style.display = 'none';
+}
+
+function restart() {
+  current = 0; score = 0;
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  render();
+}
+
+function goNextSet() { selectSet(currentSet + 1); }
+
+initSetNav();
+render();
+</script>
+</body>
+</html>

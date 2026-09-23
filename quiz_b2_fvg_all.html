@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FVG穴埋めテスト B2レベル</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 700px; margin: 0 auto; }
+  header { margin-bottom: 1.5rem; }
+  header h1 { font-size: 21px; font-weight: 500; margin-bottom: 4px; }
+  header p { font-size: 14px; color: #666; }
+  .set-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .set-btn { padding: 6px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 13px; font-family: inherit; transition: background 0.15s; }
+  .set-btn:hover { background: #f0f0f0; }
+  .set-btn.random-btn { border-color: #185FA5; color: #185FA5; }
+  .set-btn.random-btn.active { background: #185FA5; color: #fff; border-color: #185FA5; }
+  .set-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .progress-bar-wrap { background: #ddd; border-radius: 4px; height: 4px; margin-bottom: 6px; }
+  .progress-bar { background: #185FA5; height: 4px; border-radius: 4px; transition: width 0.3s; }
+  .progress-text { font-size: 13px; color: #666; margin-bottom: 1.2rem; }
+  .card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 1.5rem; margin-bottom: 1rem; }
+  .question-num { font-size: 12px; color: #999; margin-bottom: 8px; }
+  .question-tag { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; margin-bottom: 10px; }
+  .question-tag.noun { background: #e8f0fe; color: #1a56b0; }
+  .question-tag.verb { background: #fef3e8; color: #b05a1a; }
+  .question-tag.prep { background: #e8feee; color: #1a7a3c; }
+  .question-text { font-size: 16px; font-weight: 500; margin-bottom: 1.25rem; line-height: 1.7; font-family: "Segoe UI", "Candara", sans-serif; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { text-align: left; padding: 10px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 15px; font-family: "Segoe UI", "Candara", sans-serif; transition: background 0.15s, border-color 0.15s; }
+  .option-btn:hover:not(:disabled) { background: #f0f0f0; border-color: #999; }
+  .option-btn.correct { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn.wrong   { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+  .option-btn.reveal  { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn:disabled { cursor: default; }
+  .feedback { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.7; display: none; font-family: "Segoe UI", "Candara", sans-serif; }
+  .feedback.correct { background: #e1f5ee; color: #085041; display: block; }
+  .feedback.wrong    { background: #fcebeb; color: #791f1f; display: block; }
+  .hint-btn { margin-top: 10px; font-size: 13px; color: #185FA5; background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; text-decoration: underline; }
+  .hint-text { font-size: 13px; color: #666; margin-top: 6px; display: none; }
+  .next-btn { margin-top: 1.25rem; padding: 10px 20px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; display: none; }
+  .next-btn:hover { background: #333; }
+  .result-card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 2rem; text-align: center; display: none; }
+  .result-card h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+  .score-big { font-size: 48px; font-weight: 500; color: #185FA5; margin: 1rem 0; }
+  .score-msg { font-size: 15px; color: #555; margin-bottom: 1.5rem; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .restart-btn { padding: 10px 24px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .restart-btn:hover { background: #333; }
+  .next-set-btn { padding: 10px 24px; border-radius: 8px; background: #185FA5; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .next-set-btn:hover { background: #0c447c; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>FVG穴埋めテスト　B2レベル</h1>
+    <p>空欄に入る語を選びなさい。（各テスト15問：名詞5・動詞5・前置詞5）</p>
+  </header>
+  <div style="margin-bottom:1rem;"><a href="index.html" style="display:inline-block;padding:7px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fafafa;color:#1a1a18;text-decoration:none;font-size:13px;font-family:inherit;">← ポータルに戻る</a></div>
+  <div class="set-nav" id="set-nav"></div>
+  <div id="quiz-area">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar" style="width:7%"></div></div>
+    <div class="progress-text" id="prog-text"></div>
+    <div class="card">
+      <div class="question-num" id="q-num"></div>
+      <div class="question-tag" id="q-tag"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <button class="hint-btn" id="hint-btn" onclick="showHint()">ヒントを見る</button>
+      <div class="hint-text" id="hint-text"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題 →</button>
+    </div>
+  </div>
+  <div class="result-card" id="result-card">
+    <h2 id="result-title"></h2>
+    <div class="score-big" id="score-display"></div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="btn-row">
+      <button class="restart-btn" onclick="restart()">このテストをもう一度</button>
+      <button class="next-set-btn" id="next-set-btn" onclick="goNextSet()">次のテストへ →</button>
+    </div>
+  </div>
+</div>
+<script>
+// type: "n"=名詞, "v"=動詞, "p"=前置詞
+const sets = [
+  { label:"テストA", questions:[
+    // 名詞5問
+    { type:"n", q:"Man brachte den Anstieg mit dem Klimawandel in _______ .", opts:["Einklang","Zusammenhang","Betrieb","Verruf"], ans:1, hint:"「etw. in _______ bringen mit」で「〜と結びつける・関連づける」という意味。", exp:"in Zusammenhang bringen mit＝〜と結びつける・関連づける。in Einklang bringen（一致させる）との混同に注意。" },
+    { type:"n", q:"Die Kommission kam zu dem _______ , dass weitere Maßnahmen nötig sind.", opts:["Betracht","Schluss","Konflikt","Stande"], ans:1, hint:"「zu dem _______ kommen」で「〜という結論に至る」という意味。", exp:"zu dem Schluss kommen＝〜という結論に至る。in Betracht kommen（考慮の対象となる）との混同に注意。" },
+    { type:"n", q:"Der Bericht stellt die bisherige Methode in _______ .", opts:["Frage","Abrede","Mittelpunkt","Szene"], ans:0, hint:"「etw. in _______ stellen」で「〜を疑問視する・問い直す」という意味。", exp:"etw. in Frage stellen＝〜を疑問視する・問い直す。in Abrede stellen（否定する）との混同に注意。" },
+    { type:"n", q:"Wir müssen gewisse Nachteile in _______ nehmen.", opts:["Angriff","Schutz","Kauf","Betrieb"], ans:2, hint:"「etw. in _______ nehmen」で「〜を甘受する・やむなく受け入れる」という意味。", exp:"etw. in Kauf nehmen＝〜を甘受する・やむなく受け入れる。in Angriff nehmen（着手する）との混同に注意。" },
+    { type:"n", q:"Der Vorschlag fand breite _______ im Parlament.", opts:["Berücksichtigung","Eingang","Zustimmung","Rückschlag"], ans:2, hint:"「breite _______ finden」で「広く賛同を得る」という意味。", exp:"Zustimmung finden＝賛同を得る・支持される。Berücksichtigung finden（考慮される）との混同に注意。" },
+    // 動詞5問
+    { type:"v", q:"Es gelang ihnen, den Motor wieder in Gang zu _______.", opts:["kommen","bringen","setzen","stellen"], ans:1, hint:"「etw. in Gang _______」で「〜を動かす・始動させる」。能動側の動詞。", exp:"in Gang bringen＝〜を動かす・始動させる。対構造として in Gang kommen（動き出す）と区別する。" },
+    { type:"v", q:"Endlich ist die Debatte in Bewegung _______.", opts:["gebracht","gesetzt","gekommen","gestellt"], ans:2, hint:"「in Bewegung _______」で「動き出す」。自動的な状態変化の動詞。", exp:"in Bewegung kommen＝動き出す・活発になる。対構造として in Bewegung bringen（動かす）と区別する。" },
+    { type:"v", q:"Der Autor _______ die soziale Gerechtigkeit in den Mittelpunkt.", opts:["bringt","stellt","nimmt","setzt"], ans:1, hint:"「etw. in den Mittelpunkt _______」で「〜を中心に据える」。stellen グループ。", exp:"etw. in den Mittelpunkt stellen＝〜を中心に据える・重視する。stellen グループの重要表現。" },
+    { type:"v", q:"Die Regierung muss Konsequenzen aus dem Versagen _______.", opts:["bringen","nehmen","setzen","ziehen"], ans:3, hint:"「Konsequenzen aus etw. _______」で「〜から教訓を得る・結果を引き受ける」。ziehen グループ。", exp:"Konsequenzen ziehen aus＝〜から教訓を得る・結果を引き受ける。ziehen グループの重要表現。" },
+    { type:"v", q:"Experten _______ scharfe Kritik an dem Plan.", opts:["führten","übten","trieben","nahmen"], ans:1, hint:"「Kritik _______ an」で「〜に批判を加える」。üben グループ。", exp:"Kritik üben an＝〜に批判を加える。üben グループの重要表現。" },
+    // 前置詞5問
+    { type:"p", q:"Es ist schwer, Beruf und Familie _______ Einklang zu bringen.", opts:["in","an","auf","von"], ans:0, hint:"「etw. _______ Einklang bringen mit」で「〜と一致させる」。前置詞は何格？", exp:"in Einklang bringen mit＝〜と一致させる・調和させる。前置詞は in（4格）。" },
+    { type:"p", q:"Nur wenige Kandidaten kommen _______ Betracht.", opts:["zur","von","in","auf"], ans:2, hint:"「_______ Betracht kommen」で「考慮の対象となる・候補になる」。前置詞は in（4格）。", exp:"in Betracht kommen＝考慮の対象となる・候補になる。前置詞は in（4格）。" },
+    { type:"p", q:"Diese Aussage steht _______ Widerspruch zu den Fakten.", opts:["an","in","im","von"], ans:2, hint:"「_______ Widerspruch stehen zu」で「〜と矛盾する」。im は in dem の縮約形。", exp:"im Widerspruch stehen zu＝〜と矛盾する・相反する。im（=in dem）は Dativ 支配。" },
+    { type:"p", q:"Sie nahm ihren Kollegen _______ Schutz.", opts:["unter","in","auf","von"], ans:1, hint:"「jdn. _______ Schutz nehmen」で「〜を擁護する・守る」。", exp:"jdn. in Schutz nehmen＝〜を擁護する・守る。前置詞は in（4格）。" },
+    { type:"p", q:"Die Parteien führten eine intensive Diskussion _______ das Thema.", opts:["über","an","von","mit"], ans:0, hint:"「eine Diskussion führen _______ etw.」で「〜について討論を行う」。", exp:"eine Diskussion führen über＝〜について討論を行う。前置詞は über（4格）。" },
+  ]},
+  { label:"テストB", questions:[
+    // 名詞5問
+    { type:"n", q:"Er brachte das Problem _______ den Punkt.", opts:["auf","unter","in","von"], ans:0, hint:"「etw. auf den _______ bringen」ではなく、前置詞が空欄。正解の前置詞は auf（4格）。", exp:"auf den Punkt bringen＝〜を要点にまとめる・端的に言う。前置詞 auf（4格）が正しい。" },
+    { type:"n", q:"Das Gericht setzte das Urteil _______ Kraft.", opts:["in","außer","unter","auf"], ans:1, hint:"「etw. _______ Kraft setzen」で「〜を無効にする・廃止する」という意味。対構造の in Kraft setzen（施行する）と区別。", exp:"außer Kraft setzen＝〜を無効にする・廃止する。対構造として in Kraft setzen（施行する）と区別する。" },
+    { type:"n", q:"Neue Erkenntnisse finden _______ in die Praxis.", opts:["Eingang","Berücksichtigung","Zustimmung","Rückschlag"], ans:0, hint:"「_______ finden in」で「〜に取り入れられる・組み込まれる」という意味。", exp:"Eingang finden in＝〜に取り入れられる・組み込まれる。Berücksichtigung finden（考慮される）との混同に注意。" },
+    { type:"n", q:"Das Projekt erlitt einen schweren _______.", opts:["Schaden","Rückschlag","Eingang","Vergleich"], ans:1, hint:"「einen _______ erleiden」で「後退・挫折を被る」という意味。", exp:"einen Rückschlag erleiden＝後退・挫折を被る。Schaden nehmen/erleiden（損害を受ける）との区別に注意。" },
+    { type:"n", q:"In dieser Lage müssen wir klare _______ setzen.", opts:["Prioritäten","Grenzen","Verhandlungen","Konsequenzen"], ans:0, hint:"「_______ setzen」で「優先順位をつける」という意味。setzen グループ。", exp:"Prioritäten setzen＝優先順位をつける。Grenzen ziehen（境界を設ける）との動詞の違いに注意。" },
+    // 動詞5問
+    { type:"v", q:"Er kam mit dem Gesetz in _______.", opts:["Konflikt","Betracht","Stande","Bewegung"], ans:0, hint:"「in _______ kommen mit」で「〜と対立する・衝突する」という意味の名詞はどれか。", exp:"in Konflikt kommen mit＝〜と対立する・衝突する。kommen グループの重要表現。" },
+    { type:"v", q:"Die Einigung _______ nach langen Verhandlungen zu Stande.", opts:["brachte","setzte","kam","stellte"], ans:2, hint:"「zu Stande _______」で「成立する・実現する」。自動的な状態変化の動詞。", exp:"zu Stande kommen＝成立する・実現する。kommen グループ。対構造として etw. zu Stande bringen（実現させる）と区別する。" },
+    { type:"v", q:"Er nahm den Geburtstag zum Anlass, sich zu _______.", opts:["setzen","melden","führen","stellen"], ans:1, hint:"「zum Anlass nehmen, sich zu _______」の空欄は FVG の一部ではなく不定詞。「zum Anlass nehmen」の意味を確認。", exp:"etw. zum Anlass nehmen＝〜を機会・きっかけにする。nehmen グループの重要表現。" },
+    { type:"v", q:"Beide Seiten _______ derzeit Verhandlungen.", opts:["üben","führen","treiben","nehmen"], ans:1, hint:"「Verhandlungen _______」で「交渉を行う」。führen グループ。", exp:"Verhandlungen führen＝交渉を行う。führen グループ。eine Diskussion führen（討論を行う）も同じグループ。" },
+    { type:"v", q:"Der Konflikt wurde immer weiter auf die Spitze _______.", opts:["gebracht","gesetzt","getrieben","geführt"], ans:2, hint:"「auf die Spitze _______」で「〜を極端まで押し進める」。treiben グループの過去分詞。", exp:"auf die Spitze treiben＝〜を極端まで押し進める。treiben グループ。Missbrauch treiben（乱用する）も同じグループ。" },
+    // 前置詞5問
+    { type:"p", q:"Mehrere Maßnahmen stehen _______ Diskussion.", opts:["in","an","zur","von"], ans:2, hint:"「_______ Diskussion stehen」で「議論の対象となっている」。zur は zu+der の縮約形。", exp:"zur Diskussion stehen＝議論の対象となっている。zur（=zu+der）は Dativ 支配（女性名詞）。" },
+    { type:"p", q:"Der Skandal brachte die Partei _______ Verruf.", opts:["auf","in","unter","von"], ans:1, hint:"「etw. _______ Verruf bringen」で「〜の評判を傷つける」。", exp:"etw. in Verruf bringen＝〜の評判を傷つける・悪評を立てる。前置詞は in（4格）。" },
+    { type:"p", q:"Beide Faktoren stehen _______ enger Wechselwirkung.", opts:["von","auf","in","unter"], ans:2, hint:"「_______ Wechselwirkung stehen」で「〜と相互作用する」。in +3格（名詞に形容詞がついても同じ）。", exp:"in Wechselwirkung stehen mit＝〜と相互作用する。前置詞は in（Dativ）。" },
+    { type:"p", q:"Wir müssen das Problem endlich _______ Angriff nehmen.", opts:["in","auf","unter","von"], ans:0, hint:"「etw. _______ Angriff nehmen」で「〜に着手する・取りかかる」。", exp:"etw. in Angriff nehmen＝〜に着手する・取りかかる。前置詞は in（4格）。" },
+    { type:"p", q:"Die Lobby übte Druck _______ die Regierung aus.", opts:["für","von","auf","mit"], ans:2, hint:"「Druck ausüben _______ jdn.」で「〜にプレッシャーをかける」。", exp:"Druck ausüben auf＝〜にプレッシャーをかける。前置詞は auf（4格）。" },
+  ]},
+  { label:"テストC", questions:[
+    // 名詞5問
+    { type:"n", q:"Er _______ jede Verantwortung in Abrede.", opts:["brachte","stellte","nahm","setzte"], ans:1, hint:"「etw. in Abrede _______」で「〜を否定する・認めない」。stellen グループ。", exp:"etw. in Abrede stellen＝〜を否定する・認めない。stellen グループ。etw. in Frage stellen（疑問視する）との使い分けに注意。" },
+    { type:"n", q:"Das Konzept hat eine grundlegende Veränderung _______.", opts:["erlitten","gefunden","erfahren","genommen"], ans:2, hint:"「eine Veränderung _______」で「（変化を）受ける・経験する」という意味の動詞。", exp:"etw. erfahren＝（変化・扱いを）受ける・経験する。erfahren は受け身的FVGとして使われる。" },
+    { type:"n", q:"Das Ansehen des Unternehmens hat _______ genommen.", opts:["Rückschlag","Schaden","Eingang","Berücksichtigung"], ans:1, hint:"「_______ nehmen」で「損害を受ける」という意味。erleiden でも言える。", exp:"Schaden nehmen＝損害を受ける。Schaden erleiden も同義。nehmen グループ。" },
+    { type:"n", q:"Hier müssen wir klare _______ ziehen.", opts:["Vergleiche","Konsequenzen","Grenzen","Schlüsse"], ans:2, hint:"「_______ ziehen」で「限界・境界を設ける」という意味。ziehen グループ。", exp:"Grenzen ziehen＝限界・境界を設ける。Konsequenzen ziehen（教訓を得る）、einen Vergleich ziehen（比較する）も重要。" },
+    { type:"n", q:"Diese Aspekte müssen _______ finden.", opts:["Eingang","Berücksichtigung","Zustimmung","Anerkennung"], ans:1, hint:"「_______ finden」で「考慮される・顧みられる」という意味。論文・報告書の文脈で頻出。", exp:"Berücksichtigung finden＝考慮される・顧みられる。Eingang finden（組み込まれる）との混同に注意。" },
+    // 動詞5問
+    { type:"v", q:"Die Stelle _______ hohe Ansprüche an die Bewerber.", opts:["nimmt","führt","stellt","übt"], ans:2, hint:"「hohe Ansprüche _______ an」で「〜に高い要求を課す」。stellen グループ。", exp:"hohe Ansprüche stellen an＝〜に高い要求を課す。stellen グループ。" },
+    { type:"v", q:"Sie _______ ihr Können unter Beweis.", opts:["stellte","brachte","nahm","setzte"], ans:0, hint:"「etw. unter Beweis _______」で「〜を証明する・実証する」。stellen グループ。", exp:"etw. unter Beweis stellen＝〜を証明する・実証する。stellen グループ。" },
+    { type:"v", q:"Viele Traditionen sind in Vergessenheit _______.", opts:["gebracht","gesetzt","geraten","gefallen"], ans:2, hint:"「in Vergessenheit _______」で「忘れられていく」。自動的な状態変化の動詞。", exp:"in Vergessenheit geraten＝忘れられていく・忘却される。geraten グループ（自動的な状態変化）。" },
+    { type:"v", q:"Das Unternehmen ist in Schwierigkeiten _______.", opts:["gebracht","geraten","gesetzt","geführt"], ans:1, hint:"「in Schwierigkeiten _______」で「困難な状況に陥る」。自動的な状態変化の動詞。", exp:"in Schwierigkeiten geraten＝困難な状況に陥る。geraten グループ。in Vergessenheit geraten と同じグループ。" },
+    { type:"v", q:"Er hat mit seiner Stellung Missbrauch _______.", opts:["geübt","geführt","getrieben","genommen"], ans:2, hint:"「Missbrauch _______ mit」で「〜を乱用する・悪用する」。treiben グループ。", exp:"Missbrauch treiben mit＝〜を乱用する・悪用する。treiben グループ。auf die Spitze treiben（極端まで押し進める）も同じグループ。" },
+    // 前置詞5問
+    { type:"p", q:"Wirtschaftliche Interessen stehen _______ Vordergrund.", opts:["in","an","im","auf"], ans:2, hint:"「_______ Vordergrund stehen」で「前面に出ている」。im は in dem の縮約形。", exp:"im Vordergrund stehen＝前面に出ている・重視されている。im（=in dem）は Dativ 支配（男性名詞）。" },
+    { type:"p", q:"Er nahm den Geburtstag _______ Anlass, sich zu melden.", opts:["in","von","zum","auf"], ans:2, hint:"「etw. _______ Anlass nehmen」で「〜をきっかけにする」。zum は zu+dem の縮約形。", exp:"etw. zum Anlass nehmen＝〜を機会・きっかけにする。zum（=zu+dem）は Dativ 支配（男性名詞）。" },
+    { type:"p", q:"Die neue Anlage wurde _______ Betrieb genommen.", opts:["außer","in","unter","auf"], ans:1, hint:"「etw. _______ Betrieb nehmen」で「〜を稼働させる・運用開始する」。対義の außer Betrieb nehmen（運用停止）と区別。", exp:"etw. in Betrieb nehmen＝〜を稼働させる・運用開始する。前置詞は in（4格）。außer Betrieb nehmen（運用停止）との対比も重要。" },
+    { type:"p", q:"Schweden gilt _______ Beispiel für gelungene Integration.", opts:["für","wie","als","von"], ans:2, hint:"「_______ Beispiel gelten für」で「〜の例・モデルとされる」。後続語に直接名詞がくる前置詞。", exp:"als Beispiel gelten für＝〜の例・モデルとされる。前置詞は als。gelten グループ。" },
+    { type:"p", q:"Er zog einen Vergleich _______ beiden Systemen.", opts:["von","mit","an","zwischen"], ans:3, hint:"「einen Vergleich ziehen _______ A und B」で「AとBの間で比較を行う」。2者の間を表す前置詞。", exp:"einen Vergleich ziehen zwischen＝〜の間で比較を行う。前置詞は zwischen（Dativ）。" },
+  ]},
+  { label:"テストD", questions:[
+    // 名詞5問
+    { type:"n", q:"Der Autor zieht einen _______ zwischen beiden Systemen.", opts:["Schluss","Vergleich","Rückschlag","Eingang"], ans:1, hint:"「einen _______ ziehen zwischen」で「〜の間で比較を行う」という意味。", exp:"einen Vergleich ziehen zwischen＝〜の間で比較を行う。ziehen グループ。Schlüsse ziehen（結論を引き出す）との混同に注意。" },
+    { type:"n", q:"Die Kampagne wurde medienwirksam in _______ gesetzt.", opts:["Gang","Szene","Kraft","Stande"], ans:1, hint:"「etw. in _______ setzen」で「〜を演出する・印象的に見せる」という意味。", exp:"etw. in Szene setzen＝〜を演出する・印象的に見せる。setzen グループ。" },
+    { type:"n", q:"Er kam mit dem Gesetz in _______.", opts:["Bewegung","Stande","Konflikt","Betracht"], ans:2, hint:"「in _______ kommen mit」で「〜と対立する・衝突する」という意味。", exp:"in Konflikt kommen mit＝〜と対立する・衝突する。kommen グループ。" },
+    { type:"n", q:"Der Minister ist wegen des Skandals in _______ geraten.", opts:["Schwierigkeiten","Vergessenheit","Kritik","Bewegung"], ans:2, hint:"「in _______ geraten」で「批判にさらされる」という意味。geraten グループ。", exp:"in Kritik geraten＝批判にさらされる。geraten グループ（自動的な状態変化）。" },
+    { type:"n", q:"Wichtige Details sind dabei unter den Tisch _______.", opts:["geraten","gefallen","geführt","gesetzt"], ans:1, hint:"「unter den Tisch _______」で「見落とされる・無視される」という意味の動詞はどれか。", exp:"unter den Tisch fallen＝見落とされる・無視される。fallen グループ（自動的な状態変化）。" },
+    // 動詞5問
+    { type:"v", q:"Er _______ das Problem auf den Punkt.", opts:["stellte","nahm","brachte","setzte"], ans:2, hint:"「etw. auf den Punkt _______」で「〜を要点にまとめる」。bringen グループ。", exp:"etw. auf den Punkt bringen＝〜を要点にまとめる・端的に言う。bringen グループ。" },
+    { type:"v", q:"Der Minister ist wegen des Skandals in Kritik _______.", opts:["gebracht","gesetzt","geraten","getrieben"], ans:2, hint:"「in Kritik _______」で「批判にさらされる」。自動的な状態変化の動詞。", exp:"in Kritik geraten＝批判にさらされる。geraten グループ（自動的な状態変化）。" },
+    { type:"v", q:"Das gilt heute als _______.", opts:["selbstverständlich","verständlich","natürlich","klar"], ans:0, hint:"「als _______ gelten」で「当然のこととみなされる」という慣用表現。", exp:"als selbstverständlich gelten＝当然のこととみなされる。gelten グループ。als Beispiel gelten（例とされる）も重要。" },
+    { type:"v", q:"Die Lobby _______ großen Druck auf die Regierung aus.", opts:["führte","übte","trieb","nahm"], ans:1, hint:"「Druck ausüben auf」の過去形。üben グループ。", exp:"Druck ausüben auf＝〜にプレッシャーをかける（意図的）。üben グループ。Kritik üben an（批判を加える）も同じグループ。" },
+    { type:"v", q:"Das alte System wurde _______ Betrieb genommen.", opts:["in","außer","unter","auf"], ans:1, hint:"「etw. _______ Betrieb nehmen」で「〜を運用停止する」。in Betrieb nehmen（稼働させる）の対義語。", exp:"etw. außer Betrieb nehmen＝〜を運用停止する。前置詞は außer（4格）。in Betrieb nehmen（稼働させる）との対比が重要。" },
+    // 前置詞5問
+    { type:"p", q:"Der Autor stellt die soziale Gerechtigkeit _______ den Mittelpunkt.", opts:["auf","in","an","im"], ans:1, hint:"「etw. _______ den Mittelpunkt stellen」で「〜を中心に据える」。前置詞は何格？", exp:"etw. in den Mittelpunkt stellen＝〜を中心に据える・重視する。前置詞は in（4格）。" },
+    { type:"p", q:"Er stellte jede Verantwortung _______ Abrede.", opts:["von","an","in","auf"], ans:2, hint:"「etw. _______ Abrede stellen」で「〜を否定する・認めない」。", exp:"etw. in Abrede stellen＝〜を否定する・認めない。前置詞は in（4格）。" },
+    { type:"p", q:"Das Unternehmen ist _______ Schwierigkeiten geraten.", opts:["an","in","auf","von"], ans:1, hint:"「_______ Schwierigkeiten geraten」で「困難な状況に陥る」。", exp:"in Schwierigkeiten geraten＝困難な状況に陥る。前置詞は in（4格）。" },
+    { type:"p", q:"Sie stellte ihr Können _______ Beweis.", opts:["in","auf","unter","für"], ans:2, hint:"「etw. _______ Beweis stellen」で「〜を証明する・実証する」。", exp:"etw. unter Beweis stellen＝〜を証明する・実証する。前置詞は unter（4格）。" },
+    { type:"p", q:"Er brachte seine Aussage _______ Zusammenhang mit den Fakten.", opts:["im","in","auf","an"], ans:1, hint:"「etw. _______ Zusammenhang bringen mit」で「〜と結びつける」。", exp:"etw. in Zusammenhang bringen mit＝〜と結びつける・関連づける。前置詞は in（4格）。" },
+  ]},
+];
+
+const RANDOM_LABEL = "ランダム";
+const RANDOM_COUNT = 15;
+const tagLabel = { n:"名詞", v:"動詞", p:"前置詞" };
+const tagClass = { n:"noun", v:"verb", p:"prep" };
+
+function getAllQuestions() {
+  const all = [];
+  sets.forEach(s => { if (s.label !== RANDOM_LABEL) s.questions.forEach(q => all.push(q)); });
+  return all;
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+function buildRandomSet() {
+  const all = shuffle(getAllQuestions());
+  const picked = all.slice(0, Math.min(RANDOM_COUNT, all.length));
+  const idx = sets.findIndex(s => s.label === RANDOM_LABEL);
+  const randomSet = { label: RANDOM_LABEL, questions: picked };
+  if (idx >= 0) sets[idx] = randomSet;
+  else sets.push(randomSet);
+}
+buildRandomSet();
+
+let currentSet = 0, current = 0, score = 0, answered = false;
+
+function initSetNav() {
+  const nav = document.getElementById('set-nav');
+  sets.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'set-btn' + (s.label === RANDOM_LABEL ? ' random-btn' : '') + (i === 0 ? ' active' : '');
+    btn.textContent = s.label;
+    btn.onclick = () => selectSet(i);
+    nav.appendChild(btn);
+  });
+}
+
+function selectSet(idx) {
+  if (sets[idx] && sets[idx].label === RANDOM_LABEL) buildRandomSet();
+  currentSet = idx; current = 0; score = 0; answered = false;
+  document.querySelectorAll('.set-btn').forEach((b, i) => {
+    b.className = 'set-btn' + (sets[i].label === RANDOM_LABEL ? ' random-btn' : '') + (i === idx ? ' active' : '');
+  });
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  render();
+}
+
+function render() {
+  const qs = sets[currentSet].questions;
+  const q = qs[current];
+  document.getElementById('q-num').textContent = `問${current+1}`;
+  const tag = document.getElementById('q-tag');
+  tag.textContent = '【' + tagLabel[q.type] + '】';
+  tag.className = 'question-tag ' + tagClass[q.type];
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('prog-bar').style.width = `${((current+1)/qs.length)*100}%`;
+  document.getElementById('prog-text').textContent = `問${current+1} / ${qs.length}`;
+  document.getElementById('hint-text').style.display = 'none';
+  document.getElementById('hint-text').textContent = q.hint;
+  document.getElementById('hint-btn').style.display = 'inline';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('next-btn').style.display = 'none';
+  answered = false;
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.onclick = () => select(i);
+    opts.appendChild(btn);
+  });
+}
+
+function showHint() {
+  const ht = document.getElementById('hint-text');
+  ht.style.display = ht.style.display === 'none' ? 'block' : 'none';
+}
+
+function select(i) {
+  if (answered) return;
+  answered = true;
+  const q = sets[currentSet].questions[current];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+  document.getElementById('hint-btn').style.display = 'none';
+  document.getElementById('hint-text').style.display = 'none';
+  const fb = document.getElementById('feedback');
+  if (i === q.ans) {
+    score++;
+    btns[i].classList.add('correct');
+    fb.className = 'feedback correct';
+    fb.textContent = '✓ 正解！　' + q.exp;
+  } else {
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('reveal');
+    fb.className = 'feedback wrong';
+    fb.textContent = '✗ 不正解。　' + q.exp;
+  }
+  const nb = document.getElementById('next-btn');
+  nb.style.display = 'block';
+  nb.textContent = current + 1 < sets[currentSet].questions.length ? '次の問題 →' : '結果を見る';
+}
+
+function nextQuestion() {
+  current++;
+  if (current < sets[currentSet].questions.length) render();
+  else showResult();
+}
+
+function showResult() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const rc = document.getElementById('result-card');
+  rc.style.display = 'block';
+  const total = sets[currentSet].questions.length;
+  const pct = Math.round(score / total * 100);
+  document.getElementById('result-title').textContent = sets[currentSet].label + '　終了';
+  document.getElementById('score-display').textContent = `${score} / ${total}`;
+  let msg = pct >= 90 ? '素晴らしい！ほぼ完璧です。' : pct >= 70 ? 'よくできました。間違えた表現を復習しましょう。' : pct >= 50 ? 'もう少しです。リストを見直してから再挑戦しましょう。' : 'FVGリストをもう一度確認してから再挑戦しましょう。';
+  document.getElementById('score-msg').textContent = `正答率 ${pct}%　${msg}`;
+  const nb = document.getElementById('next-set-btn');
+  if (currentSet < sets.length - 1) { nb.style.display = 'inline-block'; nb.textContent = sets[currentSet + 1].label + 'へ →'; }
+  else nb.style.display = 'none';
+}
+
+function restart() {
+  current = 0; score = 0;
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  render();
+}
+
+function goNextSet() { selectSet(currentSet + 1); }
+
+initSetNav();
+render();
+</script>
+</body>
+</html>
