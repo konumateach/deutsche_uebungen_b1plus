@@ -14,6 +14,8 @@
   .set-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem; }
   .set-btn { padding: 6px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 13px; font-family: inherit; transition: background 0.15s; }
   .set-btn:hover { background: #f0f0f0; }
+  .set-btn.random-btn { border-color: #185FA5; color: #185FA5; }
+  .set-btn.random-btn.active { background: #185FA5; color: #fff; border-color: #185FA5; }
   .set-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
   .progress-bar-wrap { background: #ddd; border-radius: 4px; height: 4px; margin-bottom: 6px; }
   .progress-bar { background: #185FA5; height: 4px; border-radius: 4px; transition: width 0.3s; }
@@ -184,7 +186,7 @@ function initSetNav() {
   const nav = document.getElementById('set-nav');
   sets.forEach((s, i) => {
     const btn = document.createElement('button');
-    btn.className = 'set-btn' + (i === 0 ? ' active' : '');
+    btn.className = 'set-btn' + (s.label === RANDOM_LABEL ? ' random-btn' : '') + (i === 0 ? ' active' : '');
     btn.textContent = s.label;
     btn.onclick = () => selectSet(i);
     nav.appendChild(btn);
@@ -192,10 +194,11 @@ function initSetNav() {
 }
 
 function selectSet(idx) {
+  if (sets[idx] && sets[idx].label === RANDOM_LABEL) buildRandomSet();
   currentSet = idx;
   current = 0; score = 0; answered = false;
   document.querySelectorAll('.set-btn').forEach((b, i) => {
-    b.className = 'set-btn' + (i === idx ? ' active' : '');
+    b.className = 'set-btn' + (sets[i].label === RANDOM_LABEL ? ' random-btn' : '') + (i === idx ? ' active' : '');
   });
   document.getElementById('result-card').style.display = 'none';
   document.getElementById('quiz-area').style.display = 'block';
@@ -299,6 +302,39 @@ function restart() {
 }
 
 function goNextSet() { selectSet(currentSet + 1); }
+
+
+// ── ランダムモード ────────────────────────────────
+const RANDOM_LABEL = "ランダム";
+const RANDOM_COUNT = 20;
+
+function getAllQuestions() {
+  const all = [];
+  sets.forEach(s => { if (s.label !== RANDOM_LABEL) s.questions.forEach(q => all.push(q)); });
+  return all;
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildRandomSet() {
+  const all = shuffle(getAllQuestions());
+  const picked = all.slice(0, Math.min(RANDOM_COUNT, all.length));
+  const idx = sets.findIndex(s => s.label === RANDOM_LABEL);
+  const randomSet = { label: RANDOM_LABEL, questions: picked };
+  if (idx >= 0) sets[idx] = randomSet;
+  else sets.push(randomSet);
+}
+
+// ランダムセットを初回構築
+buildRandomSet();
+// ──────────────────────────────────────────────────
 
 initSetNav();
 render();

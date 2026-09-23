@@ -14,6 +14,8 @@
   .set-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
   .set-btn { padding: 6px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 13px; font-family: inherit; transition: background 0.15s; }
   .set-btn:hover { background: #f0f0f0; }
+  .set-btn.random-btn { border-color: #185FA5; color: #185FA5; }
+  .set-btn.random-btn.active { background: #185FA5; color: #fff; border-color: #185FA5; }
   .set-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
   .progress-bar-wrap { background: #ddd; border-radius: 4px; height: 4px; margin-bottom: 6px; }
   .progress-bar { background: #185FA5; height: 4px; border-radius: 4px; transition: width 0.3s; }
@@ -111,7 +113,7 @@ const sets = [
   {
     id: 2,
     label: "テストB",
-    info: "★①との重複：die Überzeugung・der Rückgang",
+    info: "との重複：die Überzeugung・der Rückgang",
     questions: [
       { q:"「希望」を意味するドイツ語名詞はどれか。", opts:["das Vertrauen","die Hoffnung","die Freude","die Enttäuschung"], ans:1, hint:"hoffen（望む）の名詞形。", exp:"die Hoffnung（-，-en）＝希望。die Hoffnung aufgeben（希望を捨てる）の形が典型的。" },
       { q:"「恐れ・不安」を意味するドイツ語名詞はどれか。", opts:["die Hoffnung","die Trauer","die Angst","die Zufriedenheit"], ans:2, hint:"「〜を恐れている」という表現で haben とセットになる。", exp:"die Angst（-，Ängste）＝恐れ・不安。Angst vor etw. haben の形が頻出。複数形は変音する点に注意。" },
@@ -122,7 +124,7 @@ const sets = [
       { q:"「意識・自覚」を意味するドイツ語名詞はどれか。", opts:["die Vorstellung","die Ansicht","die Meinung","das Bewusstsein"], ans:3, hint:"bewusst（意識した）の名詞形。性は das。", exp:"das Bewusstsein（-s，-）＝意識・自覚。ein Bewusstsein für etw. entwickeln（〜への意識を育てる）の形が頻出。" },
       { q:"「考え・イメージ・想像」を意味するドイツ語名詞はどれか。", opts:["die Ansicht","die Vorstellung","die Erkenntnis","die Überzeugung"], ans:1, hint:"sich vorstellen（想像する・自己紹介する）の名詞形。", exp:"die Vorstellung（-，-en）＝考え・イメージ・想像。eine falsche Vorstellung haben（誤ったイメージを持つ）。" },
       { q:"「見解・意見」を意味するドイツ語名詞はどれか。（die Meinung と同義で使われる語）", opts:["das Bewusstsein","die Erkenntnis","die Ansicht","die Vorstellung"], ans:2, hint:"meiner 〜 nach という構文で die Meinung と対比して覚えよう。", exp:"die Ansicht（-，-en）＝見解・意見。meiner Ansicht nach（私の見解では）の形が典型的。die Meinung より少しフォーマルな語感。" },
-      { q:"「確信・信念」を意味するドイツ語名詞はどれか。★テスト①出題語", opts:["die Angst","die Ansicht","die Überzeugung","die Erkenntnis"], ans:2, hint:"überzeugt（確信した）と同じ語幹。", exp:"die Überzeugung（-，-en）＝確信・信念。★テスト①との重複語。von etw. überzeugt sein（〜を確信している）と対応する。" },
+      { q:"「確信・信念」を意味するドイツ語名詞はどれか。", opts:["die Angst","die Ansicht","die Überzeugung","die Erkenntnis"], ans:2, hint:"überzeugt（確信した）と同じ語幹。", exp:"die Überzeugung（-，-en）＝確信・信念。" },
       { q:"「喜び」を意味するドイツ語名詞はどれか。", opts:["die Trauer","die Hoffnung","die Freude","die Angst"], ans:2, hint:"sich freuen（喜ぶ）の名詞形。", exp:"die Freude（-，-n）＝喜び。große Freude empfinden（大きな喜びを感じる）の形が典型的。" },
       { q:"「悲しみ」を意味するドイツ語名詞はどれか。", opts:["die Enttäuschung","die Trauer","die Angst","der Stress"], ans:1, hint:"trauern（悲しむ）の名詞形。Trauerfeier（葬儀）とも関連する。", exp:"die Trauer（-，-）＝悲しみ。tiefe Trauer ausdrücken（深い悲しみを表す）。" },
       { q:"「失望・がっかり」を意味するドイツ語名詞はどれか。", opts:["die Zufriedenheit","die Hoffnung","der Stress","die Enttäuschung"], ans:3, hint:"enttäuscht（失望した）の名詞形。ent-täuschen（幻想を解く）が語源。", exp:"die Enttäuschung（-，-en）＝失望・がっかり。eine große Enttäuschung erleben（大きな失望を経験する）。" },
@@ -132,18 +134,18 @@ const sets = [
       { q:"「行動・振る舞い」を意味するドイツ語名詞はどれか。", opts:["die Beziehung","die Unterstützung","das Verhalten","der Konflikt"], ans:2, hint:"sich verhalten（ふるまう）の名詞形。性は das。", exp:"das Verhalten（-s，-）＝行動・振る舞い。auffälliges Verhalten zeigen（目立つ行動をとる）。" },
       { q:"「対立・葛藤」を意味するドイツ語名詞はどれか。", opts:["das Verhalten","die Beziehung","die Unterstützung","der Konflikt"], ans:3, hint:"英語 conflict と同語源のラテン語由来の語。", exp:"der Konflikt（-s，-e）＝対立・葛藤。einen Konflikt lösen（対立を解消する）。" },
       { q:"「支援・サポート」を意味するドイツ語名詞はどれか。", opts:["der Konflikt","die Unterstützung","die Beziehung","das Verhalten"], ans:1, hint:"unterstützen（支援する）の名詞形。", exp:"die Unterstützung（-，-en）＝支援・サポート。Unterstützung leisten（支援する）。" },
-      { q:"「減少・後退」を意味するドイツ語名詞はどれか。★テスト①出題語", opts:["die Freude","die Meinung","der Rückgang","die Ansicht"], ans:2, hint:"Rück-（後ろへ）＋ Gang（歩み）。die Zunahme の反対語。", exp:"der Rückgang（-s，Rückgänge）＝減少・後退。★テスト①との重複語。ein deutlicher Rückgang der Zahlen（数値の顕著な減少）。" },
+      { q:"「減少・後退」を意味するドイツ語名詞はどれか。", opts:["die Freude","die Meinung","der Rückgang","die Ansicht"], ans:2, hint:"Rück-（後ろへ）＋ Gang（歩み）。die Zunahme の反対語。", exp:"der Rückgang（-s，Rückgänge）＝減少・後退。" },
     ]
   },
   {
     id: 3,
     label: "テストC",
-    info: "★②との重複：die Angst・die Meinung　★①との重複：die Leistung・die Einsamkeit",
+    info: "との重複：die Angst・die Meinung　との重複：die Leistung・die Einsamkeit",
     questions: [
-      { q:"「恐れ・不安」を意味するドイツ語名詞はどれか。★②", opts:["die Toleranz","die Angst","die Entwicklung","der Respekt"], ans:1, hint:"Angst vor +D の形をとる。", exp:"die Angst（-，Ängste）＝恐れ・不安。★テスト②との重複語。Angst vor etw. haben の形が頻出。" },
-      { q:"「意見」を意味するドイツ語名詞はどれか。★②", opts:["die Lösung","die Meinung","die Schwierigkeit","der Fortschritt"], ans:1, hint:"meiner 〜 nach という慣用句でよく使われる。", exp:"die Meinung（-，-en）＝意見。★テスト②との重複語。meiner Meinung nach（私の意見では）の形が最頻出。" },
-      { q:"「成果・業績・能力」を意味するドイツ語名詞はどれか。★①", opts:["die Herausforderung","die Gefahr","die Leistung","der Versuch"], ans:2, hint:"leisten（成し遂げる）の名詞形。", exp:"die Leistung（-，-en）＝成果・業績・能力。★テスト①との重複語。eine hohe Leistung erbringen（高い成果を上げる）。" },
-      { q:"「孤独感」を意味するドイツ語名詞はどれか。★①", opts:["das Problem","die Einsamkeit","die Zunahme","die Wirkung"], ans:1, hint:"einsam（孤独な）に -keit をつけた名詞。", exp:"die Einsamkeit（-，-）＝孤独感。★テスト①との重複語。an Einsamkeit leiden（孤独に苦しむ）。" },
+      { q:"「恐れ・不安」を意味するドイツ語名詞はどれか。", opts:["die Toleranz","die Angst","die Entwicklung","der Respekt"], ans:1, hint:"Angst vor +D の形をとる。", exp:"die Angst（-，Ängste）＝恐れ・不安。" },
+      { q:"「意見」を意味するドイツ語名詞はどれか。", opts:["die Lösung","die Meinung","die Schwierigkeit","der Fortschritt"], ans:1, hint:"meiner 〜 nach という慣用句でよく使われる。", exp:"die Meinung（-，-en）＝意見。" },
+      { q:"「成果・業績・能力」を意味するドイツ語名詞はどれか。", opts:["die Herausforderung","die Gefahr","die Leistung","der Versuch"], ans:2, hint:"leisten（成し遂げる）の名詞形。", exp:"die Leistung（-，-en）＝成果・業績・能力。" },
+      { q:"「孤独感」を意味するドイツ語名詞はどれか。", opts:["das Problem","die Einsamkeit","die Zunahme","die Wirkung"], ans:1, hint:"einsam（孤独な）に -keit をつけた名詞。", exp:"die Einsamkeit（-，-）＝孤独感。" },
       { q:"「変化・変容」を意味するドイツ語名詞はどれか。", opts:["die Toleranz","die Veränderung","der Verlauf","die Gleichheit"], ans:1, hint:"sich verändern（変化する）の名詞形。", exp:"die Veränderung（-，-en）＝変化・変容。eine grundlegende Veränderung erfahren（根本的な変化を経験する）。" },
       { q:"「発展・展開」を意味するドイツ語名詞はどれか。", opts:["der Einfluss","die Wirkung","die Entwicklung","die Folge"], ans:2, hint:"sich entwickeln（発展する）の名詞形。", exp:"die Entwicklung（-，-en）＝発展・展開。eine positive Entwicklung beobachten（前向きな発展を観察する）。" },
       { q:"「進歩・進展」を意味するドイツ語名詞はどれか。", opts:["die Zunahme","der Fortschritt","der Verlauf","der Einfluss"], ans:1, hint:"fort（前へ）＋ Schritt（一歩）からなる複合名詞。", exp:"der Fortschritt（-s，-e）＝進歩・進展。Fortschritte machen（進歩する）の形が典型的。" },
@@ -165,12 +167,12 @@ const sets = [
   {
     id: 4,
     label: "テストD",
-    info: "★③との重複：die Veränderung・der Fortschritt　★②との重複：der Zweifel・die Erkenntnis",
+    info: "との重複：die Veränderung・der Fortschritt　との重複：der Zweifel・die Erkenntnis",
     questions: [
-      { q:"「変化・変容」を意味するドイツ語名詞はどれか。★③", opts:["die Diskussion","der Wert","die Veränderung","die Bedeutung"], ans:2, hint:"sich verändern（変化する）の名詞形。", exp:"die Veränderung（-，-en）＝変化・変容。★テスト③との重複語。eine grundlegende Veränderung erfahren。" },
-      { q:"「進歩・進展」を意味するドイツ語名詞はどれか。★③", opts:["die Qualität","die Kritik","der Anspruch","der Fortschritt"], ans:3, hint:"fort（前へ）＋ Schritt（一歩）からなる複合名詞。", exp:"der Fortschritt（-s，-e）＝進歩・進展。★テスト③との重複語。Fortschritte machen（進歩する）。" },
-      { q:"「疑い・疑念」を意味するドイツ語名詞はどれか。★②", opts:["die Begründung","die Information","der Zweifel","die Priorität"], ans:2, hint:"zweifeln（疑う）の名詞形。Zweifel an +D の形をとる。", exp:"der Zweifel（-s，-）＝疑い・疑念。★テスト②との重複語。Zweifel an etw. haben（〜を疑っている）。" },
-      { q:"「認識・気づき」を意味するドイツ語名詞はどれか。★②", opts:["die Kommunikation","die Erkenntnis","das Scheitern","der Erfolg"], ans:1, hint:"erkennen（認識する）の名詞形。複数形に -se がつく。", exp:"die Erkenntnis（-，-se）＝認識・気づき。★テスト②との重複語。zu einer Erkenntnis kommen（認識に至る）。" },
+      { q:"「変化・変容」を意味するドイツ語名詞はどれか。", opts:["die Diskussion","der Wert","die Veränderung","die Bedeutung"], ans:2, hint:"sich verändern（変化する）の名詞形。", exp:"die Veränderung（-，-en）＝変化・変容。" },
+      { q:"「進歩・進展」を意味するドイツ語名詞はどれか。", opts:["die Qualität","die Kritik","der Anspruch","der Fortschritt"], ans:3, hint:"fort（前へ）＋ Schritt（一歩）からなる複合名詞。", exp:"der Fortschritt（-s，-e）＝進歩・進展。" },
+      { q:"「疑い・疑念」を意味するドイツ語名詞はどれか。", opts:["die Begründung","die Information","der Zweifel","die Priorität"], ans:2, hint:"zweifeln（疑う）の名詞形。Zweifel an +D の形をとる。", exp:"der Zweifel（-s，-）＝疑い・疑念。" },
+      { q:"「認識・気づき」を意味するドイツ語名詞はどれか。", opts:["die Kommunikation","die Erkenntnis","das Scheitern","der Erfolg"], ans:1, hint:"erkennen（認識する）の名詞形。複数形に -se がつく。", exp:"die Erkenntnis（-，-se）＝認識・気づき。" },
       { q:"「成功」を意味するドイツ語名詞はどれか。", opts:["der Wert","das Scheitern","der Erfolg","die Kritik"], ans:2, hint:"erfolgreich（成功した）と同じ語幹。", exp:"der Erfolg（-s，-e）＝成功。zum Erfolg führen（成功に導く）。" },
       { q:"「失敗・挫折」を意味するドイツ語名詞はどれか。", opts:["der Erfolg","die Qualität","die Bedeutung","das Scheitern"], ans:3, hint:"scheitern（失敗する）の名詞化。性は das。der Erfolg（成功）の反対語。", exp:"das Scheitern（-s，-）＝失敗・挫折。aus dem Scheitern lernen（失敗から学ぶ）。" },
       { q:"「価値・価値観」を意味するドイツ語名詞はどれか。", opts:["die Kritik","der Wert","das Scheitern","der Anspruch"], ans:1, hint:"wertvoll（価値ある）と同じ語幹。性は der。", exp:"der Wert（-es，-e）＝価値・価値観。einen hohen Wert legen auf（〜を重視する）。" },
@@ -192,12 +194,12 @@ const sets = [
   {
     id: 5,
     label: "テストE",
-    info: "★④との重複：der Erfolg・die Kritik　★③との重複：die Wirkung・die Folge",
+    info: "との重複：der Erfolg・die Kritik　との重複：die Wirkung・die Folge",
     questions: [
-      { q:"「成功」を意味するドイツ語名詞はどれか。★④", opts:["die Entwicklung","der Mangel","der Erfolg","die Zunahme"], ans:2, hint:"erfolgreich（成功した）と同じ語幹。", exp:"der Erfolg（-s，-e）＝成功。★テスト④との重複語。zum Erfolg führen（成功に導く）。" },
-      { q:"「批判・批評」を意味するドイツ語名詞はどれか。★④", opts:["der Grad","die Dauer","die Kritik","der Vorschlag"], ans:2, hint:"kritisch（批判的な）と同じ語幹。", exp:"die Kritik（-，-en）＝批判・批評。★テスト④との重複語。Kritik üben an（〜に批判を加える）。" },
-      { q:"「効果・作用」を意味するドイツ語名詞はどれか。★③", opts:["die Anfrage","die Wirkung","der Vorschlag","das Ausmaß"], ans:1, hint:"wirken（作用する）の名詞形。", exp:"die Wirkung（-，-en）＝効果・作用。★テスト③との重複語。eine positive Wirkung erzielen（良い効果を生む）。" },
-      { q:"「結果・影響」を意味するドイツ語名詞はどれか。★③", opts:["die Dauer","die Folge","der Mangel","der Überfluss"], ans:1, hint:"folgen（続く・従う）の名詞形。", exp:"die Folge（-，-n）＝結果・影響。★テスト③との重複語。die Folgen abschätzen（結果を見積もる）。" },
+      { q:"「成功」を意味するドイツ語名詞はどれか。", opts:["die Entwicklung","der Mangel","der Erfolg","die Zunahme"], ans:2, hint:"erfolgreich（成功した）と同じ語幹。", exp:"der Erfolg（-s，-e）＝成功。" },
+      { q:"「批判・批評」を意味するドイツ語名詞はどれか。", opts:["der Grad","die Dauer","die Kritik","der Vorschlag"], ans:2, hint:"kritisch（批判的な）と同じ語幹。", exp:"die Kritik（-，-en）＝批判・批評。" },
+      { q:"「効果・作用」を意味するドイツ語名詞はどれか。", opts:["die Anfrage","die Wirkung","der Vorschlag","das Ausmaß"], ans:1, hint:"wirken（作用する）の名詞形。", exp:"die Wirkung（-，-en）＝効果・作用。" },
+      { q:"「結果・影響」を意味するドイツ語名詞はどれか。", opts:["die Dauer","die Folge","der Mangel","der Überfluss"], ans:1, hint:"folgen（続く・従う）の名詞形。", exp:"die Folge（-，-n）＝結果・影響。" },
       { q:"「決定・決断」を意味するドイツ語名詞はどれか。", opts:["der Vorschlag","die Anfrage","die Entscheidung","die Dauer"], ans:2, hint:"entscheiden（決める）の名詞形。eine 〜 treffen の形が典型的。", exp:"die Entscheidung（-，-en）＝決定・決断。eine Entscheidung treffen（決断を下す）。" },
       { q:"「提案」を意味するドイツ語名詞はどれか。", opts:["die Entscheidung","die Minderheit","der Vorschlag","die Anfrage"], ans:2, hint:"vorschlagen（提案する）の名詞形。einen 〜 machen の形が典型的。", exp:"der Vorschlag（-s，Vorschläge）＝提案。einen Vorschlag machen（提案する）。" },
       { q:"「問い合わせ・申請」を意味するドイツ語名詞はどれか。", opts:["die Minderheit","der Vorschlag","die Anfrage","die Entwicklung"], ans:2, hint:"anfragen（問い合わせる）の名詞形。eine 〜 stellen の形でよく使う。", exp:"die Anfrage（-，-n）＝問い合わせ・申請。eine Anfrage stellen（問い合わせをする）。" },
@@ -219,12 +221,12 @@ const sets = [
   {
     id: 6,
     label: "テストF",
-    info: "★⑤との重複：die Entscheidung・der Mangel　★④との重複：der Vorteil・der Nachteil",
+    info: "との重複：die Entscheidung・der Mangel　との重複：der Vorteil・der Nachteil",
     questions: [
-      { q:"「決定・決断」を意味するドイツ語名詞はどれか。★⑤", opts:["die Beziehung","der Konflikt","die Entscheidung","das Verhalten"], ans:2, hint:"entscheiden（決める）の名詞形。eine 〜 treffen の形が典型的。", exp:"die Entscheidung（-，-en）＝決定・決断。★テスト⑤との重複語。eine Entscheidung treffen（決断を下す）。" },
-      { q:"「不足・欠如」を意味するドイツ語名詞はどれか。★⑤", opts:["die Unterstützung","der Respekt","die Gleichheit","der Mangel"], ans:3, hint:"es mangelt an +D（〜が欠けている）の形でよく使う。", exp:"der Mangel（-s，Mängel）＝不足・欠如。★テスト⑤との重複語。ein Mangel an Ressourcen（資源の不足）。" },
-      { q:"「利点・メリット」を意味するドイツ語名詞はどれか。★④", opts:["das Bewusstsein","die Ansicht","der Vorteil","die Vorstellung"], ans:2, hint:"vor（前）＋ Teil（部分）から。der Nachteil（欠点）の反対語。", exp:"der Vorteil（-s，-e）＝利点・メリット。★テスト④との重複語。Vorteile gegenüber etw. haben。" },
-      { q:"「欠点・デメリット」を意味するドイツ語名詞はどれか。★④", opts:["die Hoffnung","der Nachteil","der Stress","das Vertrauen"], ans:1, hint:"nach（後）＋ Teil（部分）から。der Vorteil（利点）の反対語。", exp:"der Nachteil（-s，-e）＝欠点・デメリット。★テスト④との重複語。Nachteile in Kauf nehmen。" },
+      { q:"「決定・決断」を意味するドイツ語名詞はどれか。", opts:["die Beziehung","der Konflikt","die Entscheidung","das Verhalten"], ans:2, hint:"entscheiden（決める）の名詞形。eine 〜 treffen の形が典型的。", exp:"die Entscheidung（-，-en）＝決定・決断。" },
+      { q:"「不足・欠如」を意味するドイツ語名詞はどれか。", opts:["die Unterstützung","der Respekt","die Gleichheit","der Mangel"], ans:3, hint:"es mangelt an +D（〜が欠けている）の形でよく使う。", exp:"der Mangel（-s，Mängel）＝不足・欠如。" },
+      { q:"「利点・メリット」を意味するドイツ語名詞はどれか。", opts:["das Bewusstsein","die Ansicht","der Vorteil","die Vorstellung"], ans:2, hint:"vor（前）＋ Teil（部分）から。der Nachteil（欠点）の反対語。", exp:"der Vorteil（-s，-e）＝利点・メリット。" },
+      { q:"「欠点・デメリット」を意味するドイツ語名詞はどれか。", opts:["die Hoffnung","der Nachteil","der Stress","das Vertrauen"], ans:1, hint:"nach（後）＋ Teil（部分）から。der Vorteil（利点）の反対語。", exp:"der Nachteil（-s，-e）＝欠点・デメリット。" },
       { q:"「希望」を意味するドイツ語名詞はどれか。", opts:["die Hoffnung","das Verhalten","die Gleichheit","der Konflikt"], ans:0, hint:"hoffen（望む）の名詞形。", exp:"die Hoffnung（-，-en）＝希望。die Hoffnung aufgeben（希望を捨てる）。" },
       { q:"「喜び」を意味するドイツ語名詞はどれか。", opts:["die Trauer","die Freude","die Unterstützung","der Respekt"], ans:1, hint:"sich freuen（喜ぶ）の名詞形。", exp:"die Freude（-，-n）＝喜び。große Freude empfinden（大きな喜びを感じる）。" },
       { q:"「悲しみ」を意味するドイツ語名詞はどれか。", opts:["die Beziehung","die Enttäuschung","die Trauer","die Zufriedenheit"], ans:2, hint:"trauern（悲しむ）の名詞形。Trauerfeier（葬儀）とも関連する。", exp:"die Trauer（-，-）＝悲しみ。tiefe Trauer ausdrücken（深い悲しみを表す）。" },
@@ -254,7 +256,7 @@ function initSetNav() {
   const nav = document.getElementById('set-nav');
   sets.forEach((s, i) => {
     const btn = document.createElement('button');
-    btn.className = 'set-btn' + (i === 0 ? ' active' : '');
+    btn.className = 'set-btn' + (s.label === RANDOM_LABEL ? ' random-btn' : '') + (i === 0 ? ' active' : '');
     btn.textContent = s.label;
     btn.onclick = () => selectSet(i);
     nav.appendChild(btn);
@@ -262,10 +264,11 @@ function initSetNav() {
 }
 
 function selectSet(idx) {
+  if (sets[idx] && sets[idx].label === RANDOM_LABEL) buildRandomSet();
   currentSet = idx;
   current = 0; score = 0; answered = false;
   document.querySelectorAll('.set-btn').forEach((b, i) => {
-    b.className = 'set-btn' + (i === idx ? ' active' : '');
+    b.className = 'set-btn' + (sets[i].label === RANDOM_LABEL ? ' random-btn' : '') + (i === idx ? ' active' : '');
   });
   document.getElementById('result-card').style.display = 'none';
   document.getElementById('quiz-area').style.display = 'block';
@@ -369,6 +372,39 @@ function restart() {
 function goNextSet() {
   selectSet(currentSet + 1);
 }
+
+
+// ── ランダムモード ────────────────────────────────
+const RANDOM_LABEL = "ランダム";
+const RANDOM_COUNT = 20;
+
+function getAllQuestions() {
+  const all = [];
+  sets.forEach(s => { if (s.label !== RANDOM_LABEL) s.questions.forEach(q => all.push(q)); });
+  return all;
+}
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function buildRandomSet() {
+  const all = shuffle(getAllQuestions());
+  const picked = all.slice(0, Math.min(RANDOM_COUNT, all.length));
+  const idx = sets.findIndex(s => s.label === RANDOM_LABEL);
+  const randomSet = { label: RANDOM_LABEL, questions: picked };
+  if (idx >= 0) sets[idx] = randomSet;
+  else sets.push(randomSet);
+}
+
+// ランダムセットを初回構築
+buildRandomSet();
+// ──────────────────────────────────────────────────
 
 initSetNav();
 render();
