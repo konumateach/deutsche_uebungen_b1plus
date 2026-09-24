@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>抽象名詞テスト B2+レベル（独→日）</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 700px; margin: 0 auto; }
+  header { margin-bottom: 1.5rem; }
+  header h1 { font-size: 21px; font-weight: 500; margin-bottom: 4px; }
+  header p { font-size: 14px; color: #666; }
+  .set-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .set-btn { padding: 6px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 13px; font-family: inherit; transition: background 0.15s; }
+  .set-btn:hover { background: #f0f0f0; }
+  .set-btn.random-btn { border-color: #185FA5; color: #185FA5; }
+  .set-btn.random-btn.active { background: #185FA5; color: #fff; border-color: #185FA5; }
+  .set-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .progress-bar-wrap { background: #ddd; border-radius: 4px; height: 4px; margin-bottom: 6px; }
+  .progress-bar { background: #185FA5; height: 4px; border-radius: 4px; transition: width 0.3s; }
+  .progress-text { font-size: 13px; color: #666; margin-bottom: 1.2rem; }
+  .card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 1.5rem; margin-bottom: 1rem; }
+  .question-num { font-size: 12px; color: #999; margin-bottom: 6px; }
+  .question-text { font-size: 22px; font-weight: 500; margin-bottom: 6px; font-family: "Segoe UI", "Candara", sans-serif; }
+  .question-sub { font-size: 13px; color: #888; margin-bottom: 1.25rem; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { text-align: left; padding: 10px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 15px; font-family: inherit; transition: background 0.15s, border-color 0.15s; }
+  .option-btn:hover:not(:disabled) { background: #f0f0f0; border-color: #999; }
+  .option-btn.correct { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn.wrong   { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+  .option-btn.reveal  { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn:disabled { cursor: default; }
+  .feedback { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.6; display: none; font-family: "Segoe UI", "Candara", sans-serif; }
+  .feedback.correct { background: #e1f5ee; color: #085041; display: block; }
+  .feedback.wrong    { background: #fcebeb; color: #791f1f; display: block; }
+  .hint-btn { margin-top: 10px; font-size: 13px; color: #185FA5; background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; text-decoration: underline; }
+  .hint-text { font-size: 13px; color: #666; margin-top: 6px; display: none; }
+  .next-btn { margin-top: 1.25rem; padding: 10px 20px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; display: none; }
+  .next-btn:hover { background: #333; }
+  .result-card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 2rem; text-align: center; display: none; }
+  .result-card h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+  .score-big { font-size: 48px; font-weight: 500; color: #185FA5; margin: 1rem 0; }
+  .score-msg { font-size: 15px; color: #555; margin-bottom: 1.5rem; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .restart-btn { padding: 10px 24px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .restart-btn:hover { background: #333; }
+  .next-set-btn { padding: 10px 24px; border-radius: 8px; background: #185FA5; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .next-set-btn:hover { background: #0c447c; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>抽象名詞テスト　B2+レベル（独→日）</h1>
+    <p>ドイツ語名詞の日本語の意味を選びなさい。（各テスト20問）</p>
+  </header>
+  <div style="margin-bottom:1rem;"><a href="index_b2plus.html" style="display:inline-block;padding:7px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fafafa;color:#1a1a18;text-decoration:none;font-size:13px;font-family:inherit;">← ポータルに戻る</a></div>
+  <div class="set-nav" id="set-nav"></div>
+  <div id="quiz-area">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar" style="width:5%"></div></div>
+    <div class="progress-text" id="prog-text"></div>
+    <div class="card">
+      <div class="question-num" id="q-num"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="question-sub" id="q-sub"></div>
+      <div class="options" id="q-options"></div>
+      <button class="hint-btn" id="hint-btn" onclick="showHint()">ヒントを見る</button>
+      <div class="hint-text" id="hint-text"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQuestion()">次の問題 →</button>
+    </div>
+  </div>
+  <div class="result-card" id="result-card">
+    <h2 id="result-title"></h2>
+    <div class="score-big" id="score-display"></div>
+    <div class="score-msg" id="score-msg"></div>
+    <div class="btn-row">
+      <button class="restart-btn" onclick="restart()">このテストをもう一度</button>
+      <button class="next-set-btn" id="next-set-btn" onclick="goNextSet()">次のテストへ →</button>
+    </div>
+  </div>
+</div>
+<script>
+// DJ: A=①1-5+③6-10+⑤6-10+⑦6-10  B=②1-5+④6-10+⑥6-10+⑧6-10
+//     C=①6-10+②6-10+⑤1-5+⑦1-5   D=③1-5+④1-5+⑥1-5+⑧1-5
+const sets = [
+  { label:"テストA", questions:[
+    // ①哲学1-5
+    { q:"die Substanz", sub:"(-，-en)", opts:["存在論", "実質・本質・内容", "本質・核心", "超越性・超越"], ans:1, hint:"einem Argument Substanz verleihen（論拠に実質を与える）の形でよく使う。", exp:"die Substanz＝実質・本質・内容。einem Argument Substanz verleihen（論拠に実質を与える）。" },
+    { q:"das Wesen", sub:"(-s，-)", opts:["本質・存在・性質", "抽象化・抽象概念", "偶然性・不確定性", "内在性"], ans:0, hint:"das Wesen einer Sache erfassen（物事の本質を把握する）の形でよく使う。", exp:"das Wesen＝本質・存在・性質。das Wesen einer Sache erfassen（物事の本質を把握する）。" },
+    { q:"die Essenz", sub:"(-，-en)", opts:["存在論", "超越性・超越", "本質・核心", "弁証法・対話的思考"], ans:2, hint:"die Essenz einer Debatte herausarbeiten（議論の本質を抽出する）の形でよく使う。", exp:"die Essenz＝本質・エッセンス。die Essenz einer Debatte herausarbeiten（議論の本質を抽出する）。" },
+    { q:"die Ontologie", sub:"(-，-n)", opts:["弁証法・対話的思考", "内在性", "逆説・矛盾命題", "存在論"], ans:3, hint:"ontologische Grundfragen aufwerfen（存在論の根本問題を提起する）の形でよく使う。", exp:"die Ontologie＝存在論。ontologische Grundfragen aufwerfen（存在論の根本問題を提起する）。" },
+    { q:"die Transzendenz", sub:"(-，-)", opts:["内在性", "偶然性・不確定性", "超越性・超越", "本質・核心"], ans:2, hint:"nach Transzendenz suchen（超越性を求める）の形でよく使う。", exp:"die Transzendenz＝超越性・超越。nach Transzendenz suchen（超越性を求める）。" },
+    // ③政治6-10
+    { q:"die Repression", sub:"(-，-en)", opts:["抑圧・弾圧", "補助金・助成", "予防・防止", "制裁・承認（文脈による）"], ans:0, hint:"staatliche Repression dokumentieren（国家による弾圧を記録する）の形でよく使う。", exp:"die Repression＝抑圧・弾圧。staatliche Repression dokumentieren（国家による弾圧を記録する）。" },
+    { q:"die Sanktion", sub:"(-，-en)", opts:["予防・防止", "管轄権・法的権限", "補助金・助成", "制裁・承認（文脈による）"], ans:3, hint:"wirtschaftliche Sanktionen verhängen（経済制裁を科す）の形でよく使う。", exp:"die Sanktion＝制裁・承認（文脈による）。wirtschaftliche Sanktionen verhängen（経済制裁を科す）。" },
+    { q:"die Jurisdiktion", sub:"(-，-en)", opts:["制裁・承認（文脈による）", "管轄権・法的権限", "補助金・助成", "予防・防止"], ans:1, hint:"außerhalb der nationalen Jurisdiktion handeln（国家の管轄権の外で行動する）の形でよく使う。", exp:"die Jurisdiktion＝管轄権・法的権限。außerhalb der nationalen Jurisdiktion handeln（国家の管轄権の外で行動する）。" },
+    { q:"die Prävention", sub:"(-，-en)", opts:["制裁・承認（文脈による）", "予防・防止", "補助金・助成", "管轄権・法的権限"], ans:1, hint:"Prävention statt Repression betreiben（抑圧の代わりに予防を行う）の形でよく使う。", exp:"die Prävention＝予防・防止。Prävention statt Repression betreiben（抑圧の代わりに予防を行う）。" },
+    { q:"die Subvention", sub:"(-，-en)", opts:["予防・防止", "制裁・承認（文脈による）", "管轄権・法的権限", "補助金・助成"], ans:3, hint:"staatliche Subventionen abbauen（国家補助金を削減する）の形でよく使う。", exp:"die Subvention＝補助金・助成。staatliche Subventionen abbauen（国家補助金を削減する）。" },
+    // ⑤文化6-10
+    { q:"die Assimilation", sub:"(-，-en)", opts:["同化・吸収", "文化変容・適応", "代表・表象・表現", "周縁化・排除"], ans:0, hint:"zwischen Integration und Assimilation unterscheiden（統合と同化を区別する）の形でよく使う。", exp:"die Assimilation＝同化・吸収。zwischen Integration und Assimilation unterscheiden（統合と同化を区別する）。" },
+    { q:"die Akkulturation", sub:"(-，-en)", opts:["周縁化・排除", "固定観念化・類型化", "文化変容・適応", "代表・表象・表現"], ans:2, hint:"Akkulturationsprozesse wissenschaftlich untersuchen（文化変容過程を学術的に研究する）の形でよく使う。", exp:"die Akkulturation＝文化変容・適応。Akkulturationsprozesse wissenschaftlich untersuchen（文化変容過程を学術的に研究する）。" },
+    { q:"die Repräsentation", sub:"(-，-en)", opts:["固定観念化・類型化", "代表・表象・表現", "周縁化・排除", "同化・吸収"], ans:1, hint:"die mediale Repräsentation von Minderheiten（少数派のメディア表象）の形でよく使う。", exp:"die Repräsentation＝代表・表象・表現。die mediale Repräsentation von Minderheiten（少数派のメディア表象）。" },
+    { q:"die Marginalisierung", sub:"(-，-en)", opts:["代表・表象・表現", "文化変容・適応", "同化・吸収", "周縁化・排除"], ans:3, hint:"die Marginalisierung bestimmter Gruppen überwinden（特定集団の周縁化を克服する）の形でよく使う。", exp:"die Marginalisierung＝周縁化・排除。die Marginalisierung bestimmter Gruppen überwinden（特定集団の周縁化を克服する）。" },
+    { q:"die Stereotypisierung", sub:"(-，-en)", opts:["文化変容・適応", "代表・表象・表現", "固定観念化・類型化", "同化・吸収"], ans:2, hint:"Stereotypisierungen in der Berichterstattung kritisieren（報道におけるステレオタイプ化を批判する）の形でよく使う。", exp:"die Stereotypisierung＝固定観念化・ステレオタイプ化。Stereotypisierungen in der Berichterstattung kritisieren（報道におけるステレオタイプ化を批判する）。" },
+    // ⑦変化6-10
+    { q:"die Akkumulation", sub:"(-，-en)", opts:["蓄積・集積", "断片化・細分化", "均質化・同質化", "異質性・多様性（構成上の）"], ans:0, hint:"eine Akkumulation von Kapital und Wissen（資本と知識の蓄積）の形でよく使う。", exp:"die Akkumulation＝蓄積・集積。eine Akkumulation von Kapital und Wissen（資本と知識の蓄積）。" },
+    { q:"die Fragmentierung", sub:"(-，-en)", opts:["均質化・同質化", "不安定化・揺さぶり", "断片化・細分化", "異質性・多様性（構成上の）"], ans:2, hint:"die Fragmentierung des Mediensystems（メディアシステムの断片化）の形でよく使う。", exp:"die Fragmentierung＝断片化・細分化。die Fragmentierung des Mediensystems（メディアシステムの断片化）。" },
+    { q:"die Homogenisierung", sub:"(-，-en)", opts:["異質性・多様性（構成上の）", "均質化・同質化", "不安定化・揺さぶり", "断片化・細分化"], ans:1, hint:"eine globale Homogenisierung der Kultur（文化のグローバルな均質化）の形でよく使う。", exp:"die Homogenisierung＝均質化。eine globale Homogenisierung der Kultur（文化のグローバルな均質化）。" },
+    { q:"die Heterogenität", sub:"(-，-en)", opts:["均質化・同質化", "蓄積・集積", "不安定化・揺さぶり", "異質性・多様性（構成上の）"], ans:3, hint:"die Heterogenität einer Gesellschaft als Stärke sehen（社会の異質性を強みとして見る）の形でよく使う。", exp:"die Heterogenität＝異質性・多様性（構成上の）。die Heterogenität einer Gesellschaft als Stärke sehen（社会の異質性を強みとして見る）。" },
+    { q:"die Destabilisierung", sub:"(-，-en)", opts:["不安定化・揺さぶり", "蓄積・集積", "均質化・同質化", "断片化・細分化"], ans:0, hint:"eine gezielte Destabilisierung demokratischer Strukturen（民主的構造の意図的な不安定化）の形でよく使う。", exp:"die Destabilisierung＝不安定化・揺さぶり。eine gezielte Destabilisierung demokratischer Strukturen（民主的構造の意図的な不安定化）。" },
+  ]},
+  { label:"テストB", questions:[
+    // ②認識1-5
+    { q:"die Wahrheit", sub:"(-，-en)", opts:["真実・真理", "知覚・認知・受け止め方", "解釈・解読", "脱構築"], ans:0, hint:"nach Wahrheit streben（真理を追い求める）の形でよく使う。", exp:"die Wahrheit＝真実・真理。nach Wahrheit streben（真理を追い求める）。" },
+    { q:"die Wahrnehmung", sub:"(-，-en)", opts:["解釈・解読", "知覚・認知・受け止め方", "相対性", "真実・真理"], ans:1, hint:"die öffentliche Wahrnehmung beeinflussen（世論の認知に影響する）の形でよく使う。", exp:"die Wahrnehmung＝知覚・認知・受け止め方。die öffentliche Wahrnehmung beeinflussen（世論の認知に影響する）。" },
+    { q:"die Interpretation", sub:"(-，-en)", opts:["脱構築", "相対性", "解釈・解読", "知覚・認知・受け止め方"], ans:2, hint:"eine Interpretation in Frage stellen（解釈を問い直す）の形でよく使う。", exp:"die Interpretation＝解釈・解読。eine Interpretation in Frage stellen（解釈を問い直す）。" },
+    { q:"die Dekonstruktion", sub:"(-，-en)", opts:["解釈・解読", "相対性", "真実・真理", "脱構築"], ans:3, hint:"eine Dekonstruktion überlieferter Begriffe vornehmen（伝承された概念の脱構築を行う）の形でよく使う。", exp:"die Dekonstruktion＝脱構築。eine Dekonstruktion überlieferter Begriffe vornehmen（伝承された概念の脱構築を行う）。" },
+    { q:"die Relativität", sub:"(-，-en)", opts:["知覚・認知・受け止め方", "解釈・解読", "脱構築", "相対性"], ans:3, hint:"die Relativität moralischer Urteile diskutieren（道徳的判断の相対性を議論する）の形でよく使う。", exp:"die Relativität＝相対性。die Relativität moralischer Urteile diskutieren（道徳的判断の相対性を議論する）。" },
+    // ④経済6-10
+    { q:"die Rentabilität", sub:"(-，-)", opts:["収益性・採算性", "流動性・資金繰り", "変動性・不安定性", "多様化・分散"], ans:0, hint:"die Rentabilität einer Investition prüfen（投資の収益性を検討する）の形でよく使う。", exp:"die Rentabilität＝収益性・採算性。die Rentabilität einer Investition prüfen（投資の収益性を検討する）。" },
+    { q:"die Liquidität", sub:"(-，-)", opts:["収益性・採算性", "流動性・資金繰り", "統合・強化・安定化", "変動性・不安定性"], ans:1, hint:"die Liquidität eines Unternehmens sichern（企業の流動性を確保する）の形でよく使う。", exp:"die Liquidität＝流動性・資金繰り。die Liquidität eines Unternehmens sichern（企業の流動性を確保する）。" },
+    { q:"die Volatilität", sub:"(-，-)", opts:["多様化・分散", "統合・強化・安定化", "変動性・不安定性", "流動性・資金繰り"], ans:2, hint:"die Volatilität der Märkte einkalkulieren（市場の変動性を考慮に入れる）の形でよく使う。", exp:"die Volatilität＝変動性・不安定性。die Volatilität der Märkte einkalkulieren（市場の変動性を考慮に入れる）。" },
+    { q:"die Diversifikation", sub:"(-，-en)", opts:["統合・強化・安定化", "収益性・採算性", "流動性・資金繰り", "多様化・分散"], ans:3, hint:"Risiken durch Diversifikation minimieren（多様化によってリスクを最小化する）の形でよく使う。", exp:"die Diversifikation＝多様化・分散。Risiken durch Diversifikation minimieren（多様化によってリスクを最小化する）。" },
+    { q:"die Konsolidierung", sub:"(-，-en)", opts:["統合・強化・安定化", "変動性・不安定性", "収益性・採算性", "多様化・分散"], ans:0, hint:"eine Konsolidierung des Marktes beobachten（市場の統合を観察する）の形でよく使う。", exp:"die Konsolidierung＝統合・強化・安定化。eine Konsolidierung des Marktes beobachten（市場の統合を観察する）。" },
+    // ⑥科学6-10
+    { q:"die Falsifizierung", sub:"(-，-en)", opts:["再現可能性", "反証・反証可能性", "操作化・測定可能化", "帰納・帰納的推論"], ans:1, hint:"das Prinzip der Falsifizierung nach Popper（ポッパーによる反証原理）の形でよく使う。", exp:"die Falsifizierung＝反証・反証可能性。das Prinzip der Falsifizierung nach Popper（ポッパーによる反証原理）。" },
+    { q:"die Replizierbarkeit", sub:"(-，-)", opts:["操作化・測定可能化", "帰納・帰納的推論", "再現可能性", "演繹・演繹的推論"], ans:2, hint:"die Replizierbarkeit von Experimenten fordern（実験の再現可能性を求める）の形でよく使う。", exp:"die Replizierbarkeit＝再現可能性。die Replizierbarkeit von Experimenten fordern（実験の再現可能性を求める）。" },
+    { q:"die Operationalisierung", sub:"(-，-en)", opts:["帰納・帰納的推論", "操作化・測定可能化", "演繹・演繹的推論", "一般化"], ans:1, hint:"abstrakte Begriffe operationalisieren（抽象的概念を操作化する）の形でよく使う。", exp:"die Operationalisierung＝操作化・測定可能化。abstrakte Begriffe operationalisieren（抽象的概念を操作化する）。" },
+    { q:"die Induktion", sub:"(-，-en)", opts:["演繹・演繹的推論", "反証・反証可能性", "再現可能性", "帰納・帰納的推論"], ans:3, hint:"Deduktion und Induktion gegenüberstellen（演繹と帰納を対比する）の形でよく使う。", exp:"die Induktion＝帰納・帰納的推論。Deduktion und Induktion gegenüberstellen（演繹と帰納を対比する）。" },
+    { q:"die Deduktion", sub:"(-，-en)", opts:["帰納・帰納的推論", "操作化・測定可能化", "演繹・演繹的推論", "一般化"], ans:2, hint:"vom Allgemeinen auf das Besondere schließen（一般から特殊へ推論する）という考え方に対応する。", exp:"die Deduktion＝演繹・演繹的推論。vom Allgemeinen auf das Besondere schließen（一般から特殊へ推論する）。" },
+    // ⑧行為6-10
+    { q:"die Zuschreibung", sub:"(-，-en)", opts:["帰属・付与", "手段化・道具化・利用", "規制緩和", "自主規制・自律的調整"], ans:0, hint:"soziale Zuschreibungen hinterfragen（社会的帰属を問い直す）の形でよく使う。", exp:"die Zuschreibung＝帰属・付与・ラベリング。soziale Zuschreibungen hinterfragen（社会的帰属を問い直す）。" },
+    { q:"die Instrumentalisierung", sub:"(-，-en)", opts:["規制緩和", "自主規制・自律的調整", "補完性原則・下位委任", "手段化・道具化・利用"], ans:3, hint:"die Instrumentalisierung von Kunst für politische Zwecke（芸術の政治目的への手段化）の形でよく使う。", exp:"die Instrumentalisierung＝手段化・道具化・利用。die Instrumentalisierung von Kunst für politische Zwecke（芸術の政治目的への手段化）。" },
+    { q:"die Deregulierung", sub:"(-，-en)", opts:["補完性原則・下位委任", "自主規制・自律的調整", "規制緩和", "帰属・付与"], ans:2, hint:"eine umstrittene Deregulierung des Marktes（市場の物議を醸す規制緩和）の形でよく使う。", exp:"die Deregulierung＝規制緩和。eine umstrittene Deregulierung des Marktes（市場の物議を醸す規制緩和）。" },
+    { q:"die Selbstregulierung", sub:"(-，-en)", opts:["規制緩和", "自主規制・自律的調整", "手段化・道具化・利用", "補完性原則・下位委任"], ans:1, hint:"auf Selbstregulierung der Branche setzen（業界の自主規制に期待する）の形でよく使う。", exp:"die Selbstregulierung＝自主規制・自律的調整。auf Selbstregulierung der Branche setzen（業界の自主規制に期待する）。" },
+    { q:"die Subsidiarität", sub:"(-，-en)", opts:["補完性原則・下位委任", "自主規制・自律的調整", "手段化・道具化・利用", "規制緩和"], ans:0, hint:"das Prinzip der Subsidiarität in der EU anwenden（EUにおける補完性原則を適用する）の形でよく使う。", exp:"die Subsidiarität＝補完性原則・下位委任。das Prinzip der Subsidiarität in der EU anwenden（EUにおける補完性原則を適用する）。" },
+  ]},
+  { label:"テストC", questions:[
+    // ①哲学6-10
+    { q:"die Immanenz", sub:"(-，-)", opts:["抽象化・抽象概念", "偶然性・不確定性", "弁証法・対話的思考", "内在性"], ans:3, hint:"Immanenz und Transzendenz gegenüberstellen（内在性と超越性を対置する）の形でよく使う。", exp:"die Immanenz＝内在性。Immanenz und Transzendenz gegenüberstellen（内在性と超越性を対置する）。" },
+    { q:"die Abstraktion", sub:"(-，-en)", opts:["逆説・矛盾命題", "抽象化・抽象概念", "偶然性・不確定性", "弁証法・対話的思考"], ans:1, hint:"den Grad der Abstraktion erhöhen（抽象化の度合いを高める）の形でよく使う。", exp:"die Abstraktion＝抽象化・抽象概念。den Grad der Abstraktion erhöhen（抽象化の度合いを高める）。" },
+    { q:"die Kontingenz", sub:"(-，-en)", opts:["弁証法・対話的思考", "逆説・矛盾命題", "偶然性・不確定性", "内在性"], ans:2, hint:"die Kontingenz historischer Ereignisse betonen（歴史的出来事の偶然性を強調する）の形でよく使う。", exp:"die Kontingenz＝偶然性・不確定性。die Kontingenz historischer Ereignisse betonen（歴史的出来事の偶然性を強調する）。" },
+    { q:"die Dialektik", sub:"(-，-en)", opts:["弁証法・対話的思考", "逆説・矛盾命題", "内在性", "抽象化・抽象概念"], ans:0, hint:"eine dialektische Spannung aufzeigen（弁証法的な緊張を示す）の形でよく使う。", exp:"die Dialektik＝弁証法・対話的思考。eine dialektische Spannung aufzeigen（弁証法的な緊張を示す）。" },
+    { q:"die Paradoxie", sub:"(-，-n)", opts:["偶然性・不確定性", "内在性", "抽象化・抽象概念", "逆説・矛盾命題"], ans:3, hint:"eine Paradoxie im Denken aufdecken（思考における逆説を明らかにする）の形でよく使う。", exp:"die Paradoxie＝逆説・パラドックス。eine Paradoxie im Denken aufdecken（思考における逆説を明らかにする）。" },
+    // ②認識6-10
+    { q:"die Hermeneutik", sub:"(-，-)", opts:["因果関係・因果性", "相関関係", "解釈学", "多元性・複数性"], ans:2, hint:"hermeneutische Methoden anwenden（解釈学的方法を適用する）の形でよく使う。", exp:"die Hermeneutik＝解釈学。hermeneutische Methoden anwenden（解釈学的方法を適用する）。" },
+    { q:"die Kausalität", sub:"(-，-en)", opts:["多元性・複数性", "因果関係・因果性", "認識論", "相関関係"], ans:1, hint:"Kausalität und Korrelation unterscheiden（因果関係と相関関係を区別する）の形でよく使う。", exp:"die Kausalität＝因果関係・因果性。Kausalität und Korrelation unterscheiden（因果関係と相関関係を区別する）。" },
+    { q:"die Korrelation", sub:"(-，-en)", opts:["相関関係", "認識論", "多元性・複数性", "因果関係・因果性"], ans:0, hint:"eine statistische Korrelation nachweisen（統計的相関関係を証明する）の形でよく使う。", exp:"die Korrelation＝相関関係。eine statistische Korrelation nachweisen（統計的相関関係を証明する）。" },
+    { q:"die Epistemologie", sub:"(-，-n)", opts:["多元性・複数性", "相関関係", "解釈学", "認識論"], ans:3, hint:"epistemologische Grundlagen hinterfragen（認識論的基礎を問い直す）の形でよく使う。", exp:"die Epistemologie＝認識論。epistemologische Grundlagen hinterfragen（認識論的基礎を問い直す）。" },
+    { q:"die Pluralität", sub:"(-，-en)", opts:["因果関係・因果性", "認識論", "多元性・複数性", "解釈学"], ans:2, hint:"die Pluralität der Perspektiven anerkennen（視点の多元性を認める）の形でよく使う。", exp:"die Pluralität＝多元性・複数性。die Pluralität der Perspektiven anerkennen（視点の多元性を認める）。" },
+    // ⑤文化1-5
+    { q:"die Identität", sub:"(-，-en)", opts:["帰属意識・所属", "自己同一性・帰属", "記憶・想起", "遺産・継承されたもの"], ans:1, hint:"die eigene Identität konstruieren（自己のアイデンティティを構築する）の形でよく使う。", exp:"die Identität＝アイデンティティ・同一性。die eigene Identität konstruieren（自己のアイデンティティを構築する）。" },
+    { q:"die Zugehörigkeit", sub:"(-，-en)", opts:["帰属意識・所属", "記憶・想起", "混成性・雑種性", "遺産・継承されたもの"], ans:0, hint:"ein Gefühl der Zugehörigkeit entwickeln（帰属意識を育む）の形でよく使う。", exp:"die Zugehörigkeit＝帰属意識・所属。ein Gefühl der Zugehörigkeit entwickeln（帰属意識を育む）。" },
+    { q:"die Erinnerung", sub:"(-，-en)", opts:["遺産・継承されたもの", "混成性・雑種性", "帰属意識・所属", "記憶・想起"], ans:3, hint:"kollektive Erinnerung bewahren（集合的記憶を保存する）の形でよく使う。", exp:"die Erinnerung＝記憶・想起。kollektive Erinnerung bewahren（集合的記憶を保存する）。" },
+    { q:"das Erbe", sub:"(-s，-n)", opts:["同化・吸収", "代表・表象・表現", "遺産・継承されたもの", "記憶・想起"], ans:2, hint:"ein kulturelles Erbe weitergeben（文化遺産を伝える）の形でよく使う。", exp:"das Erbe＝遺産・継承されたもの。ein kulturelles Erbe weitergeben（文化遺産を伝える）。" },
+    { q:"die Hybridität", sub:"(-，-en)", opts:["混成性・雑種性", "記憶・想起", "遺産・継承されたもの", "帰属意識・所属"], ans:0, hint:"kulturelle Hybridität als Ressource begreifen（文化的混成性を資源として捉える）の形でよく使う。", exp:"die Hybridität＝混成性・ハイブリッド性。kulturelle Hybridität als Ressource begreifen（文化的混成性を資源として捉える）。" },
+    // ⑦変化1-5
+    { q:"die Dynamik", sub:"(-，-en)", opts:["収束・集約", "動態・作動原理", "乖離・分岐", "拡散・急増"], ans:1, hint:"die Dynamik eines sozialen Prozesses analysieren（社会的プロセスのダイナミクスを分析する）の形でよく使う。", exp:"die Dynamik＝ダイナミクス・動態。die Dynamik eines sozialen Prozesses analysieren（社会的プロセスのダイナミクスを分析する）。" },
+    { q:"die Konvergenz", sub:"(-，-en)", opts:["普及・拡散・浸透", "収束・集約", "乖離・分岐", "拡散・急増"], ans:1, hint:"eine Konvergenz der Meinungen feststellen（意見の収束を確認する）の形でよく使う。", exp:"die Konvergenz＝収束・一致・コンバージェンス。eine Konvergenz der Meinungen feststellen（意見の収束を確認する）。" },
+    { q:"die Divergenz", sub:"(-，-en)", opts:["乖離・分岐", "収束・集約", "普及・拡散・浸透", "拡散・急増"], ans:0, hint:"eine wachsende Divergenz beobachten（拡大する乖離を観察する）の形でよく使う。", exp:"die Divergenz＝乖離・分岐・ダイバージェンス。eine wachsende Divergenz beobachten（拡大する乖離を観察する）。" },
+    { q:"die Proliferation", sub:"(-，-en)", opts:["収束・集約", "普及・拡散・浸透", "乖離・分岐", "拡散・急増"], ans:3, hint:"die Proliferation digitaler Technologien（デジタル技術の急増）の形でよく使う。", exp:"die Proliferation＝拡散・急増。die Proliferation digitaler Technologien（デジタル技術の急増）。" },
+    { q:"die Diffusion", sub:"(-，-en)", opts:["拡散・急増", "収束・集約", "普及・拡散・浸透", "乖離・分岐"], ans:2, hint:"die Diffusion von Innovationen untersuchen（イノベーションの普及を研究する）の形でよく使う。", exp:"die Diffusion＝普及・拡散・浸透。die Diffusion von Innovationen untersuchen（イノベーションの普及を研究する）。" },
+  ]},
+  { label:"テストD", questions:[
+    // ③政治1-5
+    { q:"die Souveränität", sub:"(-，-en)", opts:["覇権・支配的権力", "転覆・体制への抵抗", "主権・自律性", "差別・不平等扱い"], ans:2, hint:"die nationale Souveränität wahren（国家主権を守る）の形でよく使う。", exp:"die Souveränität＝主権・自律性。die nationale Souveränität wahren（国家主権を守る）。" },
+    { q:"die Hegemonie", sub:"(-，-n)", opts:["解放・自立", "覇権・支配的権力", "主権・自律性", "差別・不平等扱い"], ans:1, hint:"kulturelle Hegemonie ausüben（文化的覇権を行使する）の形でよく使う。", exp:"die Hegemonie＝覇権・支配的権力。kulturelle Hegemonie ausüben（文化的覇権を行使する）。" },
+    { q:"die Emanzipation", sub:"(-，-en)", opts:["転覆・体制への抵抗", "差別・不平等扱い", "覇権・支配的権力", "解放・自立"], ans:3, hint:"die Emanzipation unterdrückter Gruppen（被抑圧集団の解放）の形でよく使う。", exp:"die Emanzipation＝解放・自立。die Emanzipation unterdrückter Gruppen（被抑圧集団の解放）。" },
+    { q:"die Subversion", sub:"(-，-en)", opts:["転覆・体制への抵抗", "差別・不平等扱い", "解放・自立", "主権・自律性"], ans:0, hint:"subversive Strategien einsetzen（転覆的戦略を用いる）の形でよく使う。", exp:"die Subversion＝転覆・体制への抵抗。subversive Strategien einsetzen（転覆的戦略を用いる）。" },
+    { q:"die Diskriminierung", sub:"(-，-en)", opts:["主権・自律性", "転覆・体制への抵抗", "覇権・支配的権力", "差別・不平等扱い"], ans:3, hint:"strukturelle Diskriminierung bekämpfen（構造的差別に立ち向かう）の形でよく使う。", exp:"die Diskriminierung＝差別。strukturelle Diskriminierung bekämpfen（構造的差別に立ち向かう）。" },
+    // ④経済1-5
+    { q:"die Effizienz", sub:"(-，-en)", opts:["有効性・実効性", "効率性・能率", "持続可能性", "資源・手段"], ans:1, hint:"die Effizienz eines Systems steigern（システムの効率性を高める）の形でよく使う。", exp:"die Effizienz＝効率性。die Effizienz eines Systems steigern（システムの効率性を高める）。" },
+    { q:"die Effektivität", sub:"(-，-en)", opts:["効率性・能率", "資源・手段", "有効性・実効性", "能力・容量・収容力"], ans:2, hint:"die Effektivität einer Maßnahme bewerten（措置の有効性を評価する）の形でよく使う。", exp:"die Effektivität＝有効性・実効性。die Effektivität einer Maßnahme bewerten（措置の有効性を評価する）。" },
+    { q:"die Nachhaltigkeit", sub:"(-，-)", opts:["持続可能性", "資源・手段", "能力・容量・収容力", "効率性・能率"], ans:0, hint:"ökologische Nachhaltigkeit fördern（生態学的持続可能性を促進する）の形でよく使う。", exp:"die Nachhaltigkeit＝持続可能性。ökologische Nachhaltigkeit fördern（生態学的持続可能性を促進する）。" },
+    { q:"die Ressource", sub:"(-，-n)", opts:["資源・手段", "能力・容量・収容力", "持続可能性", "有効性・実効性"], ans:0, hint:"knappe Ressourcen gerecht verteilen（乏しい資源を公平に分配する）の形でよく使う。", exp:"die Ressource＝資源・リソース。knappe Ressourcen gerecht verteilen（乏しい資源を公平に分配する）。" },
+    { q:"die Kapazität", sub:"(-，-en)", opts:["資源・手段", "効率性・能率", "有効性・実効性", "能力・容量・収容力"], ans:3, hint:"die Kapazitäten eines Systems ausschöpfen（システムの能力を使い切る）の形でよく使う。", exp:"die Kapazität＝能力・容量・収容力。die Kapazitäten eines Systems ausschöpfen（システムの能力を使い切る）。" },
+    // ⑥科学1-5
+    { q:"die Methodik", sub:"(-，-en)", opts:["妥当性", "方法論・研究手法", "信頼性・説得力", "代表性"], ans:1, hint:"eine rigorose Methodik anwenden（厳密な方法論を適用する）の形でよく使う。", exp:"die Methodik＝方法論・研究手法。eine rigorose Methodik anwenden（厳密な方法論を適用する）。" },
+    { q:"die Validität", sub:"(-，-)", opts:["信頼性・説得力", "代表性", "妥当性", "一般化"], ans:2, hint:"die Validität einer Messung sicherstellen（測定の妥当性を確保する）の形でよく使う。", exp:"die Validität＝妥当性。die Validität einer Messung sicherstellen（測定の妥当性を確保する）。" },
+    { q:"die Reliabilität", sub:"(-，-)", opts:["代表性", "妥当性", "信頼性（測定の）", "一般化"], ans:2, hint:"die Reliabilität eines Tests überprüfen（テストの信頼性を確認する）の形でよく使う。", exp:"die Reliabilität＝信頼性（測定の）。die Reliabilität eines Tests überprüfen（テストの信頼性を確認する）。" },
+    { q:"die Repräsentativität", sub:"(-，-)", opts:["一般化", "妥当性", "信頼性・説得力", "代表性"], ans:3, hint:"die Repräsentativität einer Stichprobe gewährleisten（標本の代表性を保証する）の形でよく使う。", exp:"die Repräsentativität＝代表性。die Repräsentativität einer Stichprobe gewährleisten（標本の代表性を保証する）。" },
+    { q:"die Generalisierung", sub:"(-，-en)", opts:["一般化", "信頼性・説得力", "代表性", "妥当性"], ans:0, hint:"unzulässige Generalisierungen vermeiden（不当な一般化を避ける）の形でよく使う。", exp:"die Generalisierung＝一般化。unzulässige Generalisierungen vermeiden（不当な一般化を避ける）。" },
+    // ⑧行為1-5
+    { q:"die Handlungsfähigkeit", sub:"(-，-)", opts:["説明責任の義務", "行為能力・主体性", "法令遵守・規則順守", "拘束力・義務性・信頼性"], ans:1, hint:"die politische Handlungsfähigkeit wiederherstellen（政治的行為能力を回復する）の形でよく使う。", exp:"die Handlungsfähigkeit＝行為能力・主体性。die politische Handlungsfähigkeit wiederherstellen（政治的行為能力を回復する）。" },
+    { q:"die Rechenschaftspflicht", sub:"(-，-en)", opts:["説明責任の義務", "法令遵守・規則順守", "不作為・怠慢", "拘束力・義務性・信頼性"], ans:0, hint:"eine gesetzliche Rechenschaftspflicht einführen（法的説明責任義務を導入する）の形でよく使う。", exp:"die Rechenschaftspflicht＝説明責任の義務。eine gesetzliche Rechenschaftspflicht einführen（法的説明責任義務を導入する）。" },
+    { q:"die Compliance", sub:"(-，-s)", opts:["不作為・怠慢", "法令遵守・規則順守", "拘束力・義務性・信頼性", "行為能力・主体性"], ans:1, hint:"Compliance-Regeln strikt einhalten（コンプライアンス規則を厳守する）の形でよく使う。", exp:"die Compliance＝コンプライアンス・法令遵守。Compliance-Regeln strikt einhalten（コンプライアンス規則を厳守する）。" },
+    { q:"die Verbindlichkeit", sub:"(-，-en)", opts:["不作為・怠慢", "法令遵守・規則順守", "拘束力・義務性・信頼性", "行為能力・主体性"], ans:2, hint:"die rechtliche Verbindlichkeit eines Vertrags（契約の法的拘束力）の形でよく使う。", exp:"die Verbindlichkeit＝拘束力・義務性・信頼性。die rechtliche Verbindlichkeit eines Vertrags（契約の法的拘束力）。" },
+    { q:"die Unterlassung", sub:"(-，-en)", opts:["拘束力・義務性・信頼性", "説明責任・報告義務", "法令遵守・規則順守", "不作為・怠慢"], ans:3, hint:"eine Haftung durch Unterlassung feststellen（不作為による責任を確認する）の形でよく使う。", exp:"die Unterlassung＝不作為・怠慢。eine Haftung durch Unterlassung feststellen（不作為による責任を確認する）。" },
+  ]},
+];
+
+const RANDOM_LABEL = "ランダム";
+const RANDOM_COUNT = 20;
+function getAllQuestions() {
+  const all = [];
+  sets.forEach(s => { if (s.label !== RANDOM_LABEL) s.questions.forEach(q => all.push(q)); });
+  return all;
+}
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function buildRandomSet() {
+  const all = shuffle(getAllQuestions());
+  const picked = all.slice(0, Math.min(RANDOM_COUNT, all.length));
+  const idx = sets.findIndex(s => s.label === RANDOM_LABEL);
+  const randomSet = { label: RANDOM_LABEL, questions: picked };
+  if (idx >= 0) sets[idx] = randomSet; else sets.push(randomSet);
+}
+buildRandomSet();
+let currentSet = 0, current = 0, score = 0, answered = false;
+function initSetNav() {
+  const nav = document.getElementById('set-nav');
+  sets.forEach((s, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'set-btn' + (s.label === RANDOM_LABEL ? ' random-btn' : '') + (i === 0 ? ' active' : '');
+    btn.textContent = s.label;
+    btn.onclick = () => selectSet(i);
+    nav.appendChild(btn);
+  });
+}
+function selectSet(idx) {
+  if (sets[idx] && sets[idx].label === RANDOM_LABEL) buildRandomSet();
+  currentSet = idx; current = 0; score = 0; answered = false;
+  document.querySelectorAll('.set-btn').forEach((b, i) => {
+    b.className = 'set-btn' + (sets[i].label === RANDOM_LABEL ? ' random-btn' : '') + (i === idx ? ' active' : '');
+  });
+  document.getElementById('result-card').style.display = 'none';
+  document.getElementById('quiz-area').style.display = 'block';
+  render();
+}
+function render() {
+  const qs = sets[currentSet].questions;
+  const q = qs[current];
+  document.getElementById('q-num').textContent = `問${current+1}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('q-sub').textContent = q.sub;
+  document.getElementById('prog-bar').style.width = `${((current+1)/qs.length)*100}%`;
+  document.getElementById('prog-text').textContent = `問${current+1} / ${qs.length}`;
+  document.getElementById('hint-text').style.display = 'none';
+  document.getElementById('hint-text').textContent = q.hint;
+  document.getElementById('hint-btn').style.display = 'inline';
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('next-btn').style.display = 'none';
+  answered = false;
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = '';
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.textContent = opt;
+    btn.onclick = () => select(i);
+    opts.appendChild(btn);
+  });
+}
+function showHint() {
+  const ht = document.getElementById('hint-text');
+  ht.style.display = ht.style.display === 'none' ? 'block' : 'none';
+}
+function select(i) {
+  if (answered) return;
+  answered = true;
+  const q = sets[currentSet].questions[current];
+  const btns = document.querySelectorAll('.option-btn');
+  btns.forEach(b => b.disabled = true);
+  document.getElementById('hint-btn').style.display = 'none';
+  document.getElementById('hint-text').style.display = 'none';
+  const fb = document.getElementById('feedback');
+  if (i === q.ans) { score++; btns[i].classList.add('correct'); fb.className = 'feedback correct'; fb.textContent = '✓ 正解！　' + q.exp; }
+  else { btns[i].classList.add('wrong'); btns[q.ans].classList.add('reveal'); fb.className = 'feedback wrong'; fb.textContent = '✗ 不正解。　' + q.exp; }
+  const nb = document.getElementById('next-btn');
+  nb.style.display = 'block';
+  nb.textContent = current + 1 < sets[currentSet].questions.length ? '次の問題 →' : '結果を見る';
+}
+function nextQuestion() { current++; if (current < sets[currentSet].questions.length) render(); else showResult(); }
+function showResult() {
+  document.getElementById('quiz-area').style.display = 'none';
+  const rc = document.getElementById('result-card');
+  rc.style.display = 'block';
+  const total = sets[currentSet].questions.length;
+  const pct = Math.round(score / total * 100);
+  document.getElementById('result-title').textContent = sets[currentSet].label + '　終了';
+  document.getElementById('score-display').textContent = `${score} / ${total}`;
+  let msg = pct >= 90 ? '素晴らしい！ほぼ完璧です。' : pct >= 70 ? 'よくできました。間違えた語を復習しましょう。' : pct >= 50 ? 'もう少しです。リストを見直してから再挑戦しましょう。' : '語彙リストをもう一度確認してから再挑戦しましょう。';
+  document.getElementById('score-msg').textContent = `正答率 ${pct}%　${msg}`;
+  const nb = document.getElementById('next-set-btn');
+  if (currentSet < sets.length - 1) { nb.style.display = 'inline-block'; nb.textContent = sets[currentSet + 1].label + 'へ →'; }
+  else nb.style.display = 'none';
+}
+function restart() { current = 0; score = 0; document.getElementById('result-card').style.display = 'none'; document.getElementById('quiz-area').style.display = 'block'; render(); }
+function goNextSet() { selectSet(currentSet + 1); }
+initSetNav();
+render();
+</script>
+</body>
+</html>
