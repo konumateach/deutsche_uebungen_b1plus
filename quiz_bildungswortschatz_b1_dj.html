@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教養語彙テスト B1レベル（独→日）</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 700px; margin: 0 auto; }
+  header { margin-bottom: 1.5rem; }
+  header h1 { font-size: 21px; font-weight: 500; margin-bottom: 4px; }
+  header p { font-size: 14px; color: #666; }
+  .set-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .set-btn { padding: 5px 11px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 12px; font-family: inherit; transition: background 0.15s; }
+  .set-btn:hover { background: #f0f0f0; }
+  .set-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .set-btn.random-btn { border-color: #185FA5; color: #185FA5; }
+  .set-btn.random-btn.active { background: #185FA5; color: #fff; }
+  .progress-bar-wrap { background: #ddd; border-radius: 4px; height: 4px; margin-bottom: 6px; }
+  .progress-bar { background: #185FA5; height: 4px; border-radius: 4px; transition: width 0.3s; }
+  .progress-text { font-size: 13px; color: #666; margin-bottom: 1.2rem; }
+  .card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 1.5rem; margin-bottom: 1rem; }
+  .question-num { font-size: 12px; color: #999; margin-bottom: 6px; }
+  .pos-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-bottom: 10px; }
+  .pos-N   { background: #e8f0fe; color: #1a56b0; }
+  .pos-V   { background: #fef3e8; color: #b05a1a; }
+  .pos-Adj { background: #fde8e8; color: #b01a1a; }
+  .pos-Adv { background: #e8feee; color: #1a7a3c; }
+  .question-text { font-size: 24px; font-weight: 600; margin-bottom: 1.25rem; font-family: "Segoe UI", "Candara", sans-serif; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { text-align: left; padding: 10px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 15px; font-family: inherit; transition: background 0.15s, border-color 0.15s; }
+  .option-btn:hover:not(:disabled) { background: #f0f0f0; border-color: #999; }
+  .option-btn.correct { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn.wrong   { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+  .option-btn.reveal  { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn:disabled { cursor: default; }
+  .feedback { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.7; display: none; font-family: "Segoe UI", "Candara", sans-serif; }
+  .feedback.correct { background: #e1f5ee; color: #085041; display: block; }
+  .feedback.wrong    { background: #fcebeb; color: #791f1f; display: block; }
+  .hint-btn { margin-top: 10px; font-size: 13px; color: #185FA5; background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; text-decoration: underline; }
+  .hint-text { font-size: 13px; color: #666; margin-top: 6px; display: none; }
+  .next-btn { margin-top: 1.25rem; padding: 10px 20px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; display: none; }
+  .next-btn:hover { background: #333; }
+  .result-card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 2rem; text-align: center; display: none; }
+  .result-card h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+  .score-big { font-size: 48px; font-weight: 500; color: #185FA5; margin: 1rem 0; }
+  .score-msg { font-size: 15px; color: #555; margin-bottom: 1.5rem; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .restart-btn { padding: 10px 24px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .next-set-btn { padding: 10px 24px; border-radius: 8px; background: #185FA5; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>教養語彙テスト　B1レベル（独→日）</h1>
+    <p>ドイツ語の意味を選びなさい（独→日）。領域ごとにテストが分かれています。</p>
+  </header>
+  <div class="set-nav" id="set-nav"></div>
+  <div id="quiz-area">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar"></div></div>
+    <div class="progress-text" id="prog-text"></div>
+    <div class="card">
+      <div class="question-num" id="q-num"></div>
+      <div class="pos-tag" id="pos-tag"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <button class="hint-btn" id="hint-btn" onclick="showHint()">ヒントを見る</button>
+      <div class="hint-text" id="hint-text"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQ()">次の問題 →</button>
+    </div>
+  </div>
+  <div class="result-card" id="result-card">
+    <h2 id="res-title"></h2>
+    <div class="score-big" id="res-score"></div>
+    <div class="score-msg" id="res-msg"></div>
+    <div class="btn-row">
+      <button class="restart-btn" onclick="restart()">もう一度</button>
+      <button class="next-set-btn" id="next-set-btn" onclick="goNext()">次のテスト →</button>
+    </div>
+  </div>
+</div>
+<script>
+const sets = [
+  { label:"①論理・思考", questions:[
+    { q:"der Beweis", pos:"N", opts:["証拠・証明", "関係・割合・比率", "結果・論理的帰結", "変容・変革（構造的）"], ans:0, hint:"einen Beweis liefern（証拠を示す）の形が典型的。", exp:"der Beweis＝証拠・証明。einen Beweis liefern（証拠を示す）の形が典型的。" },
+    { q:"der Standpunkt", pos:"N", opts:["結論", "妥協・妥協点", "立場・見地", "影響"], ans:2, hint:"von meinem Standpunkt aus（私の立場からは）の形でよく使う。", exp:"der Standpunkt＝立場・見地。von meinem Standpunkt aus（私の立場からは）の形でよく使う。" },
+    { q:"die Ansicht", pos:"N", opts:["見解", "結果・影響", "寛容・許容", "理由・根拠"], ans:0, hint:"meiner Ansicht nach は Meinung よりフォーマル。", exp:"die Ansicht＝見解。meiner Ansicht nach は Meinung よりフォーマル。" },
+    { q:"die Annahme", pos:"N", opts:["程度・規模", "発言・陳述", "対立・葛藤", "仮定・前提"], ans:3, hint:"von der Annahme ausgehen（〜という前提から出発する）の形でよく使う。", exp:"die Annahme＝仮定・前提。von der Annahme ausgehen（〜という前提から出発する）の形でよく使う。" },
+    { q:"logisch", pos:"Adj", opts:["論理的な", "緊急の・切迫した", "公の・公開の", "本質的な・重要な"], ans:0, hint:"Das ist nicht logisch.（それは論理的でない）の形が典型的。", exp:"logisch＝論理的な。Das ist nicht logisch.（それは論理的でない）の形が典型的。" },
+    { q:"meinen", pos:"V", opts:["表す・示す・描写する", "〜と思う・考える", "達成する・到達する", "判断する"], ans:1, hint:"Was meinen Sie dazu?（それについてどう思いますか）の形が典型的。", exp:"meinen＝〜と思う・考える。Was meinen Sie dazu?（それについてどう思いますか）の形が典型的。" },
+    { q:"erkennen", pos:"V", opts:["比較する", "増加する", "認識する・気づく", "高める・増やす"], ans:2, hint:"ein Problem erkennen（問題に気づく）の形が典型的。", exp:"erkennen＝認識する・気づく。ein Problem erkennen（問題に気づく）の形が典型的。" },
+    { q:"der Schluss", pos:"N", opts:["程度・規模", "結論", "対立・葛藤", "発展・展開"], ans:1, hint:"zu dem Schluss kommen（〜という結論に至る）の形が最頻出。", exp:"der Schluss＝結論。zu dem Schluss kommen（〜という結論に至る）の形が最頻出。" },
+    { q:"die Ursache", pos:"N", opts:["原因", "可能性・機会", "関係・つながり", "説明・解説"], ans:0, hint:"die Ursache des Problems（問題の原因）の形が典型的。", exp:"die Ursache＝原因。die Ursache des Problems（問題の原因）の形が典型的。" },
+    { q:"die Folge", pos:"N", opts:["結果・影響", "減少・後退", "品質・質", "不足・欠如"], ans:0, hint:"als Folge davon（その結果として）の形もよく使う。", exp:"die Folge＝結果・影響。als Folge davon（その結果として）の形もよく使う。" },
+    { q:"überlegen", pos:"V", opts:["説得する・納得させる", "考える・検討する", "表す・示す・描写する", "確認する・断言する"], ans:1, hint:"sich etw. überlegen（〜をよく考える）の再帰形が最頻出。", exp:"überlegen＝考える・検討する。sich etw. überlegen（〜をよく考える）の再帰形が最頻出。" },
+    { q:"allerdings", pos:"Adv", opts:["しかしながら・ただし", "他方では", "〜と比較して", "ほとんど〜ない"], ans:0, hint:"前文の内容を認めつつも留保を加える副詞。文頭に置くことが多い。", exp:"allerdings＝しかしながら・ただし。前文の内容を認めつつも留保を加える副詞。文頭に置くことが多い。" },
+    { q:"die Meinung", pos:"N", opts:["意味・重要性", "意見", "影響", "結果・成果"], ans:1, hint:"meiner Meinung nach（私の意見では）の形が最頻出。", exp:"die Meinung＝意見。meiner Meinung nach（私の意見では）の形が最頻出。" },
+    { q:"begründen", pos:"V", opts:["根拠を示す", "評価する", "減少する", "説得する・納得させる"], ans:0, hint:"eine Entscheidung begründen（決定の根拠を示す）の形が典型的。", exp:"begründen＝根拠を示す。eine Entscheidung begründen（決定の根拠を示す）の形が典型的。" },
+    { q:"der Grund", pos:"N", opts:["解決策", "結果・影響", "理由・根拠", "欠点・短所"], ans:2, hint:"Grund と Ursache はどちらも「理由・原因」だが、Grund は主観的な理由に使うことが多い。", exp:"der Grund＝理由・根拠。Grund と Ursache はどちらも「理由・原因」だが、Grund は主観的な理由に使うことが多い。" },
+    { q:"der Zusammenhang", pos:"N", opts:["少数・少数派", "関連・文脈", "責任", "指摘・ヒント・注意"], ans:1, hint:"in welchem Zusammenhang（どういう文脈で）の形が頻出。", exp:"der Zusammenhang＝関連・文脈。in welchem Zusammenhang（どういう文脈で）の形が頻出。" }
+  ]},
+  { label:"②変化・推移", questions:[
+    { q:"verbessern", pos:"V", opts:["評価する", "改善する", "〜と思う・考える", "強調する"], ans:1, hint:"die Situation verbessern（状況を改善する）の形が典型的。", exp:"verbessern＝改善する。die Situation verbessern（状況を改善する）の形が典型的。" },
+    { q:"zunehmen", pos:"V", opts:["維持する・保つ", "表す・示す・描写する", "増加する", "報告する・伝える"], ans:2, hint:"Die Zahl nimmt zu.（数が増加する）の形が典型的。", exp:"zunehmen＝増加する。Die Zahl nimmt zu.（数が増加する）の形が典型的。" },
+    { q:"der Fortschritt", pos:"N", opts:["不足・欠如", "関係・割合・比率", "進歩・進展", "理由・根拠"], ans:2, hint:"Fortschritte machen（進歩する）の形が最頻出。", exp:"der Fortschritt＝進歩・進展。Fortschritte machen（進歩する）の形が最頻出。" },
+    { q:"der Wandel", pos:"N", opts:["変容・変革（構造的）", "意味・重要性", "結果・論理的帰結", "側面・観点"], ans:0, hint:"sozialer Wandel のように長期的・構造的な変化に使う。", exp:"der Wandel＝変容・変革（構造的）。sozialer Wandel のように長期的・構造的な変化に使う。" },
+    { q:"die Entwicklung", pos:"N", opts:["会話・話し合い", "情報", "措置・対策", "発展・展開"], ans:3, hint:"eine positive Entwicklung（前向きな発展）の形が典型的。", exp:"die Entwicklung＝発展・展開。eine positive Entwicklung（前向きな発展）の形が典型的。" },
+    { q:"die Zunahme", pos:"N", opts:["対立・葛藤", "増加", "差異・相違", "証拠・証明"], ans:1, hint:"eine starke Zunahme（大幅な増加）の形が典型的。", exp:"die Zunahme＝増加。eine starke Zunahme（大幅な増加）の形が典型的。" },
+    { q:"beibehalten", pos:"V", opts:["防ぐ・阻止する", "維持する・保つ", "増加する", "改善する"], ans:1, hint:"einen Kurs beibehalten（方針を維持する）の形が典型的。", exp:"beibehalten＝維持する・保つ。einen Kurs beibehalten（方針を維持する）の形が典型的。" },
+    { q:"verschlechtern", pos:"V", opts:["悪化する", "減少する", "協力する", "考える・検討する"], ans:0, hint:"sich verschlechtern（悪化する）の再帰形が最頻出。", exp:"verschlechtern＝悪化する。sich verschlechtern（悪化する）の再帰形が最頻出。" },
+    { q:"abnehmen", pos:"V", opts:["確認する・断言する", "証明する・立証する", "協力する", "減少する"], ans:3, hint:"Die Nachfrage nimmt ab.（需要が減少する）の形が典型的。", exp:"abnehmen＝減少する。Die Nachfrage nimmt ab.（需要が減少する）の形が典型的。" },
+    { q:"die Veränderung", pos:"N", opts:["平等・同等性", "価値・価値観", "結果・成果", "変化・変容"], ans:3, hint:"eine grundlegende Veränderung（根本的な変化）の形が典型的。", exp:"die Veränderung＝変化・変容。eine grundlegende Veränderung（根本的な変化）の形が典型的。" },
+    { q:"der Rückgang", pos:"N", opts:["前提条件・必要条件", "減少・後退", "理由・根拠", "課題・挑戦"], ans:1, hint:"ein deutlicher Rückgang（顕著な減少）の形が典型的。", exp:"der Rückgang＝減少・後退。ein deutlicher Rückgang（顕著な減少）の形が典型的。" },
+    { q:"allmählich", pos:"Adv", opts:["次第に・ますます", "まったく・十分に", "徐々に", "概して・全体的に見て"], ans:2, hint:"allmählich besser werden（徐々によくなる）の形が典型的。", exp:"allmählich＝徐々に。allmählich besser werden（徐々によくなる）の形が典型的。" }
+  ]},
+  { label:"③評価・判断", questions:[
+    { q:"bedeutend", pos:"Adj", opts:["重要な・著しい", "論理的な", "明確な・はっきりした", "相当な・著しい"], ans:0, hint:"eine bedeutende Rolle spielen（重要な役割を果たす）の形が典型的。", exp:"bedeutend＝重要な・著しい。eine bedeutende Rolle spielen（重要な役割を果たす）の形が典型的。" },
+    { q:"der Vergleich", pos:"N", opts:["少数・少数派", "利点・長所", "比較", "関係・つながり"], ans:2, hint:"im Vergleich zu（〜と比較して）の形で最頻出。", exp:"der Vergleich＝比較。im Vergleich zu（〜と比較して）の形で最頻出。" },
+    { q:"bewerten", pos:"V", opts:["証明する・立証する", "高める・増やす", "評価する", "考慮する・踏まえる"], ans:2, hint:"etw. positiv bewerten（〜を肯定的に評価する）の形が典型的。", exp:"bewerten＝評価する。etw. positiv bewerten（〜を肯定的に評価する）の形が典型的。" },
+    { q:"der Wert", pos:"N", opts:["社会", "価値・価値観", "困難・難しさ", "関連・文脈"], ans:1, hint:"einen hohen Wert legen auf（〜を重視する）の形が典型的。", exp:"der Wert＝価値・価値観。einen hohen Wert legen auf（〜を重視する）の形が典型的。" },
+    { q:"die Kritik", pos:"N", opts:["平等・同等性", "批判・批評", "課題・挑戦", "寛容・許容"], ans:1, hint:"Kritik üben an（〜を批判する）の形が典型的。", exp:"die Kritik＝批判・批評。Kritik üben an（〜を批判する）の形が典型的。" },
+    { q:"der Nachteil", pos:"N", opts:["原因", "欠点・短所", "責任", "社会"], ans:1, hint:"Nachteile in Kauf nehmen（欠点をやむなく受け入れる）の形も重要。", exp:"der Nachteil＝欠点・短所。Nachteile in Kauf nehmen（欠点をやむなく受け入れる）の形も重要。" },
+    { q:"betonen", pos:"V", opts:["高める・増やす", "悪化する", "達成する・到達する", "強調する"], ans:3, hint:"die Wichtigkeit betonen（重要性を強調する）の形が典型的。", exp:"betonen＝強調する。die Wichtigkeit betonen（重要性を強調する）の形が典型的。" },
+    { q:"vergleichen", pos:"V", opts:["防ぐ・阻止する", "比較する", "確認する・断言する", "証明する・立証する"], ans:1, hint:"A mit B vergleichen（AとBを比較する）の形が典型的。", exp:"vergleichen＝比較する。A mit B vergleichen（AとBを比較する）の形が典型的。" },
+    { q:"die Bedeutung", pos:"N", opts:["責任", "意味・重要性", "情報", "解決策"], ans:1, hint:"von großer Bedeutung sein（大きな意味を持つ）の形が典型的。", exp:"die Bedeutung＝意味・重要性。von großer Bedeutung sein（大きな意味を持つ）の形が典型的。" },
+    { q:"die Qualität", pos:"N", opts:["批判・批評", "原因", "意味・重要性", "品質・質"], ans:3, hint:"auf Qualität achten（品質に気をつける）の形が典型的。", exp:"die Qualität＝品質・質。auf Qualität achten（品質に気をつける）の形が典型的。" },
+    { q:"der Aspekt", pos:"N", opts:["問題", "側面・観点", "欠点・短所", "立場・見地"], ans:1, hint:"alle Aspekte berücksichtigen（すべての側面を考慮する）の形が典型的。", exp:"der Aspekt＝側面・観点。alle Aspekte berücksichtigen（すべての側面を考慮する）の形が典型的。" },
+    { q:"wesentlich", pos:"Adj", opts:["緊急の・切迫した", "重要な・著しい", "論理的な", "本質的な・重要な"], ans:3, hint:"ein wesentlicher Unterschied（本質的な差異）の形が典型的。", exp:"wesentlich＝本質的な・重要な。ein wesentlicher Unterschied（本質的な差異）の形が典型的。" },
+    { q:"grundsätzlich", pos:"Adv", opts:["本質的には・主に", "それどころか・反対に", "原則的に・基本的に", "概して・全体的に見て"], ans:2, hint:"grundsätzlich einverstanden sein（基本的に同意する）の形が典型的。", exp:"grundsätzlich＝原則的に・基本的に。grundsätzlich einverstanden sein（基本的に同意する）の形が典型的。" },
+    { q:"der Vorteil", pos:"N", opts:["価値・価値観", "原因", "利点・長所", "関係・つながり"], ans:2, hint:"Vorteile und Nachteile のセットで覚えよう。", exp:"der Vorteil＝利点・長所。Vorteile und Nachteile のセットで覚えよう。" },
+    { q:"beurteilen", pos:"V", opts:["判断する", "減らす・削減する", "解決する", "協力する"], ans:0, hint:"die Lage beurteilen（状況を判断する）の形が典型的。", exp:"beurteilen＝判断する。die Lage beurteilen（状況を判断する）の形が典型的。" }
+  ]},
+  { label:"④社会・関係", questions:[
+    { q:"die Gesellschaft", pos:"N", opts:["特徴・特性", "課題・挑戦", "意味・重要性", "社会"], ans:3, hint:"die moderne Gesellschaft（現代社会）の形が典型的。", exp:"die Gesellschaft＝社会。die moderne Gesellschaft（現代社会）の形が典型的。" },
+    { q:"die Verantwortung", pos:"N", opts:["責任", "品質・質", "増加", "仮定・前提"], ans:0, hint:"Verantwortung übernehmen（責任を引き受ける）の形が最頻出。", exp:"die Verantwortung＝責任。Verantwortung übernehmen（責任を引き受ける）の形が最頻出。" },
+    { q:"das Verhältnis", pos:"N", opts:["減少・後退", "情報", "批判・批評", "関係・割合・比率"], ans:3, hint:"das Verhältnis zwischen A und B（AとBの関係）の形が典型的。", exp:"das Verhältnis＝関係・割合・比率。das Verhältnis zwischen A und B（AとBの関係）の形が典型的。" },
+    { q:"unterstützen", pos:"V", opts:["支援する", "〜と思う・考える", "認識する・気づく", "根拠を示す"], ans:0, hint:"jdn. bei etw. unterstützen（〜を支援する）の形が典型的。", exp:"unterstützen＝支援する。jdn. bei etw. unterstützen（〜を支援する）の形が典型的。" },
+    { q:"beeinflussen", pos:"V", opts:["認識する・気づく", "減らす・削減する", "影響を与える", "判断する"], ans:2, hint:"die Entscheidung beeinflussen（決定に影響を与える）の形が典型的。", exp:"beeinflussen＝影響を与える。die Entscheidung beeinflussen（決定に影響を与える）の形が典型的。" },
+    { q:"das Verhalten", pos:"N", opts:["社会", "行動・振る舞い", "進歩・進展", "程度・規模"], ans:1, hint:"das Verhalten ändern（行動を変える）の形が典型的。", exp:"das Verhalten＝行動・振る舞い。das Verhalten ändern（行動を変える）の形が典型的。" },
+    { q:"gemeinsam", pos:"Adv", opts:["まず・最初に", "原則的には（基本的には）", "共同の・一緒に", "ほとんど〜ない"], ans:2, hint:"gemeinsam handeln（共同して行動する）の形が典型的。", exp:"gemeinsam＝共同の・一緒に。gemeinsam handeln（共同して行動する）の形が典型的。" },
+    { q:"die Gemeinschaft", pos:"N", opts:["不足・欠如", "原因", "共同体・集団", "社会"], ans:2, hint:"eine internationale Gemeinschaft（国際共同体）の形が典型的。", exp:"die Gemeinschaft＝共同体・集団。eine internationale Gemeinschaft（国際共同体）の形が典型的。" },
+    { q:"die Toleranz", pos:"N", opts:["結果・影響", "品質・質", "側面・観点", "寛容・許容"], ans:3, hint:"Toleranz zeigen（寛容さを示す）の形が典型的。", exp:"die Toleranz＝寛容・許容。Toleranz zeigen（寛容さを示す）の形が典型的。" },
+    { q:"die Gleichheit", pos:"N", opts:["特徴・特性", "仮定・前提", "平等・同等性", "妥協・妥協点"], ans:2, hint:"Gleichheit vor dem Gesetz（法の前の平等）の形が典型的。", exp:"die Gleichheit＝平等・同等性。Gleichheit vor dem Gesetz（法の前の平等）の形が典型的。" },
+    { q:"zusammenarbeiten", pos:"V", opts:["協力する", "強調する", "維持する・保つ", "支援する"], ans:0, hint:"eng zusammenarbeiten（緊密に協力する）の形が典型的。", exp:"zusammenarbeiten＝協力する。eng zusammenarbeiten（緊密に協力する）の形が典型的。" },
+    { q:"die Beziehung", pos:"N", opts:["行動・振る舞い", "意見", "増加", "関係・つながり"], ans:3, hint:"eine gute Beziehung aufbauen（良い関係を築く）の形が典型的。", exp:"die Beziehung＝関係・つながり。eine gute Beziehung aufbauen（良い関係を築く）の形が典型的。" },
+    { q:"sozial", pos:"Adj", opts:["必要な・不可欠な", "論理的な", "社会的な", "客観的な・事実に即した"], ans:2, hint:"ein soziales Problem（社会的な問題）の形が典型的。", exp:"sozial＝社会的な。ein soziales Problem（社会的な問題）の形が典型的。" }
+  ]},
+  { label:"⑤問題・解決", questions:[
+    { q:"die Herausforderung", pos:"N", opts:["影響", "平等・同等性", "問題", "課題・挑戦"], ans:3, hint:"eine Herausforderung annehmen（挑戦を受け入れる）の形が典型的。", exp:"die Herausforderung＝課題・挑戦。eine Herausforderung annehmen（挑戦を受け入れる）の形が典型的。" },
+    { q:"die Voraussetzung", pos:"N", opts:["前提条件・必要条件", "仮定・前提", "品質・質", "結果・影響"], ans:0, hint:"eine wichtige Voraussetzung（重要な前提条件）の形が典型的。", exp:"die Voraussetzung＝前提条件・必要条件。eine wichtige Voraussetzung（重要な前提条件）の形が典型的。" },
+    { q:"vermeiden", pos:"V", opts:["報告する・伝える", "強調する", "避ける", "表す・示す・描写する"], ans:2, hint:"Fehler vermeiden（ミスを避ける）の形が典型的。", exp:"vermeiden＝避ける。Fehler vermeiden（ミスを避ける）の形が典型的。" },
+    { q:"der Kompromiss", pos:"N", opts:["理由・根拠", "関係・つながり", "責任", "妥協・妥協点"], ans:3, hint:"einen Kompromiss finden（妥協点を見つける）の形が典型的。", exp:"der Kompromiss＝妥協・妥協点。einen Kompromiss finden（妥協点を見つける）の形が典型的。" },
+    { q:"notwendig", pos:"Adj", opts:["それに応じた・相応の", "必要な・不可欠な", "客観的な・事実に即した", "可能な"], ans:1, hint:"notwendige Maßnahmen（必要な措置）の形が典型的。", exp:"notwendig＝必要な・不可欠な。notwendige Maßnahmen（必要な措置）の形が典型的。" },
+    { q:"lösen", pos:"V", opts:["確認する・断言する", "支援する", "〜と思う・考える", "解決する"], ans:3, hint:"ein Problem lösen（問題を解決する）の形が最頻出。", exp:"lösen＝解決する。ein Problem lösen（問題を解決する）の形が最頻出。" },
+    { q:"die Lösung", pos:"N", opts:["関係・つながり", "解決策", "可能性・機会", "情報"], ans:1, hint:"eine Lösung finden（解決策を見つける）の形が最頻出。", exp:"die Lösung＝解決策。eine Lösung finden（解決策を見つける）の形が最頻出。" },
+    { q:"die Maßnahme", pos:"N", opts:["証拠・証明", "利点・長所", "措置・対策", "側面・観点"], ans:2, hint:"Maßnahmen ergreifen（措置を講じる）の形が最頻出。", exp:"die Maßnahme＝措置・対策。Maßnahmen ergreifen（措置を講じる）の形が最頻出。" },
+    { q:"dringend", pos:"Adj", opts:["緊急の・切迫した", "重要な・著しい", "それに応じた・相応の", "論理的な"], ans:0, hint:"dringender Handlungsbedarf（緊急の行動の必要性）の形が典型的。", exp:"dringend＝緊急の・切迫した。dringender Handlungsbedarf（緊急の行動の必要性）の形が典型的。" },
+    { q:"die Schwierigkeit", pos:"N", opts:["社会", "意味・重要性", "困難・難しさ", "問題"], ans:2, hint:"Schwierigkeiten überwinden（困難を乗り越える）の形が典型的。", exp:"die Schwierigkeit＝困難・難しさ。Schwierigkeiten überwinden（困難を乗り越える）の形が典型的。" },
+    { q:"möglich", pos:"Adj", opts:["必要な・不可欠な", "緊急の・切迫した", "本質的な・重要な", "可能な"], ans:3, hint:"so schnell wie möglich（できるだけ早く）の形が最頻出。", exp:"möglich＝可能な。so schnell wie möglich（できるだけ早く）の形が最頻出。" },
+    { q:"verhindern", pos:"V", opts:["評価する", "証明する・立証する", "防ぐ・阻止する", "強調する"], ans:2, hint:"etw. zu verhindern versuchen（〜を防ごうとする）の形が典型的。", exp:"verhindern＝防ぐ・阻止する。etw. zu verhindern versuchen（〜を防ごうとする）の形が典型的。" },
+    { q:"das Problem", pos:"N", opts:["困難・難しさ", "報告・レポート", "問題", "多数・多数派"], ans:2, hint:"ein Problem lösen（問題を解決する）の形が最頻出。", exp:"das Problem＝問題。ein Problem lösen（問題を解決する）の形が最頻出。" },
+    { q:"der Konflikt", pos:"N", opts:["共同体・集団", "立場・見地", "前提条件・必要条件", "対立・葛藤"], ans:3, hint:"einen Konflikt lösen（対立を解消する）の形が典型的。", exp:"der Konflikt＝対立・葛藤。einen Konflikt lösen（対立を解消する）の形が典型的。" }
+  ]},
+  { label:"⑥情報・コミュニケーション", questions:[
+    { q:"die Aussage", pos:"N", opts:["発言・陳述", "指摘・ヒント・注意", "措置・対策", "見解"], ans:0, hint:"eine Aussage machen（発言する）の形が典型的。", exp:"die Aussage＝発言・陳述。eine Aussage machen（発言する）の形が典型的。" },
+    { q:"ausdrücklich", pos:"Adv", opts:["まったく・十分に", "明示的に・はっきりと", "互いの・相互の", "全体として・合計で"], ans:1, hint:"ausdrücklich darauf hinweisen（明示的に指摘する）の形が典型的。", exp:"ausdrücklich＝明示的に・はっきりと。ausdrücklich darauf hinweisen（明示的に指摘する）の形が典型的。" },
+    { q:"die Mitteilung", pos:"N", opts:["通知・伝言", "報告・レポート", "側面・観点", "比較"], ans:0, hint:"eine Mitteilung machen（通知する）の形が典型的。", exp:"die Mitteilung＝通知・伝言。eine Mitteilung machen（通知する）の形が典型的。" },
+    { q:"überzeugen", pos:"V", opts:["評価する", "支援する", "説得する・納得させる", "悪化する"], ans:2, hint:"jdn. von etw. überzeugen（〜を納得させる）の形が典型的。", exp:"überzeugen＝説得する・納得させる。jdn. von etw. überzeugen（〜を納得させる）の形が典型的。" },
+    { q:"der Bericht", pos:"N", opts:["通知・伝言", "批判・批評", "報告・レポート", "関連・文脈"], ans:2, hint:"einen Bericht erstellen（報告書を作成する）の形が典型的。", exp:"der Bericht＝報告・レポート。einen Bericht erstellen（報告書を作成する）の形が典型的。" },
+    { q:"der Hinweis", pos:"N", opts:["説明・解説", "指摘・ヒント・注意", "前提条件・必要条件", "例外"], ans:1, hint:"einen Hinweis geben（ヒント・注意を与える）の形が典型的。", exp:"der Hinweis＝指摘・ヒント・注意。einen Hinweis geben（ヒント・注意を与える）の形が典型的。" },
+    { q:"deutlich", pos:"Adj", opts:["論理的な", "公の・公開の", "明確な・はっきりした", "本質的な・重要な"], ans:2, hint:"deutlich machen（明確にする）の形が典型的。", exp:"deutlich＝明確な・はっきりした。deutlich machen（明確にする）の形が典型的。" },
+    { q:"die Möglichkeit", pos:"N", opts:["効果・作用", "品質・質", "可能性・機会", "差異・相違"], ans:2, hint:"die Möglichkeit haben（〜する可能性がある）の形が典型的。", exp:"die Möglichkeit＝可能性・機会。die Möglichkeit haben（〜する可能性がある）の形が典型的。" },
+    { q:"die Erklärung", pos:"N", opts:["行動・振る舞い", "説明・解説", "平等・同等性", "程度・規模"], ans:1, hint:"eine Erklärung abgeben（説明をする）の形が典型的。", exp:"die Erklärung＝説明・解説。eine Erklärung abgeben（説明をする）の形が典型的。" },
+    { q:"erklären", pos:"V", opts:["根拠を示す", "改善する", "説明する", "証明する・立証する"], ans:2, hint:"etw. genau erklären（〜を詳しく説明する）の形が典型的。", exp:"erklären＝説明する。etw. genau erklären（〜を詳しく説明する）の形が典型的。" },
+    { q:"das Gespräch", pos:"N", opts:["見解", "問題", "課題・挑戦", "会話・話し合い"], ans:3, hint:"ein Gespräch führen（話し合いを行う）の形が典型的。", exp:"das Gespräch＝会話・話し合い。ein Gespräch führen（話し合いを行う）の形が典型的。" },
+    { q:"berichten", pos:"V", opts:["確認する・断言する", "報告する・伝える", "証明する・立証する", "根拠を示す"], ans:1, hint:"über etw. berichten（〜について報告する）の形が典型的。", exp:"berichten＝報告する・伝える。über etw. berichten（〜について報告する）の形が典型的。" },
+    { q:"die Information", pos:"N", opts:["問題", "会話・話し合い", "情報", "特徴・特性"], ans:2, hint:"Informationen weitergeben（情報を伝える）の形が典型的。", exp:"die Information＝情報。Informationen weitergeben（情報を伝える）の形が典型的。" },
+    { q:"mitteilen", pos:"V", opts:["影響を与える", "悪化する", "判断する", "伝える・通知する"], ans:3, hint:"jdm. etw. mitteilen（〜に〜を伝える）の形が典型的。", exp:"mitteilen＝伝える・通知する。jdm. etw. mitteilen（〜に〜を伝える）の形が典型的。" },
+    { q:"nachweisen", pos:"V", opts:["協力する", "〜と思う・考える", "確認する・断言する", "証明する・立証する"], ans:3, hint:"wissenschaftlich nachweisen（科学的に証明する）の形が典型的。", exp:"nachweisen＝証明する・立証する。wissenschaftlich nachweisen（科学的に証明する）の形が典型的。" }
+  ]},
+  { label:"⑦量・程度", questions:[
+    { q:"kaum", pos:"Adv", opts:["ある程度", "原則的には（基本的には）", "ある意味では", "ほとんど〜ない"], ans:3, hint:"kaum möglich（ほとんど不可能）の形が典型的。", exp:"kaum＝ほとんど〜ない。kaum möglich（ほとんど不可能）の形が典型的。" },
+    { q:"der Mangel", pos:"N", opts:["共同体・集団", "説明・解説", "困難・難しさ", "不足・欠如"], ans:3, hint:"ein Mangel an Ressourcen（資源の不足）の形が典型的。", exp:"der Mangel＝不足・欠如。ein Mangel an Ressourcen（資源の不足）の形が典型的。" },
+    { q:"zunächst", pos:"Adv", opts:["まず・最初に", "したがって（論理的帰結として）", "それとは対照的に", "この理由から・したがって"], ans:0, hint:"zunächst möchte ich...（まず〜したい）の形が論述で頻出。", exp:"zunächst＝まず・最初に。zunächst möchte ich...（まず〜したい）の形が論述で頻出。" },
+    { q:"die Mehrheit", pos:"N", opts:["比較", "多数・多数派", "報告・レポート", "前提条件・必要条件"], ans:1, hint:"die Mehrheit der Bevölkerung（人口の多数）の形が典型的。", exp:"die Mehrheit＝多数・多数派。die Mehrheit der Bevölkerung（人口の多数）の形が典型的。" },
+    { q:"überwiegend", pos:"Adv", opts:["〜の観点から・〜を見据えて", "まったく・十分に", "大多数の・主として", "他方では"], ans:2, hint:"überwiegend positiv（大多数において肯定的）の形が典型的。", exp:"überwiegend＝大多数の・主として。überwiegend positiv（大多数において肯定的）の形が典型的。" },
+    { q:"zumindest", pos:"Adv", opts:["それどころか・反対に", "大多数の・主として", "少なくとも", "とりわけ・なかでも"], ans:2, hint:"zumindest versuchen（少なくとも試みる）の形が典型的。", exp:"zumindest＝少なくとも。zumindest versuchen（少なくとも試みる）の形が典型的。" },
+    { q:"insgesamt", pos:"Adv", opts:["全体として・合計で", "したがって（論理的帰結として）", "共同の・一緒に", "互いの・相互の"], ans:0, hint:"insgesamt gesehen（全体的に見て）の形が典型的。", exp:"insgesamt＝全体として・合計で。insgesamt gesehen（全体的に見て）の形が典型的。" },
+    { q:"erreichen", pos:"V", opts:["達成する・到達する", "〜と思う・考える", "比較する", "考慮する・踏まえる"], ans:0, hint:"ein Ziel erreichen（目標を達成する）の形が典型的。", exp:"erreichen＝達成する・到達する。ein Ziel erreichen（目標を達成する）の形が典型的。" },
+    { q:"erheblich", pos:"Adj", opts:["緊急の・切迫した", "相当な・著しい", "必要な・不可欠な", "社会的な"], ans:1, hint:"ein erheblicher Unterschied（著しい差異）の形が典型的。", exp:"erheblich＝相当な・著しい。ein erheblicher Unterschied（著しい差異）の形が典型的。" },
+    { q:"steigern", pos:"V", opts:["評価する", "認識する・気づく", "高める・増やす", "引き起こす・原因となる"], ans:2, hint:"die Effizienz steigern（効率を高める）の形が典型的。", exp:"steigern＝高める・増やす。die Effizienz steigern（効率を高める）の形が典型的。" },
+    { q:"der Anteil", pos:"N", opts:["側面・観点", "結果・影響", "割合・分担", "報告・レポート"], ans:2, hint:"einen hohen Anteil ausmachen（高い割合を占める）の形が典型的。", exp:"der Anteil＝割合・分担。einen hohen Anteil ausmachen（高い割合を占める）の形が典型的。" },
+    { q:"weitgehend", pos:"Adv", opts:["ほとんど〜ない", "大部分において", "それとは対照的に", "この理由から・したがって"], ans:1, hint:"weitgehend gelöst（ほぼ解決した）の形が典型的。", exp:"weitgehend＝大部分において。weitgehend gelöst（ほぼ解決した）の形が典型的。" },
+    { q:"die Minderheit", pos:"N", opts:["不足・欠如", "前提条件・必要条件", "差異・相違", "少数・少数派"], ans:3, hint:"eine sprachliche Minderheit（言語的少数派）の形が典型的。", exp:"die Minderheit＝少数・少数派。eine sprachliche Minderheit（言語的少数派）の形が典型的。" },
+    { q:"reduzieren", pos:"V", opts:["減らす・削減する", "避ける", "影響を与える", "根拠を示す"], ans:0, hint:"Kosten reduzieren（コストを削減する）の形が典型的。", exp:"reduzieren＝減らす・削減する。Kosten reduzieren（コストを削減する）の形が典型的。" },
+    { q:"das Ausmaß", pos:"N", opts:["程度・規模", "共同体・集団", "関連・文脈", "責任"], ans:0, hint:"das Ausmaß des Problems（問題の規模）の形が典型的。", exp:"das Ausmaß＝程度・規模。das Ausmaß des Problems（問題の規模）の形が典型的。" },
+    { q:"das Merkmal", pos:"N", opts:["意見", "共同体・集団", "特徴・特性", "関係・つながり"], ans:2, hint:"ein wesentliches Merkmal（本質的な特徴）の形が典型的。", exp:"das Merkmal＝特徴・特性。ein wesentliches Merkmal（本質的な特徴）の形が典型的。" }
+  ]},
+  { label:"⑧原因・結果・論述全般", questions:[
+    { q:"darstellen", pos:"V", opts:["報告する・伝える", "〜を可能にする", "証明する・立証する", "表す・示す・描写する"], ans:3, hint:"ein Problem darstellen（問題を示す）の形が典型的。", exp:"darstellen＝表す・示す・描写する。ein Problem darstellen（問題を示す）の形が典型的。" },
+    { q:"daher", pos:"Adv", opts:["そのため・したがって", "共同の・一緒に", "全体として・合計で", "根本的には・つまるところ"], ans:0, hint:"Daher ist eine Lösung notwendig. の形が典型的。", exp:"daher＝そのため・したがって。Daher ist eine Lösung notwendig. の形が典型的。" },
+    { q:"folglich", pos:"Adv", opts:["したがって（論理的帰結として）", "実際に・本当に", "少なくとも", "ほとんど〜ない"], ans:0, hint:"Folglich müssen wir handeln. の形が典型的。", exp:"folglich＝したがって（論理的帰結として）。Folglich müssen wir handeln. の形が典型的。" },
+    { q:"das Ergebnis", pos:"N", opts:["批判・批評", "関連・文脈", "結果・成果", "効果・作用"], ans:2, hint:"zu einem Ergebnis kommen（結論に達する）の形が典型的。", exp:"das Ergebnis＝結果・成果。zu einem Ergebnis kommen（結論に達する）の形が典型的。" },
+    { q:"zunehmend", pos:"Adv", opts:["まず・最初に", "次第に・ますます", "〜の観点から・〜を見据えて", "第一に・主として"], ans:1, hint:"zunehmend wichtiger werden（次第に重要になる）の形が典型的。", exp:"zunehmend＝次第に・ますます。zunehmend wichtiger werden（次第に重要になる）の形が典型的。" },
+    { q:"offensichtlich", pos:"Adv", opts:["第一に・主として", "互いの・相互の", "いずれにせよ・必ず", "明らかに・明白な"], ans:3, hint:"Das ist offensichtlich falsch. の形が典型的。", exp:"offensichtlich＝明らかに・明白な。Das ist offensichtlich falsch. の形が典型的。" },
+    { q:"der Unterschied", pos:"N", opts:["寛容・許容", "共同体・集団", "差異・相違", "結論"], ans:2, hint:"einen Unterschied machen（差異をもたらす）の形が典型的。", exp:"der Unterschied＝差異・相違。einen Unterschied machen（差異をもたらす）の形が典型的。" },
+    { q:"feststellen", pos:"V", opts:["表す・示す・描写する", "証明する・立証する", "確認する・断言する", "支援する"], ans:2, hint:"ein Problem feststellen（問題を確認する）の形が典型的。", exp:"feststellen＝確認する・断言する。ein Problem feststellen（問題を確認する）の形が典型的。" },
+    { q:"öffentlich", pos:"Adj", opts:["可能な", "社会的な", "公の・公開の", "それに応じた・相応の"], ans:2, hint:"öffentliches Interesse（公の利益）の形が典型的。", exp:"öffentlich＝公の・公開の。öffentliches Interesse（公の利益）の形が典型的。" },
+    { q:"der Einfluss", pos:"N", opts:["批判・批評", "関係・割合・比率", "影響", "増加"], ans:2, hint:"einen großen Einfluss haben auf（〜に大きな影響を持つ）の形が典型的。", exp:"der Einfluss＝影響。einen großen Einfluss haben auf（〜に大きな影響を持つ）の形が典型的。" },
+    { q:"jedenfalls", pos:"Adv", opts:["ある意味では", "いずれにせよ・とにかく", "共同の・一緒に", "徐々に"], ans:1, hint:"Jedenfalls müssen wir etwas tun. の形が典型的。", exp:"jedenfalls＝いずれにせよ・とにかく。Jedenfalls müssen wir etwas tun. の形が典型的。" },
+    { q:"berücksichtigen", pos:"V", opts:["考慮する・踏まえる", "避ける", "報告する・伝える", "〜と思う・考える"], ans:0, hint:"alle Faktoren berücksichtigen の形が典型的。", exp:"berücksichtigen＝考慮する・踏まえる。alle Faktoren berücksichtigen の形が典型的。" },
+    { q:"verursachen", pos:"V", opts:["認識する・気づく", "維持する・保つ", "影響を与える", "引き起こす・原因となる"], ans:3, hint:"Schäden verursachen（損害を引き起こす）の形が典型的。", exp:"verursachen＝引き起こす・原因となる。Schäden verursachen（損害を引き起こす）の形が典型的。" },
+    { q:"durchaus", pos:"Adv", opts:["大部分において", "まったく・十分に", "それどころか・反対に", "実際に・本当に"], ans:1, hint:"durchaus möglich（十分に可能）の形が典型的。", exp:"durchaus＝まったく・十分に。durchaus möglich（十分に可能）の形が典型的。" },
+    { q:"sachlich", pos:"Adj", opts:["客観的な・事実に即した", "可能な", "相当な・著しい", "必要な・不可欠な"], ans:0, hint:"sachlich bleiben（客観的でいる）の形が典型的。", exp:"sachlich＝客観的な・事実に即した。sachlich bleiben（客観的でいる）の形が典型的。" },
+    { q:"tatsächlich", pos:"Adv", opts:["実際に・本当に", "第一に・主として", "通常・一般的に", "しかしながら・ただし"], ans:0, hint:"Das ist tatsächlich ein Problem. の形が典型的。", exp:"tatsächlich＝実際に・本当に。Das ist tatsächlich ein Problem. の形が典型的。" },
+    { q:"die Konsequenz", pos:"N", opts:["原因", "可能性・機会", "進歩・進展", "結果・論理的帰結"], ans:3, hint:"Konsequenzen ziehen（結論を引き出す）の形が典型的。", exp:"die Konsequenz＝結果・論理的帰結。Konsequenzen ziehen（結論を引き出す）の形が典型的。" },
+    { q:"entsprechend", pos:"Adj", opts:["それに応じた・相応の", "重要な・著しい", "可能な", "社会的な"], ans:0, hint:"entsprechende Maßnahmen（それに応じた措置）の形が典型的。", exp:"entsprechend＝それに応じた・相応の。entsprechende Maßnahmen（それに応じた措置）の形が典型的。" },
+    { q:"gegenseitig", pos:"Adv", opts:["互いの・相互の", "原則的に・基本的に", "ある意味では", "共同の・一緒に"], ans:0, hint:"sich gegenseitig helfen（互いに助け合う）の形が典型的。", exp:"gegenseitig＝互いの・相互の。sich gegenseitig helfen（互いに助け合う）の形が典型的。" },
+    { q:"die Ausnahme", pos:"N", opts:["例外", "報告・レポート", "責任", "変容・変革（構造的）"], ans:0, hint:"eine Ausnahme machen（例外を設ける）の形が典型的。", exp:"die Ausnahme＝例外。eine Ausnahme machen（例外を設ける）の形が典型的。" },
+    { q:"ermöglichen", pos:"V", opts:["影響を与える", "判断する", "考慮する・踏まえる", "〜を可能にする"], ans:3, hint:"neue Möglichkeiten ermöglichen の形が典型的。", exp:"ermöglichen＝〜を可能にする。neue Möglichkeiten ermöglichen の形が典型的。" },
+    { q:"beispielsweise", pos:"Adv", opts:["言い換えれば", "徐々に", "たとえば", "第一に・主として"], ans:2, hint:"beispielsweise könnte man...（たとえば〜できる）の形が典型的。", exp:"beispielsweise＝たとえば。beispielsweise könnte man...（たとえば〜できる）の形が典型的。" },
+    { q:"die Wirkung", pos:"N", opts:["関係・つながり", "効果・作用", "程度・規模", "変容・変革（構造的）"], ans:1, hint:"eine positive Wirkung haben（良い効果をもたらす）の形が典型的。", exp:"die Wirkung＝効果・作用。eine positive Wirkung haben（良い効果をもたらす）の形が典型的。" }
+  ]},
+  { label:"⑨定型表現", questions:[
+    { q:"im Prinzip", pos:"Adv", opts:["原則的には（基本的には）", "〜に関して", "部分的に・ある程度", "全体として・合計で"], ans:0, hint:"同意しつつも留保を加えるときに使う。", exp:"im Prinzip＝原則的には（基本的には）。同意しつつも留保を加えるときに使う。" },
+    { q:"in diesem Zusammenhang", pos:"Adv", opts:["明示的に・はっきりと", "これに関連して", "全体として・合計で", "いずれにせよ・必ず"], ans:1, hint:"前の話題に関連して新しい点を付け加えるときに使う。", exp:"in diesem Zusammenhang＝これに関連して。前の話題に関連して新しい点を付け加えるときに使う。" },
+    { q:"auf jeden Fall", pos:"Adv", opts:["とりわけ・なかでも", "たとえば", "この理由から・したがって", "いずれにせよ・必ず"], ans:3, hint:"条件にかかわらず確実であることを強調する。", exp:"auf jeden Fall＝いずれにせよ・必ず。条件にかかわらず確実であることを強調する。" },
+    { q:"unter anderem", pos:"Adv", opts:["とりわけ・なかでも", "次第に・ますます", "ある意味では", "原則的に・基本的に"], ans:0, hint:"複数の例の中から代表的なものを挙げるときに使う。", exp:"unter anderem＝とりわけ・なかでも。複数の例の中から代表的なものを挙げるときに使う。" },
+    { q:"zum Teil", pos:"Adv", opts:["しかしながら・ただし", "本質的には・主に", "部分的に・ある程度", "ある程度"], ans:2, hint:"完全ではなく一部だけ当てはまることを示す。", exp:"zum Teil＝部分的に・ある程度。完全ではなく一部だけ当てはまることを示す。" },
+    { q:"in erster Linie", pos:"Adv", opts:["第一に・主として", "いずれにせよ・とにかく", "〜の観点から・〜を見据えて", "部分的に・ある程度"], ans:0, hint:"最も重要な点を最初に述べるときに使う。", exp:"in erster Linie＝第一に・主として。最も重要な点を最初に述べるときに使う。" },
+    { q:"in Bezug auf", pos:"Adv", opts:["〜に関して", "明示的に・はっきりと", "たとえば", "少なくとも"], ans:0, hint:"特定のテーマについて話を限定するときに使う。", exp:"in Bezug auf＝〜に関して。特定のテーマについて話を限定するときに使う。" },
+    { q:"im Gegenteil", pos:"Adv", opts:["互いの・相互の", "いずれにせよ・必ず", "共同の・一緒に", "それどころか・反対に"], ans:3, hint:"前文の内容を完全に否定して逆のことを述べるときに使う。", exp:"im Gegenteil＝それどころか・反対に。前文の内容を完全に否定して逆のことを述べるときに使う。" },
+    { q:"in gewissem Sinne", pos:"Adv", opts:["他方では", "部分的に・ある程度", "実際に・本当に", "ある意味では"], ans:3, hint:"完全には同意できないが部分的には認めるときに使う。", exp:"in gewissem Sinne＝ある意味では。完全には同意できないが部分的には認めるときに使う。" },
+    { q:"im Wesentlichen", pos:"Adv", opts:["まず・最初に", "原則的に・基本的に", "本質的には・主に", "したがって（論理的帰結として）"], ans:2, hint:"細部は省いて要点を述べるときに使う。", exp:"im Wesentlichen＝本質的には・主に。細部は省いて要点を述べるときに使う。" },
+    { q:"im Hinblick auf", pos:"Adv", opts:["実際に・本当に", "〜の観点から・〜を見据えて", "とりわけ・なかでも", "互いの・相互の"], ans:1, hint:"ある目的・視点から考えるときに使う。", exp:"im Hinblick auf＝〜の観点から・〜を見据えて。ある目的・視点から考えるときに使う。" },
+    { q:"im Gegensatz dazu", pos:"Adv", opts:["たとえば", "通常・一般的に", "それどころか・反対に", "それとは対照的に"], ans:3, hint:"二つのものを対比するときに使う。", exp:"im Gegensatz dazu＝それとは対照的に。二つのものを対比するときに使う。" },
+    { q:"auf der anderen Seite", pos:"Adv", opts:["少なくとも", "〜と比較して", "それどころか・反対に", "他方では"], ans:3, hint:"einerseits...andererseits と同様に対比を示す。", exp:"auf der anderen Seite＝他方では。einerseits...andererseits と同様に対比を示す。" },
+    { q:"im Großen und Ganzen", pos:"Adv", opts:["概して・全体的に見て", "それどころか・反対に", "他方では", "それとは対照的に"], ans:0, hint:"細かい点には触れず全体的な評価を述べるときに使う。", exp:"im Großen und Ganzen＝概して・全体的に見て。細かい点には触れず全体的な評価を述べるときに使う。" },
+    { q:"im Vergleich zu", pos:"Adv", opts:["〜と比較して", "たとえば", "まず・最初に", "根本的には・つまるところ"], ans:0, hint:"二つのものを比較するときに使う。", exp:"im Vergleich zu＝〜と比較して。二つのものを比較するときに使う。" },
+    { q:"aus diesem Grund", pos:"Adv", opts:["ある意味では", "それどころか・反対に", "この理由から・したがって", "第一に・主として"], ans:2, hint:"前文の理由を受けて結論を述べるときに使う。", exp:"aus diesem Grund＝この理由から・したがって。前文の理由を受けて結論を述べるときに使う。" },
+    { q:"in der Regel", pos:"Adv", opts:["とりわけ・なかでも", "明らかに・明白な", "根本的には・つまるところ", "通常・一般的に"], ans:3, hint:"例外を認めつつも一般的な傾向を述べるときに使う。", exp:"in der Regel＝通常・一般的に。例外を認めつつも一般的な傾向を述べるときに使う。" },
+    { q:"mit anderen Worten", pos:"Adv", opts:["言い換えれば", "明らかに・明白な", "共同の・一緒に", "通常・一般的に"], ans:0, hint:"前文の内容を別の言い方で説明するときに使う。", exp:"mit anderen Worten＝言い換えれば。前文の内容を別の言い方で説明するときに使う。" },
+    { q:"in gewissem Maße", pos:"Adv", opts:["しかしながら・ただし", "〜に関して", "ある程度", "互いの・相互の"], ans:2, hint:"完全ではないが部分的に当てはまることを示す。", exp:"in gewissem Maße＝ある程度。完全ではないが部分的に当てはまることを示す。" },
+    { q:"im Grunde", pos:"Adv", opts:["共同の・一緒に", "それどころか・反対に", "いずれにせよ・必ず", "根本的には・つまるところ"], ans:3, hint:"議論の核心を述べるときに使う。im Grunde genommen の形も頻出。", exp:"im Grunde＝根本的には・つまるところ。議論の核心を述べるときに使う。im Grunde genommen の形も頻出。" }
+  ]}
+];
+
+const allQuestions = [
+    { q:"zumindest", pos:"Adv", opts:["少なくとも", "明示的に・はっきりと", "原則的に・基本的に", "他方では"], ans:0, hint:"zumindest versuchen（少なくとも試みる）の形が典型的。", exp:"zumindest＝少なくとも。zumindest versuchen（少なくとも試みる）の形が典型的。" },
+    { q:"der Anteil", pos:"N", opts:["割合・分担", "進歩・進展", "会話・話し合い", "平等・同等性"], ans:0, hint:"einen hohen Anteil ausmachen（高い割合を占める）の形が典型的。", exp:"der Anteil＝割合・分担。einen hohen Anteil ausmachen（高い割合を占める）の形が典型的。" },
+    { q:"die Voraussetzung", pos:"N", opts:["前提条件・必要条件", "寛容・許容", "関係・つながり", "情報"], ans:0, hint:"eine wichtige Voraussetzung（重要な前提条件）の形が典型的。", exp:"die Voraussetzung＝前提条件・必要条件。eine wichtige Voraussetzung（重要な前提条件）の形が典型的。" },
+    { q:"das Ergebnis", pos:"N", opts:["結果・成果", "割合・分担", "前提条件・必要条件", "問題"], ans:0, hint:"zu einem Ergebnis kommen（結論に達する）の形が典型的。", exp:"das Ergebnis＝結果・成果。zu einem Ergebnis kommen（結論に達する）の形が典型的。" },
+    { q:"im Gegensatz dazu", pos:"Adv", opts:["他方では", "共同の・一緒に", "それとは対照的に", "ある程度"], ans:2, hint:"二つのものを対比するときに使う。", exp:"im Gegensatz dazu＝それとは対照的に。二つのものを対比するときに使う。" },
+    { q:"möglich", pos:"Adj", opts:["それに応じた・相応の", "明確な・はっきりした", "社会的な", "可能な"], ans:3, hint:"so schnell wie möglich（できるだけ早く）の形が最頻出。", exp:"möglich＝可能な。so schnell wie möglich（できるだけ早く）の形が最頻出。" },
+    { q:"folglich", pos:"Adv", opts:["〜の観点から・〜を見据えて", "それとは対照的に", "したがって（論理的帰結として）", "ほとんど〜ない"], ans:2, hint:"Folglich müssen wir handeln. の形が典型的。", exp:"folglich＝したがって（論理的帰結として）。Folglich müssen wir handeln. の形が典型的。" },
+    { q:"erheblich", pos:"Adj", opts:["客観的な・事実に即した", "相当な・著しい", "明確な・はっきりした", "可能な"], ans:1, hint:"ein erheblicher Unterschied（著しい差異）の形が典型的。", exp:"erheblich＝相当な・著しい。ein erheblicher Unterschied（著しい差異）の形が典型的。" },
+    { q:"erkennen", pos:"V", opts:["認識する・気づく", "〜を可能にする", "維持する・保つ", "評価する"], ans:0, hint:"ein Problem erkennen（問題に気づく）の形が典型的。", exp:"erkennen＝認識する・気づく。ein Problem erkennen（問題に気づく）の形が典型的。" },
+    { q:"zum Teil", pos:"Adv", opts:["概して・全体的に見て", "ある程度", "いずれにせよ・必ず", "部分的に・ある程度"], ans:3, hint:"完全ではなく一部だけ当てはまることを示す。", exp:"zum Teil＝部分的に・ある程度。完全ではなく一部だけ当てはまることを示す。" },
+    { q:"die Maßnahme", pos:"N", opts:["仮定・前提", "立場・見地", "行動・振る舞い", "措置・対策"], ans:3, hint:"Maßnahmen ergreifen（措置を講じる）の形が最頻出。", exp:"die Maßnahme＝措置・対策。Maßnahmen ergreifen（措置を講じる）の形が最頻出。" },
+    { q:"vermeiden", pos:"V", opts:["報告する・伝える", "避ける", "解決する", "説得する・納得させる"], ans:1, hint:"Fehler vermeiden（ミスを避ける）の形が典型的。", exp:"vermeiden＝避ける。Fehler vermeiden（ミスを避ける）の形が典型的。" },
+    { q:"der Nachteil", pos:"N", opts:["欠点・短所", "情報", "見解", "影響"], ans:0, hint:"Nachteile in Kauf nehmen（欠点をやむなく受け入れる）の形も重要。", exp:"der Nachteil＝欠点・短所。Nachteile in Kauf nehmen（欠点をやむなく受け入れる）の形も重要。" },
+    { q:"die Beziehung", pos:"N", opts:["解決策", "不足・欠如", "影響", "関係・つながり"], ans:3, hint:"eine gute Beziehung aufbauen（良い関係を築く）の形が典型的。", exp:"die Beziehung＝関係・つながり。eine gute Beziehung aufbauen（良い関係を築く）の形が典型的。" },
+    { q:"ausdrücklich", pos:"Adv", opts:["概して・全体的に見て", "〜の観点から・〜を見据えて", "原則的には（基本的には）", "明示的に・はっきりと"], ans:3, hint:"ausdrücklich darauf hinweisen（明示的に指摘する）の形が典型的。", exp:"ausdrücklich＝明示的に・はっきりと。ausdrücklich darauf hinweisen（明示的に指摘する）の形が典型的。" },
+    { q:"das Verhalten", pos:"N", opts:["行動・振る舞い", "理由・根拠", "程度・規模", "変化・変容"], ans:0, hint:"das Verhalten ändern（行動を変える）の形が典型的。", exp:"das Verhalten＝行動・振る舞い。das Verhalten ändern（行動を変える）の形が典型的。" },
+    { q:"die Herausforderung", pos:"N", opts:["割合・分担", "社会", "課題・挑戦", "影響"], ans:2, hint:"eine Herausforderung annehmen（挑戦を受け入れる）の形が典型的。", exp:"die Herausforderung＝課題・挑戦。eine Herausforderung annehmen（挑戦を受け入れる）の形が典型的。" },
+    { q:"erklären", pos:"V", opts:["証明する・立証する", "考える・検討する", "説明する", "減らす・削減する"], ans:2, hint:"etw. genau erklären（〜を詳しく説明する）の形が典型的。", exp:"erklären＝説明する。etw. genau erklären（〜を詳しく説明する）の形が典型的。" },
+    { q:"das Ausmaß", pos:"N", opts:["解決策", "例外", "程度・規模", "証拠・証明"], ans:2, hint:"das Ausmaß des Problems（問題の規模）の形が典型的。", exp:"das Ausmaß＝程度・規模。das Ausmaß des Problems（問題の規模）の形が典型的。" },
+    { q:"in gewissem Sinne", pos:"Adv", opts:["原則的には（基本的には）", "ある意味では", "概して・全体的に見て", "たとえば"], ans:1, hint:"完全には同意できないが部分的には認めるときに使う。", exp:"in gewissem Sinne＝ある意味では。完全には同意できないが部分的には認めるときに使う。" },
+    { q:"die Gemeinschaft", pos:"N", opts:["結果・論理的帰結", "共同体・集団", "問題", "妥協・妥協点"], ans:1, hint:"eine internationale Gemeinschaft（国際共同体）の形が典型的。", exp:"die Gemeinschaft＝共同体・集団。eine internationale Gemeinschaft（国際共同体）の形が典型的。" },
+    { q:"die Ansicht", pos:"N", opts:["指摘・ヒント・注意", "利点・長所", "効果・作用", "見解"], ans:3, hint:"meiner Ansicht nach は Meinung よりフォーマル。", exp:"die Ansicht＝見解。meiner Ansicht nach は Meinung よりフォーマル。" },
+    { q:"verbessern", pos:"V", opts:["証明する・立証する", "支援する", "強調する", "改善する"], ans:3, hint:"die Situation verbessern（状況を改善する）の形が典型的。", exp:"verbessern＝改善する。die Situation verbessern（状況を改善する）の形が典型的。" },
+    { q:"im Grunde", pos:"Adv", opts:["第一に・主として", "根本的には・つまるところ", "ある程度", "明示的に・はっきりと"], ans:1, hint:"議論の核心を述べるときに使う。im Grunde genommen の形も頻出。", exp:"im Grunde＝根本的には・つまるところ。議論の核心を述べるときに使う。im Grunde genommen の形も頻出。" },
+    { q:"im Hinblick auf", pos:"Adv", opts:["〜の観点から・〜を見据えて", "そのため・したがって", "互いの・相互の", "したがって（論理的帰結として）"], ans:0, hint:"ある目的・視点から考えるときに使う。", exp:"im Hinblick auf＝〜の観点から・〜を見据えて。ある目的・視点から考えるときに使う。" },
+    { q:"steigern", pos:"V", opts:["証明する・立証する", "協力する", "比較する", "高める・増やす"], ans:3, hint:"die Effizienz steigern（効率を高める）の形が典型的。", exp:"steigern＝高める・増やす。die Effizienz steigern（効率を高める）の形が典型的。" },
+    { q:"kaum", pos:"Adv", opts:["したがって（論理的帰結として）", "ほとんど〜ない", "本質的には・主に", "大部分において"], ans:1, hint:"kaum möglich（ほとんど不可能）の形が典型的。", exp:"kaum＝ほとんど〜ない。kaum möglich（ほとんど不可能）の形が典型的。" },
+    { q:"begründen", pos:"V", opts:["根拠を示す", "伝える・通知する", "支援する", "改善する"], ans:0, hint:"eine Entscheidung begründen（決定の根拠を示す）の形が典型的。", exp:"begründen＝根拠を示す。eine Entscheidung begründen（決定の根拠を示す）の形が典型的。" },
+    { q:"überzeugen", pos:"V", opts:["高める・増やす", "改善する", "説得する・納得させる", "達成する・到達する"], ans:2, hint:"jdn. von etw. überzeugen（〜を納得させる）の形が典型的。", exp:"überzeugen＝説得する・納得させる。jdn. von etw. überzeugen（〜を納得させる）の形が典型的。" },
+    { q:"insgesamt", pos:"Adv", opts:["たとえば", "全体として・合計で", "互いの・相互の", "概して・全体的に見て"], ans:1, hint:"insgesamt gesehen（全体的に見て）の形が典型的。", exp:"insgesamt＝全体として・合計で。insgesamt gesehen（全体的に見て）の形が典型的。" },
+    { q:"der Aspekt", pos:"N", opts:["原因", "寛容・許容", "報告・レポート", "側面・観点"], ans:3, hint:"alle Aspekte berücksichtigen（すべての側面を考慮する）の形が典型的。", exp:"der Aspekt＝側面・観点。alle Aspekte berücksichtigen（すべての側面を考慮する）の形が典型的。" },
+    { q:"der Schluss", pos:"N", opts:["結果・成果", "責任", "価値・価値観", "結論"], ans:3, hint:"zu dem Schluss kommen（〜という結論に至る）の形が最頻出。", exp:"der Schluss＝結論。zu dem Schluss kommen（〜という結論に至る）の形が最頻出。" },
+    { q:"auf der anderen Seite", pos:"Adv", opts:["全体として・合計で", "通常・一般的に", "他方では", "部分的に・ある程度"], ans:2, hint:"einerseits...andererseits と同様に対比を示す。", exp:"auf der anderen Seite＝他方では。einerseits...andererseits と同様に対比を示す。" },
+    { q:"in der Regel", pos:"Adv", opts:["原則的には（基本的には）", "通常・一般的に", "共同の・一緒に", "それとは対照的に"], ans:1, hint:"例外を認めつつも一般的な傾向を述べるときに使う。", exp:"in der Regel＝通常・一般的に。例外を認めつつも一般的な傾向を述べるときに使う。" },
+    { q:"gegenseitig", pos:"Adv", opts:["それとは対照的に", "〜に関して", "実際に・本当に", "互いの・相互の"], ans:3, hint:"sich gegenseitig helfen（互いに助け合う）の形が典型的。", exp:"gegenseitig＝互いの・相互の。sich gegenseitig helfen（互いに助け合う）の形が典型的。" },
+    { q:"der Vergleich", pos:"N", opts:["割合・分担", "多数・多数派", "比較", "可能性・機会"], ans:2, hint:"im Vergleich zu（〜と比較して）の形で最頻出。", exp:"der Vergleich＝比較。im Vergleich zu（〜と比較して）の形で最頻出。" },
+    { q:"vergleichen", pos:"V", opts:["解決する", "証明する・立証する", "比較する", "表す・示す・描写する"], ans:2, hint:"A mit B vergleichen（AとBを比較する）の形が典型的。", exp:"vergleichen＝比較する。A mit B vergleichen（AとBを比較する）の形が典型的。" },
+    { q:"in erster Linie", pos:"Adv", opts:["大部分において", "徐々に", "第一に・主として", "通常・一般的に"], ans:2, hint:"最も重要な点を最初に述べるときに使う。", exp:"in erster Linie＝第一に・主として。最も重要な点を最初に述べるときに使う。" },
+    { q:"das Problem", pos:"N", opts:["問題", "責任", "平等・同等性", "品質・質"], ans:0, hint:"ein Problem lösen（問題を解決する）の形が最頻出。", exp:"das Problem＝問題。ein Problem lösen（問題を解決する）の形が最頻出。" },
+    { q:"auf jeden Fall", pos:"Adv", opts:["部分的に・ある程度", "とりわけ・なかでも", "根本的には・つまるところ", "いずれにせよ・必ず"], ans:3, hint:"条件にかかわらず確実であることを強調する。", exp:"auf jeden Fall＝いずれにせよ・必ず。条件にかかわらず確実であることを強調する。" },
+    { q:"zunehmend", pos:"Adv", opts:["そのため・したがって", "次第に・ますます", "明示的に・はっきりと", "原則的には（基本的には）"], ans:1, hint:"zunehmend wichtiger werden（次第に重要になる）の形が典型的。", exp:"zunehmend＝次第に・ますます。zunehmend wichtiger werden（次第に重要になる）の形が典型的。" },
+    { q:"jedenfalls", pos:"Adv", opts:["ある程度", "ある意味では", "いずれにせよ・とにかく", "概して・全体的に見て"], ans:2, hint:"Jedenfalls müssen wir etwas tun. の形が典型的。", exp:"jedenfalls＝いずれにせよ・とにかく。Jedenfalls müssen wir etwas tun. の形が典型的。" },
+    { q:"im Großen und Ganzen", pos:"Adv", opts:["第一に・主として", "概して・全体的に見て", "原則的に・基本的に", "いずれにせよ・とにかく"], ans:1, hint:"細かい点には触れず全体的な評価を述べるときに使う。", exp:"im Großen und Ganzen＝概して・全体的に見て。細かい点には触れず全体的な評価を述べるときに使う。" },
+    { q:"die Mehrheit", pos:"N", opts:["少数・少数派", "多数・多数派", "欠点・短所", "意見"], ans:1, hint:"die Mehrheit der Bevölkerung（人口の多数）の形が典型的。", exp:"die Mehrheit＝多数・多数派。die Mehrheit der Bevölkerung（人口の多数）の形が典型的。" },
+    { q:"der Unterschied", pos:"N", opts:["理由・根拠", "説明・解説", "差異・相違", "変容・変革（構造的）"], ans:2, hint:"einen Unterschied machen（差異をもたらす）の形が典型的。", exp:"der Unterschied＝差異・相違。einen Unterschied machen（差異をもたらす）の形が典型的。" },
+    { q:"die Minderheit", pos:"N", opts:["少数・少数派", "品質・質", "仮定・前提", "効果・作用"], ans:0, hint:"eine sprachliche Minderheit（言語的少数派）の形が典型的。", exp:"die Minderheit＝少数・少数派。eine sprachliche Minderheit（言語的少数派）の形が典型的。" },
+    { q:"zunächst", pos:"Adv", opts:["実際に・本当に", "まず・最初に", "〜に関して", "いずれにせよ・必ず"], ans:1, hint:"zunächst möchte ich...（まず〜したい）の形が論述で頻出。", exp:"zunächst＝まず・最初に。zunächst möchte ich...（まず〜したい）の形が論述で頻出。" },
+    { q:"die Ausnahme", pos:"N", opts:["例外", "意味・重要性", "通知・伝言", "関係・割合・比率"], ans:0, hint:"eine Ausnahme machen（例外を設ける）の形が典型的。", exp:"die Ausnahme＝例外。eine Ausnahme machen（例外を設ける）の形が典型的。" },
+    { q:"bedeutend", pos:"Adj", opts:["客観的な・事実に即した", "明確な・はっきりした", "緊急の・切迫した", "重要な・著しい"], ans:3, hint:"eine bedeutende Rolle spielen（重要な役割を果たす）の形が典型的。", exp:"bedeutend＝重要な・著しい。eine bedeutende Rolle spielen（重要な役割を果たす）の形が典型的。" },
+    { q:"deutlich", pos:"Adj", opts:["相当な・著しい", "客観的な・事実に即した", "必要な・不可欠な", "明確な・はっきりした"], ans:3, hint:"deutlich machen（明確にする）の形が典型的。", exp:"deutlich＝明確な・はっきりした。deutlich machen（明確にする）の形が典型的。" },
+    { q:"berichten", pos:"V", opts:["高める・増やす", "協力する", "報告する・伝える", "比較する"], ans:2, hint:"über etw. berichten（〜について報告する）の形が典型的。", exp:"berichten＝報告する・伝える。über etw. berichten（〜について報告する）の形が典型的。" },
+    { q:"der Mangel", pos:"N", opts:["不足・欠如", "比較", "効果・作用", "会話・話し合い"], ans:0, hint:"ein Mangel an Ressourcen（資源の不足）の形が典型的。", exp:"der Mangel＝不足・欠如。ein Mangel an Ressourcen（資源の不足）の形が典型的。" },
+    { q:"die Gesellschaft", pos:"N", opts:["説明・解説", "関連・文脈", "社会", "結果・成果"], ans:2, hint:"die moderne Gesellschaft（現代社会）の形が典型的。", exp:"die Gesellschaft＝社会。die moderne Gesellschaft（現代社会）の形が典型的。" },
+    { q:"die Folge", pos:"N", opts:["特徴・特性", "解決策", "証拠・証明", "結果・影響"], ans:3, hint:"als Folge davon（その結果として）の形もよく使う。", exp:"die Folge＝結果・影響。als Folge davon（その結果として）の形もよく使う。" },
+    { q:"überlegen", pos:"V", opts:["高める・増やす", "〜と思う・考える", "考える・検討する", "解決する"], ans:2, hint:"sich etw. überlegen（〜をよく考える）の再帰形が最頻出。", exp:"überlegen＝考える・検討する。sich etw. überlegen（〜をよく考える）の再帰形が最頻出。" },
+    { q:"das Verhältnis", pos:"N", opts:["効果・作用", "可能性・機会", "例外", "関係・割合・比率"], ans:3, hint:"das Verhältnis zwischen A und B（AとBの関係）の形が典型的。", exp:"das Verhältnis＝関係・割合・比率。das Verhältnis zwischen A und B（AとBの関係）の形が典型的。" },
+    { q:"feststellen", pos:"V", opts:["確認する・断言する", "評価する", "伝える・通知する", "維持する・保つ"], ans:0, hint:"ein Problem feststellen（問題を確認する）の形が典型的。", exp:"feststellen＝確認する・断言する。ein Problem feststellen（問題を確認する）の形が典型的。" },
+    { q:"überwiegend", pos:"Adv", opts:["大多数の・主として", "ほとんど〜ない", "まったく・十分に", "明示的に・はっきりと"], ans:0, hint:"überwiegend positiv（大多数において肯定的）の形が典型的。", exp:"überwiegend＝大多数の・主として。überwiegend positiv（大多数において肯定的）の形が典型的。" },
+    { q:"der Beweis", pos:"N", opts:["証拠・証明", "批判・批評", "効果・作用", "妥協・妥協点"], ans:0, hint:"einen Beweis liefern（証拠を示す）の形が典型的。", exp:"der Beweis＝証拠・証明。einen Beweis liefern（証拠を示す）の形が典型的。" },
+    { q:"offensichtlich", pos:"Adv", opts:["ある程度", "実際に・本当に", "根本的には・つまるところ", "明らかに・明白な"], ans:3, hint:"Das ist offensichtlich falsch. の形が典型的。", exp:"offensichtlich＝明らかに・明白な。Das ist offensichtlich falsch. の形が典型的。" },
+    { q:"der Vorteil", pos:"N", opts:["割合・分担", "原因", "利点・長所", "行動・振る舞い"], ans:2, hint:"Vorteile und Nachteile のセットで覚えよう。", exp:"der Vorteil＝利点・長所。Vorteile und Nachteile のセットで覚えよう。" },
+    { q:"mit anderen Worten", pos:"Adv", opts:["ほとんど〜ない", "言い換えれば", "全体として・合計で", "〜と比較して"], ans:1, hint:"前文の内容を別の言い方で説明するときに使う。", exp:"mit anderen Worten＝言い換えれば。前文の内容を別の言い方で説明するときに使う。" },
+    { q:"aus diesem Grund", pos:"Adv", opts:["とりわけ・なかでも", "この理由から・したがって", "これに関連して", "〜と比較して"], ans:1, hint:"前文の理由を受けて結論を述べるときに使う。", exp:"aus diesem Grund＝この理由から・したがって。前文の理由を受けて結論を述べるときに使う。" },
+    { q:"meinen", pos:"V", opts:["維持する・保つ", "〜と思う・考える", "強調する", "防ぐ・阻止する"], ans:1, hint:"Was meinen Sie dazu?（それについてどう思いますか）の形が典型的。", exp:"meinen＝〜と思う・考える。Was meinen Sie dazu?（それについてどう思いますか）の形が典型的。" },
+    { q:"die Meinung", pos:"N", opts:["仮定・前提", "共同体・集団", "意見", "説明・解説"], ans:2, hint:"meiner Meinung nach（私の意見では）の形が最頻出。", exp:"die Meinung＝意見。meiner Meinung nach（私の意見では）の形が最頻出。" },
+    { q:"weitgehend", pos:"Adv", opts:["まったく・十分に", "しかしながら・ただし", "大部分において", "概して・全体的に見て"], ans:2, hint:"weitgehend gelöst（ほぼ解決した）の形が典型的。", exp:"weitgehend＝大部分において。weitgehend gelöst（ほぼ解決した）の形が典型的。" },
+    { q:"die Entwicklung", pos:"N", opts:["可能性・機会", "理由・根拠", "減少・後退", "発展・展開"], ans:3, hint:"eine positive Entwicklung（前向きな発展）の形が典型的。", exp:"die Entwicklung＝発展・展開。eine positive Entwicklung（前向きな発展）の形が典型的。" },
+    { q:"sachlich", pos:"Adj", opts:["必要な・不可欠な", "客観的な・事実に即した", "論理的な", "相当な・著しい"], ans:1, hint:"sachlich bleiben（客観的でいる）の形が典型的。", exp:"sachlich＝客観的な・事実に即した。sachlich bleiben（客観的でいる）の形が典型的。" },
+    { q:"der Standpunkt", pos:"N", opts:["立場・見地", "少数・少数派", "効果・作用", "利点・長所"], ans:0, hint:"von meinem Standpunkt aus（私の立場からは）の形でよく使う。", exp:"der Standpunkt＝立場・見地。von meinem Standpunkt aus（私の立場からは）の形でよく使う。" },
+    { q:"die Wirkung", pos:"N", opts:["批判・批評", "発言・陳述", "効果・作用", "会話・話し合い"], ans:2, hint:"eine positive Wirkung haben（良い効果をもたらす）の形が典型的。", exp:"die Wirkung＝効果・作用。eine positive Wirkung haben（良い効果をもたらす）の形が典型的。" },
+    { q:"beurteilen", pos:"V", opts:["伝える・通知する", "減らす・削減する", "悪化する", "判断する"], ans:3, hint:"die Lage beurteilen（状況を判断する）の形が典型的。", exp:"beurteilen＝判断する。die Lage beurteilen（状況を判断する）の形が典型的。" },
+    { q:"in gewissem Maße", pos:"Adv", opts:["まったく・十分に", "大多数の・主として", "原則的に・基本的に", "ある程度"], ans:3, hint:"完全ではないが部分的に当てはまることを示す。", exp:"in gewissem Maße＝ある程度。完全ではないが部分的に当てはまることを示す。" },
+    { q:"allmählich", pos:"Adv", opts:["それどころか・反対に", "全体として・合計で", "しかしながら・ただし", "徐々に"], ans:3, hint:"allmählich besser werden（徐々によくなる）の形が典型的。", exp:"allmählich＝徐々に。allmählich besser werden（徐々によくなる）の形が典型的。" },
+    { q:"tatsächlich", pos:"Adv", opts:["まったく・十分に", "実際に・本当に", "〜の観点から・〜を見据えて", "それとは対照的に"], ans:1, hint:"Das ist tatsächlich ein Problem. の形が典型的。", exp:"tatsächlich＝実際に・本当に。Das ist tatsächlich ein Problem. の形が典型的。" },
+    { q:"durchaus", pos:"Adv", opts:["この理由から・したがって", "まったく・十分に", "原則的には（基本的には）", "いずれにせよ・必ず"], ans:1, hint:"durchaus möglich（十分に可能）の形が典型的。", exp:"durchaus＝まったく・十分に。durchaus möglich（十分に可能）の形が典型的。" },
+    { q:"dringend", pos:"Adj", opts:["緊急の・切迫した", "相当な・著しい", "必要な・不可欠な", "客観的な・事実に即した"], ans:0, hint:"dringender Handlungsbedarf（緊急の行動の必要性）の形が典型的。", exp:"dringend＝緊急の・切迫した。dringender Handlungsbedarf（緊急の行動の必要性）の形が典型的。" },
+    { q:"verschlechtern", pos:"V", opts:["防ぐ・阻止する", "悪化する", "考慮する・踏まえる", "報告する・伝える"], ans:1, hint:"sich verschlechtern（悪化する）の再帰形が最頻出。", exp:"verschlechtern＝悪化する。sich verschlechtern（悪化する）の再帰形が最頻出。" },
+    { q:"sozial", pos:"Adj", opts:["可能な", "本質的な・重要な", "社会的な", "明確な・はっきりした"], ans:2, hint:"ein soziales Problem（社会的な問題）の形が典型的。", exp:"sozial＝社会的な。ein soziales Problem（社会的な問題）の形が典型的。" },
+    { q:"beibehalten", pos:"V", opts:["維持する・保つ", "避ける", "考慮する・踏まえる", "判断する"], ans:0, hint:"einen Kurs beibehalten（方針を維持する）の形が典型的。", exp:"beibehalten＝維持する・保つ。einen Kurs beibehalten（方針を維持する）の形が典型的。" },
+    { q:"zunehmen", pos:"V", opts:["増加する", "考える・検討する", "〜と思う・考える", "比較する"], ans:0, hint:"Die Zahl nimmt zu.（数が増加する）の形が典型的。", exp:"zunehmen＝増加する。Die Zahl nimmt zu.（数が増加する）の形が典型的。" },
+    { q:"die Konsequenz", pos:"N", opts:["利点・長所", "結果・論理的帰結", "関係・つながり", "関係・割合・比率"], ans:1, hint:"Konsequenzen ziehen（結論を引き出す）の形が典型的。", exp:"die Konsequenz＝結果・論理的帰結。Konsequenzen ziehen（結論を引き出す）の形が典型的。" },
+    { q:"betonen", pos:"V", opts:["引き起こす・原因となる", "強調する", "高める・増やす", "考える・検討する"], ans:1, hint:"die Wichtigkeit betonen（重要性を強調する）の形が典型的。", exp:"betonen＝強調する。die Wichtigkeit betonen（重要性を強調する）の形が典型的。" },
+    { q:"die Schwierigkeit", pos:"N", opts:["会話・話し合い", "結果・成果", "困難・難しさ", "意見"], ans:2, hint:"Schwierigkeiten überwinden（困難を乗り越える）の形が典型的。", exp:"die Schwierigkeit＝困難・難しさ。Schwierigkeiten überwinden（困難を乗り越える）の形が典型的。" },
+    { q:"lösen", pos:"V", opts:["減少する", "判断する", "解決する", "減らす・削減する"], ans:2, hint:"ein Problem lösen（問題を解決する）の形が最頻出。", exp:"lösen＝解決する。ein Problem lösen（問題を解決する）の形が最頻出。" },
+    { q:"mitteilen", pos:"V", opts:["証明する・立証する", "解決する", "伝える・通知する", "減らす・削減する"], ans:2, hint:"jdm. etw. mitteilen（〜に〜を伝える）の形が典型的。", exp:"mitteilen＝伝える・通知する。jdm. etw. mitteilen（〜に〜を伝える）の形が典型的。" },
+    { q:"grundsätzlich", pos:"Adv", opts:["たとえば", "原則的に・基本的に", "したがって（論理的帰結として）", "第一に・主として"], ans:1, hint:"grundsätzlich einverstanden sein（基本的に同意する）の形が典型的。", exp:"grundsätzlich＝原則的に・基本的に。grundsätzlich einverstanden sein（基本的に同意する）の形が典型的。" },
+    { q:"die Ursache", pos:"N", opts:["減少・後退", "結果・影響", "社会", "原因"], ans:3, hint:"die Ursache des Problems（問題の原因）の形が典型的。", exp:"die Ursache＝原因。die Ursache des Problems（問題の原因）の形が典型的。" },
+    { q:"notwendig", pos:"Adj", opts:["必要な・不可欠な", "論理的な", "社会的な", "緊急の・切迫した"], ans:0, hint:"notwendige Maßnahmen（必要な措置）の形が典型的。", exp:"notwendig＝必要な・不可欠な。notwendige Maßnahmen（必要な措置）の形が典型的。" },
+    { q:"die Annahme", pos:"N", opts:["説明・解説", "理由・根拠", "仮定・前提", "特徴・特性"], ans:2, hint:"von der Annahme ausgehen（〜という前提から出発する）の形でよく使う。", exp:"die Annahme＝仮定・前提。von der Annahme ausgehen（〜という前提から出発する）の形でよく使う。" },
+    { q:"ermöglichen", pos:"V", opts:["達成する・到達する", "避ける", "〜を可能にする", "減らす・削減する"], ans:2, hint:"neue Möglichkeiten ermöglichen の形が典型的。", exp:"ermöglichen＝〜を可能にする。neue Möglichkeiten ermöglichen の形が典型的。" },
+    { q:"der Kompromiss", pos:"N", opts:["妥協・妥協点", "理由・根拠", "結論", "結果・影響"], ans:0, hint:"einen Kompromiss finden（妥協点を見つける）の形が典型的。", exp:"der Kompromiss＝妥協・妥協点。einen Kompromiss finden（妥協点を見つける）の形が典型的。" },
+    { q:"die Veränderung", pos:"N", opts:["不足・欠如", "変化・変容", "困難・難しさ", "効果・作用"], ans:1, hint:"eine grundlegende Veränderung（根本的な変化）の形が典型的。", exp:"die Veränderung＝変化・変容。eine grundlegende Veränderung（根本的な変化）の形が典型的。" },
+    { q:"der Wert", pos:"N", opts:["発言・陳述", "特徴・特性", "価値・価値観", "責任"], ans:2, hint:"einen hohen Wert legen auf（〜を重視する）の形が典型的。", exp:"der Wert＝価値・価値観。einen hohen Wert legen auf（〜を重視する）の形が典型的。" },
+    { q:"in diesem Zusammenhang", pos:"Adv", opts:["明示的に・はっきりと", "これに関連して", "大多数の・主として", "徐々に"], ans:1, hint:"前の話題に関連して新しい点を付け加えるときに使う。", exp:"in diesem Zusammenhang＝これに関連して。前の話題に関連して新しい点を付け加えるときに使う。" },
+    { q:"unterstützen", pos:"V", opts:["防ぐ・阻止する", "説得する・納得させる", "支援する", "確認する・断言する"], ans:2, hint:"jdn. bei etw. unterstützen（〜を支援する）の形が典型的。", exp:"unterstützen＝支援する。jdn. bei etw. unterstützen（〜を支援する）の形が典型的。" },
+    { q:"verursachen", pos:"V", opts:["報告する・伝える", "〜と思う・考える", "引き起こす・原因となる", "高める・増やす"], ans:2, hint:"Schäden verursachen（損害を引き起こす）の形が典型的。", exp:"verursachen＝引き起こす・原因となる。Schäden verursachen（損害を引き起こす）の形が典型的。" },
+    { q:"logisch", pos:"Adj", opts:["相当な・著しい", "論理的な", "可能な", "客観的な・事実に即した"], ans:1, hint:"Das ist nicht logisch.（それは論理的でない）の形が典型的。", exp:"logisch＝論理的な。Das ist nicht logisch.（それは論理的でない）の形が典型的。" },
+    { q:"verhindern", pos:"V", opts:["影響を与える", "報告する・伝える", "強調する", "防ぐ・阻止する"], ans:3, hint:"etw. zu verhindern versuchen（〜を防ごうとする）の形が典型的。", exp:"verhindern＝防ぐ・阻止する。etw. zu verhindern versuchen（〜を防ごうとする）の形が典型的。" },
+    { q:"reduzieren", pos:"V", opts:["判断する", "維持する・保つ", "減らす・削減する", "報告する・伝える"], ans:2, hint:"Kosten reduzieren（コストを削減する）の形が典型的。", exp:"reduzieren＝減らす・削減する。Kosten reduzieren（コストを削減する）の形が典型的。" },
+    { q:"darstellen", pos:"V", opts:["判断する", "影響を与える", "表す・示す・描写する", "比較する"], ans:2, hint:"ein Problem darstellen（問題を示す）の形が典型的。", exp:"darstellen＝表す・示す・描写する。ein Problem darstellen（問題を示す）の形が典型的。" },
+    { q:"in Bezug auf", pos:"Adv", opts:["少なくとも", "ある程度", "次第に・ますます", "〜に関して"], ans:3, hint:"特定のテーマについて話を限定するときに使う。", exp:"in Bezug auf＝〜に関して。特定のテーマについて話を限定するときに使う。" },
+    { q:"die Information", pos:"N", opts:["少数・少数派", "影響", "結果・影響", "情報"], ans:3, hint:"Informationen weitergeben（情報を伝える）の形が典型的。", exp:"die Information＝情報。Informationen weitergeben（情報を伝える）の形が典型的。" },
+    { q:"der Zusammenhang", pos:"N", opts:["批判・批評", "多数・多数派", "関連・文脈", "品質・質"], ans:2, hint:"in welchem Zusammenhang（どういう文脈で）の形が頻出。", exp:"der Zusammenhang＝関連・文脈。in welchem Zusammenhang（どういう文脈で）の形が頻出。" },
+    { q:"im Vergleich zu", pos:"Adv", opts:["他方では", "〜と比較して", "それとは対照的に", "次第に・ますます"], ans:1, hint:"二つのものを比較するときに使う。", exp:"im Vergleich zu＝〜と比較して。二つのものを比較するときに使う。" },
+    { q:"erreichen", pos:"V", opts:["引き起こす・原因となる", "達成する・到達する", "協力する", "防ぐ・阻止する"], ans:1, hint:"ein Ziel erreichen（目標を達成する）の形が典型的。", exp:"erreichen＝達成する・到達する。ein Ziel erreichen（目標を達成する）の形が典型的。" },
+    { q:"berücksichtigen", pos:"V", opts:["改善する", "強調する", "考慮する・踏まえる", "協力する"], ans:2, hint:"alle Faktoren berücksichtigen の形が典型的。", exp:"berücksichtigen＝考慮する・踏まえる。alle Faktoren berücksichtigen の形が典型的。" },
+    { q:"das Merkmal", pos:"N", opts:["特徴・特性", "寛容・許容", "課題・挑戦", "効果・作用"], ans:0, hint:"ein wesentliches Merkmal（本質的な特徴）の形が典型的。", exp:"das Merkmal＝特徴・特性。ein wesentliches Merkmal（本質的な特徴）の形が典型的。" },
+    { q:"abnehmen", pos:"V", opts:["解決する", "証明する・立証する", "高める・増やす", "減少する"], ans:3, hint:"Die Nachfrage nimmt ab.（需要が減少する）の形が典型的。", exp:"abnehmen＝減少する。Die Nachfrage nimmt ab.（需要が減少する）の形が典型的。" },
+    { q:"nachweisen", pos:"V", opts:["説得する・納得させる", "解決する", "認識する・気づく", "証明する・立証する"], ans:3, hint:"wissenschaftlich nachweisen（科学的に証明する）の形が典型的。", exp:"nachweisen＝証明する・立証する。wissenschaftlich nachweisen（科学的に証明する）の形が典型的。" },
+    { q:"die Erklärung", pos:"N", opts:["問題", "差異・相違", "会話・話し合い", "説明・解説"], ans:3, hint:"eine Erklärung abgeben（説明をする）の形が典型的。", exp:"die Erklärung＝説明・解説。eine Erklärung abgeben（説明をする）の形が典型的。" },
+    { q:"im Gegenteil", pos:"Adv", opts:["この理由から・したがって", "他方では", "それどころか・反対に", "通常・一般的に"], ans:2, hint:"前文の内容を完全に否定して逆のことを述べるときに使う。", exp:"im Gegenteil＝それどころか・反対に。前文の内容を完全に否定して逆のことを述べるときに使う。" },
+    { q:"der Einfluss", pos:"N", opts:["説明・解説", "報告・レポート", "減少・後退", "影響"], ans:3, hint:"einen großen Einfluss haben auf（〜に大きな影響を持つ）の形が典型的。", exp:"der Einfluss＝影響。einen großen Einfluss haben auf（〜に大きな影響を持つ）の形が典型的。" },
+    { q:"die Bedeutung", pos:"N", opts:["比較", "意味・重要性", "関連・文脈", "解決策"], ans:1, hint:"von großer Bedeutung sein（大きな意味を持つ）の形が典型的。", exp:"die Bedeutung＝意味・重要性。von großer Bedeutung sein（大きな意味を持つ）の形が典型的。" },
+    { q:"gemeinsam", pos:"Adv", opts:["共同の・一緒に", "これに関連して", "原則的には（基本的には）", "いずれにせよ・必ず"], ans:0, hint:"gemeinsam handeln（共同して行動する）の形が典型的。", exp:"gemeinsam＝共同の・一緒に。gemeinsam handeln（共同して行動する）の形が典型的。" },
+    { q:"die Mitteilung", pos:"N", opts:["関連・文脈", "通知・伝言", "解決策", "仮定・前提"], ans:1, hint:"eine Mitteilung machen（通知する）の形が典型的。", exp:"die Mitteilung＝通知・伝言。eine Mitteilung machen（通知する）の形が典型的。" },
+    { q:"im Prinzip", pos:"Adv", opts:["全体として・合計で", "そのため・したがって", "原則的には（基本的には）", "通常・一般的に"], ans:2, hint:"同意しつつも留保を加えるときに使う。", exp:"im Prinzip＝原則的には（基本的には）。同意しつつも留保を加えるときに使う。" },
+    { q:"im Wesentlichen", pos:"Adv", opts:["本質的には・主に", "明らかに・明白な", "少なくとも", "まったく・十分に"], ans:0, hint:"細部は省いて要点を述べるときに使う。", exp:"im Wesentlichen＝本質的には・主に。細部は省いて要点を述べるときに使う。" },
+    { q:"der Konflikt", pos:"N", opts:["影響", "関係・割合・比率", "見解", "対立・葛藤"], ans:3, hint:"einen Konflikt lösen（対立を解消する）の形が典型的。", exp:"der Konflikt＝対立・葛藤。einen Konflikt lösen（対立を解消する）の形が典型的。" },
+    { q:"der Grund", pos:"N", opts:["理由・根拠", "関連・文脈", "減少・後退", "共同体・集団"], ans:0, hint:"Grund と Ursache はどちらも「理由・原因」だが、Grund は主観的な理由に使うことが多い。", exp:"der Grund＝理由・根拠。Grund と Ursache はどちらも「理由・原因」だが、Grund は主観的な理由に使うことが多い。" },
+    { q:"zusammenarbeiten", pos:"V", opts:["協力する", "引き起こす・原因となる", "確認する・断言する", "達成する・到達する"], ans:0, hint:"eng zusammenarbeiten（緊密に協力する）の形が典型的。", exp:"zusammenarbeiten＝協力する。eng zusammenarbeiten（緊密に協力する）の形が典型的。" },
+    { q:"der Rückgang", pos:"N", opts:["平等・同等性", "比較", "減少・後退", "意見"], ans:2, hint:"ein deutlicher Rückgang（顕著な減少）の形が典型的。", exp:"der Rückgang＝減少・後退。ein deutlicher Rückgang（顕著な減少）の形が典型的。" },
+    { q:"entsprechend", pos:"Adj", opts:["本質的な・重要な", "相当な・著しい", "社会的な", "それに応じた・相応の"], ans:3, hint:"entsprechende Maßnahmen（それに応じた措置）の形が典型的。", exp:"entsprechend＝それに応じた・相応の。entsprechende Maßnahmen（それに応じた措置）の形が典型的。" },
+    { q:"der Hinweis", pos:"N", opts:["特徴・特性", "指摘・ヒント・注意", "責任", "品質・質"], ans:1, hint:"einen Hinweis geben（ヒント・注意を与える）の形が典型的。", exp:"der Hinweis＝指摘・ヒント・注意。einen Hinweis geben（ヒント・注意を与える）の形が典型的。" },
+    { q:"bewerten", pos:"V", opts:["評価する", "強調する", "引き起こす・原因となる", "減らす・削減する"], ans:0, hint:"etw. positiv bewerten（〜を肯定的に評価する）の形が典型的。", exp:"bewerten＝評価する。etw. positiv bewerten（〜を肯定的に評価する）の形が典型的。" },
+    { q:"beispielsweise", pos:"Adv", opts:["〜の観点から・〜を見据えて", "実際に・本当に", "〜に関して", "たとえば"], ans:3, hint:"beispielsweise könnte man...（たとえば〜できる）の形が典型的。", exp:"beispielsweise＝たとえば。beispielsweise könnte man...（たとえば〜できる）の形が典型的。" },
+    { q:"das Gespräch", pos:"N", opts:["責任", "会話・話し合い", "欠点・短所", "特徴・特性"], ans:1, hint:"ein Gespräch führen（話し合いを行う）の形が典型的。", exp:"das Gespräch＝会話・話し合い。ein Gespräch führen（話し合いを行う）の形が典型的。" },
+    { q:"unter anderem", pos:"Adv", opts:["とりわけ・なかでも", "ほとんど〜ない", "そのため・したがって", "いずれにせよ・とにかく"], ans:0, hint:"複数の例の中から代表的なものを挙げるときに使う。", exp:"unter anderem＝とりわけ・なかでも。複数の例の中から代表的なものを挙げるときに使う。" },
+    { q:"die Verantwortung", pos:"N", opts:["割合・分担", "責任", "通知・伝言", "品質・質"], ans:1, hint:"Verantwortung übernehmen（責任を引き受ける）の形が最頻出。", exp:"die Verantwortung＝責任。Verantwortung übernehmen（責任を引き受ける）の形が最頻出。" },
+    { q:"beeinflussen", pos:"V", opts:["表す・示す・描写する", "判断する", "〜と思う・考える", "影響を与える"], ans:3, hint:"die Entscheidung beeinflussen（決定に影響を与える）の形が典型的。", exp:"beeinflussen＝影響を与える。die Entscheidung beeinflussen（決定に影響を与える）の形が典型的。" },
+    { q:"die Aussage", pos:"N", opts:["発言・陳述", "結果・成果", "意味・重要性", "理由・根拠"], ans:0, hint:"eine Aussage machen（発言する）の形が典型的。", exp:"die Aussage＝発言・陳述。eine Aussage machen（発言する）の形が典型的。" },
+    { q:"der Wandel", pos:"N", opts:["変容・変革（構造的）", "少数・少数派", "責任", "共同体・集団"], ans:0, hint:"sozialer Wandel のように長期的・構造的な変化に使う。", exp:"der Wandel＝変容・変革（構造的）。sozialer Wandel のように長期的・構造的な変化に使う。" },
+    { q:"daher", pos:"Adv", opts:["全体として・合計で", "そのため・したがって", "通常・一般的に", "〜の観点から・〜を見据えて"], ans:1, hint:"Daher ist eine Lösung notwendig. の形が典型的。", exp:"daher＝そのため・したがって。Daher ist eine Lösung notwendig. の形が典型的。" },
+    { q:"öffentlich", pos:"Adj", opts:["それに応じた・相応の", "公の・公開の", "重要な・著しい", "本質的な・重要な"], ans:1, hint:"öffentliches Interesse（公の利益）の形が典型的。", exp:"öffentlich＝公の・公開の。öffentliches Interesse（公の利益）の形が典型的。" },
+    { q:"die Zunahme", pos:"N", opts:["結果・成果", "増加", "程度・規模", "通知・伝言"], ans:1, hint:"eine starke Zunahme（大幅な増加）の形が典型的。", exp:"die Zunahme＝増加。eine starke Zunahme（大幅な増加）の形が典型的。" },
+    { q:"allerdings", pos:"Adv", opts:["第一に・主として", "部分的に・ある程度", "少なくとも", "しかしながら・ただし"], ans:3, hint:"前文の内容を認めつつも留保を加える副詞。文頭に置くことが多い。", exp:"allerdings＝しかしながら・ただし。前文の内容を認めつつも留保を加える副詞。文頭に置くことが多い。" },
+    { q:"die Lösung", pos:"N", opts:["証拠・証明", "解決策", "増加", "前提条件・必要条件"], ans:1, hint:"eine Lösung finden（解決策を見つける）の形が最頻出。", exp:"die Lösung＝解決策。eine Lösung finden（解決策を見つける）の形が最頻出。" },
+    { q:"der Bericht", pos:"N", opts:["理由・根拠", "結果・影響", "報告・レポート", "結果・成果"], ans:2, hint:"einen Bericht erstellen（報告書を作成する）の形が典型的。", exp:"der Bericht＝報告・レポート。einen Bericht erstellen（報告書を作成する）の形が典型的。" },
+    { q:"die Gleichheit", pos:"N", opts:["利点・長所", "特徴・特性", "多数・多数派", "平等・同等性"], ans:3, hint:"Gleichheit vor dem Gesetz（法の前の平等）の形が典型的。", exp:"die Gleichheit＝平等・同等性。Gleichheit vor dem Gesetz（法の前の平等）の形が典型的。" },
+    { q:"die Möglichkeit", pos:"N", opts:["効果・作用", "関係・つながり", "価値・価値観", "可能性・機会"], ans:3, hint:"die Möglichkeit haben（〜する可能性がある）の形が典型的。", exp:"die Möglichkeit＝可能性・機会。die Möglichkeit haben（〜する可能性がある）の形が典型的。" },
+    { q:"die Toleranz", pos:"N", opts:["社会", "寛容・許容", "発言・陳述", "仮定・前提"], ans:1, hint:"Toleranz zeigen（寛容さを示す）の形が典型的。", exp:"die Toleranz＝寛容・許容。Toleranz zeigen（寛容さを示す）の形が典型的。" },
+    { q:"die Kritik", pos:"N", opts:["仮定・前提", "批判・批評", "会話・話し合い", "比較"], ans:1, hint:"Kritik üben an（〜を批判する）の形が典型的。", exp:"die Kritik＝批判・批評。Kritik üben an（〜を批判する）の形が典型的。" },
+    { q:"der Fortschritt", pos:"N", opts:["前提条件・必要条件", "寛容・許容", "結果・影響", "進歩・進展"], ans:3, hint:"Fortschritte machen（進歩する）の形が最頻出。", exp:"der Fortschritt＝進歩・進展。Fortschritte machen（進歩する）の形が最頻出。" },
+    { q:"wesentlich", pos:"Adj", opts:["客観的な・事実に即した", "必要な・不可欠な", "本質的な・重要な", "相当な・著しい"], ans:2, hint:"ein wesentlicher Unterschied（本質的な差異）の形が典型的。", exp:"wesentlich＝本質的な・重要な。ein wesentlicher Unterschied（本質的な差異）の形が典型的。" },
+    { q:"die Qualität", pos:"N", opts:["説明・解説", "結果・論理的帰結", "側面・観点", "品質・質"], ans:3, hint:"auf Qualität achten（品質に気をつける）の形が典型的。", exp:"die Qualität＝品質・質。auf Qualität achten（品質に気をつける）の形が典型的。" }
+];
+const RANDOM_COUNT = 20;
+const posLabel = { N:"名詞", V:"動詞", Adj:"形容詞", Adv:"副詞" };
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function buildRandomSet() {
+  return { label:"ランダム", questions: shuffle(allQuestions).slice(0, RANDOM_COUNT) };
+}
+
+// ナビ用セットリスト（ランダムは動的生成）
+let currentQuestions = [];
+let cur=0, score=0, answered=false, curSetIdx=0;
+const NAV_SETS = sets.map(s=>s.label).concat(["ランダム"]);
+
+function initNav() {
+  const nav = document.getElementById('set-nav');
+  NAV_SETS.forEach((label,i) => {
+    const b = document.createElement('button');
+    const isRandom = label === "ランダム";
+    b.className = 'set-btn' + (isRandom?' random-btn':'') + (i===0?' active':'');
+    b.textContent = label;
+    b.onclick = () => selectSet(i);
+    nav.appendChild(b);
+  });
+}
+
+function selectSet(i) {
+  curSetIdx=i; cur=0; score=0; answered=false;
+  document.querySelectorAll('.set-btn').forEach((b,j)=>{
+    const isRandom = NAV_SETS[j]==="ランダム";
+    b.className='set-btn'+(isRandom?' random-btn':'')+(j===i?' active':'');
+  });
+  if (NAV_SETS[i]==="ランダム") {
+    currentQuestions = buildRandomSet().questions;
+  } else {
+    currentQuestions = sets[i].questions;
+  }
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  render();
+}
+
+function render() {
+  const q=currentQuestions[cur];
+  document.getElementById('prog-bar').style.width=((cur+1)/currentQuestions.length*100)+'%';
+  document.getElementById('prog-text').textContent='問'+(cur+1)+' / '+currentQuestions.length;
+  document.getElementById('q-num').textContent='問'+(cur+1);
+  const tag=document.getElementById('pos-tag');
+  tag.textContent='【'+posLabel[q.pos]+'】';
+  tag.className='pos-tag pos-'+q.pos;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('hint-text').textContent=q.hint;
+  document.getElementById('hint-text').style.display='none';
+  document.getElementById('hint-btn').style.display='inline';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('next-btn').style.display='none';
+  answered=false;
+  const opts=document.getElementById('q-options');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='option-btn'; b.textContent=o; b.onclick=()=>select(i);
+    opts.appendChild(b);
+  });
+}
+
+function showHint(){
+  const h=document.getElementById('hint-text');
+  h.style.display=h.style.display==='none'?'block':'none';
+}
+
+function select(i){
+  if(answered)return;
+  answered=true;
+  const q=currentQuestions[cur];
+  const btns=document.querySelectorAll('.option-btn');
+  btns.forEach(b=>b.disabled=true);
+  document.getElementById('hint-btn').style.display='none';
+  document.getElementById('hint-text').style.display='none';
+  const fb=document.getElementById('feedback');
+  if(i===q.ans){
+    score++;
+    btns[i].classList.add('correct');
+    fb.className='feedback correct';
+    fb.textContent='✓ 正解！　'+q.exp;
+  }else{
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('reveal');
+    fb.className='feedback wrong';
+    fb.textContent='✗ 不正解。　'+q.exp;
+  }
+  const nb=document.getElementById('next-btn');
+  nb.style.display='block';
+  nb.textContent=cur+1<currentQuestions.length?'次の問題 →':'結果を見る';
+}
+
+function nextQ(){cur++;if(cur<currentQuestions.length)render();else showResult();}
+
+function showResult(){
+  document.getElementById('quiz-area').style.display='none';
+  document.getElementById('result-card').style.display='block';
+  const total=currentQuestions.length,pct=Math.round(score/total*100);
+  document.getElementById('res-title').textContent=NAV_SETS[curSetIdx]+'　終了';
+  document.getElementById('res-score').textContent=score+' / '+total;
+  const msgs=['語彙リストをもう一度確認してから再挑戦しましょう。','もう少しです。リストを見直してから再挑戦しましょう。','よくできました。間違えた語を復習しましょう。','素晴らしい！ほぼ完璧です。'];
+  document.getElementById('res-msg').textContent='正答率 '+pct+'%　'+msgs[pct>=90?3:pct>=70?2:pct>=50?1:0];
+  const nb=document.getElementById('next-set-btn');
+  const nextIdx=curSetIdx+1;
+  if(nextIdx<NAV_SETS.length){nb.style.display='inline-block';nb.textContent=NAV_SETS[nextIdx]+' →';}
+  else nb.style.display='none';
+}
+
+function restart(){
+  cur=0;score=0;
+  if(NAV_SETS[curSetIdx]==="ランダム") currentQuestions=buildRandomSet().questions;
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  render();
+}
+
+function goNext(){selectSet(curSetIdx+1);}
+
+// 初期化
+currentQuestions = sets[0].questions;
+initNav();
+render();
+</script>
+</body>
+</html>

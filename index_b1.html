@@ -3,14 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ドイツ語練習テスト B2+レベル</title>
+<title>ドイツ語練習テスト B1レベル</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; padding: 2rem 1rem; }
   .container { max-width: 680px; margin: 0 auto; }
-  header { margin-bottom: 2.5rem; }
+  header { margin-bottom: 1.5rem; }
   header h1 { font-size: 24px; font-weight: 500; margin-bottom: 6px; }
   header p { font-size: 14px; color: #666; line-height: 1.6; }
+  .back-link { display: inline-block; margin-bottom: 1.25rem; padding: 7px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; color: #1a1a18; text-decoration: none; font-size: 13px; }
+  .back-link:hover { background: #f0f0f0; }
+  .level-nav { display: flex; gap: 8px; margin-bottom: 2rem; flex-wrap: wrap; }
+  .level-btn { padding: 6px 16px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; color: #666; text-decoration: none; font-size: 13px; transition: background 0.15s; }
+  .level-btn:hover { background: #f0f0f0; border-color: #999; }
+  .level-btn.active { background: #2d7a3e; color: #fff; border-color: #2d7a3e; }
   .section { margin-bottom: 2rem; }
   .section-title { font-size: 13px; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: #999; margin-bottom: 10px; padding-bottom: 8px; border-bottom: 0.5px solid #ddd; }
   .card-link { display: block; text-decoration: none; color: inherit; background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 1.1rem 1.25rem; margin-bottom: 10px; transition: border-color 0.15s, box-shadow 0.15s; }
@@ -20,52 +26,48 @@
   .icon-ja   { background: #e8f0fe; }
   .icon-de   { background: #fef3e8; }
   .icon-verb { background: #f3e8fe; }
-  .icon-fvg  { background: #e8feee; }
+  .icon-nv   { background: #fff3e8; }
   .card-body { flex: 1; }
   .card-title { font-size: 15px; font-weight: 500; margin-bottom: 3px; }
   .card-meta  { font-size: 13px; color: #888; }
   .card-arrow { color: #bbb; font-size: 18px; flex-shrink: 0; }
-  .level-nav { display: flex; gap: 8px; margin-bottom: 2rem; }
-  .level-btn { padding: 6px 16px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; color: #666; text-decoration: none; font-size: 13px; font-family: inherit; transition: background 0.15s; }
-  .level-btn:hover { background: #f0f0f0; border-color: #999; }
-  .level-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
   footer { margin-top: 3rem; font-size: 12px; color: #bbb; text-align: center; }
 </style>
 </head>
 <body>
 <div class="container">
+  <a class="back-link" href="index.html">← レベル選択に戻る</a>
+
   <header>
     <h1>ドイツ語練習テスト</h1>
-    <p>抽象名詞・動詞コロケーション・機能動詞結合（FVG）の練習テストです。<br>
-       各テストをクリックして開始してください。</p>
+    <p>教養語彙・動詞コロケーション・名詞＋動詞表現の練習テストです。</p>
   </header>
 
-  <div style="margin-bottom:1rem;"><a href="index.html" style="display:inline-block;padding:7px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fafafa;color:#1a1a18;text-decoration:none;font-size:13px;">← レベル選択に戻る</a></div>
   <div class="level-nav">
-    <a class="level-btn" href="index_b1.html">B1レベル</a>
+    <a class="level-btn active" href="index_b1.html">B1レベル</a>
     <a class="level-btn" href="index_b1plus.html">B1+レベル</a>
     <a class="level-btn" href="index_b2.html">B2レベル</a>
-    <a class="level-btn active" href="index_b2plus.html">B2+レベル</a>
+    <a class="level-btn" href="index_b2plus.html">B2+レベル</a>
   </div>
 
   <div class="section">
-    <div class="section-title">抽象名詞　Abstrakte Nomen</div>
-    <a class="card-link" href="quiz_b2plus_abstrakte_nomen_jd_all.html">
+    <div class="section-title">教養語彙　Bildungswortschatz</div>
+    <a class="card-link" href="quiz_bildungswortschatz_b1_dj.html">
       <div class="card-inner">
-        <div class="card-icon icon-ja">🇯🇵</div>
+        <div class="card-icon icon-de">🇩🇪</div>
         <div class="card-body">
-          <div class="card-title">抽象名詞　日本語 → ドイツ語</div>
-          <div class="card-meta">テストA〜D・各20問・計80問　4択選択式</div>
+          <div class="card-title">教養語彙テスト　B1レベル（独→日）</div>
+          <div class="card-meta">①〜⑨領域別＋ランダム　4択選択式</div>
         </div>
         <div class="card-arrow">›</div>
       </div>
     </a>
-    <a class="card-link" href="quiz_b2plus_abstrakte_nomen_dj_all.html">
+    <a class="card-link" href="quiz_bildungswortschatz_b1_jd.html">
       <div class="card-inner">
-        <div class="card-icon icon-de">🇩🇪</div>
+        <div class="card-icon icon-ja">🇯🇵</div>
         <div class="card-body">
-          <div class="card-title">抽象名詞　ドイツ語 → 日本語</div>
-          <div class="card-meta">テストA〜D・各20問・計80問　4択選択式</div>
+          <div class="card-title">教養語彙テスト　B1レベル</div>
+          <div class="card-meta">①〜⑨領域別＋ランダム　4択選択式</div>
         </div>
         <div class="card-arrow">›</div>
       </div>
@@ -74,12 +76,12 @@
 
   <div class="section">
     <div class="section-title">動詞コロケーション　Verben mit Präpositionen</div>
-    <a class="card-link" href="quiz_b2plus_verbprep_all.html">
+    <a class="card-link" href="quiz_verbprep_b1_all.html">
       <div class="card-inner">
         <div class="card-icon icon-verb">📘</div>
         <div class="card-body">
-          <div class="card-title">動詞コロケーション</div>
-          <div class="card-meta">テストA〜F・各10問・計60問　前置詞選択式</div>
+          <div class="card-title">動詞コロケーションテスト　B1レベル</div>
+          <div class="card-meta">テストA〜E・各10問・計50問　前置詞選択式</div>
         </div>
         <div class="card-arrow">›</div>
       </div>
@@ -87,20 +89,20 @@
   </div>
 
   <div class="section">
-    <div class="section-title">機能動詞結合　Funktionsverbgefüge</div>
-    <a class="card-link" href="quiz_b2plus_fvg_all.html">
+    <div class="section-title">名詞＋動詞表現　Nomen-Verb-Verbindungen</div>
+    <a class="card-link" href="quiz_nomenverb_b1_all.html">
       <div class="card-inner">
-        <div class="card-icon icon-fvg">📝</div>
+        <div class="card-icon icon-nv">📝</div>
         <div class="card-body">
-          <div class="card-title">機能動詞結合（FVG）穴埋めテスト</div>
-          <div class="card-meta">テストA〜D・各15問・計60問　名詞／動詞／前置詞の穴埋め</div>
+          <div class="card-title">名詞＋動詞表現テスト　A2〜B1前半</div>
+          <div class="card-meta">テストA〜D・各10問・計40問　動詞選択式</div>
         </div>
         <div class="card-arrow">›</div>
       </div>
     </a>
   </div>
 
-  <footer>© 授業用資料　B2+レベル</footer>
+  <footer>© 授業用資料　B1レベル</footer>
 </div>
 </body>
 </html>

@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教養語彙テスト B1レベル</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 700px; margin: 0 auto; }
+  header { margin-bottom: 1.5rem; }
+  header h1 { font-size: 21px; font-weight: 500; margin-bottom: 4px; }
+  header p { font-size: 14px; color: #666; }
+  .set-nav { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .set-btn { padding: 5px 11px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 12px; font-family: inherit; transition: background 0.15s; }
+  .set-btn:hover { background: #f0f0f0; }
+  .set-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .set-btn.random-btn { border-color: #185FA5; color: #185FA5; }
+  .set-btn.random-btn.active { background: #185FA5; color: #fff; }
+  .progress-bar-wrap { background: #ddd; border-radius: 4px; height: 4px; margin-bottom: 6px; }
+  .progress-bar { background: #185FA5; height: 4px; border-radius: 4px; transition: width 0.3s; }
+  .progress-text { font-size: 13px; color: #666; margin-bottom: 1.2rem; }
+  .card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 1.5rem; margin-bottom: 1rem; }
+  .question-num { font-size: 12px; color: #999; margin-bottom: 6px; }
+  .pos-tag { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; margin-bottom: 10px; }
+  .pos-N   { background: #e8f0fe; color: #1a56b0; }
+  .pos-V   { background: #fef3e8; color: #b05a1a; }
+  .pos-Adj { background: #fde8e8; color: #b01a1a; }
+  .pos-Adv { background: #e8feee; color: #1a7a3c; }
+  .question-text { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; line-height: 1.6; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { text-align: left; padding: 10px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 16px; font-family: "Segoe UI", "Candara", sans-serif; font-weight: 500; transition: background 0.15s, border-color 0.15s; }
+  .option-btn:hover:not(:disabled) { background: #f0f0f0; border-color: #999; }
+  .option-btn.correct { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn.wrong   { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+  .option-btn.reveal  { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn:disabled { cursor: default; }
+  .feedback { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.7; display: none; font-family: "Segoe UI", "Candara", sans-serif; }
+  .feedback.correct { background: #e1f5ee; color: #085041; display: block; }
+  .feedback.wrong    { background: #fcebeb; color: #791f1f; display: block; }
+  .hint-btn { margin-top: 10px; font-size: 13px; color: #185FA5; background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; text-decoration: underline; }
+  .hint-text { font-size: 13px; color: #666; margin-top: 6px; display: none; }
+  .next-btn { margin-top: 1.25rem; padding: 10px 20px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; display: none; }
+  .next-btn:hover { background: #333; }
+  .result-card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 2rem; text-align: center; display: none; }
+  .result-card h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+  .score-big { font-size: 48px; font-weight: 500; color: #185FA5; margin: 1rem 0; }
+  .score-msg { font-size: 15px; color: #555; margin-bottom: 1.5rem; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .restart-btn { padding: 10px 24px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .next-set-btn { padding: 10px 24px; border-radius: 8px; background: #185FA5; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>教養語彙テスト　B1レベル</h1>
+    <p>日本語の意味に対応するドイツ語を選びなさい。領域ごとにテストが分かれています。</p>
+  </header>
+  <div class="set-nav" id="set-nav"></div>
+  <div id="quiz-area">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar"></div></div>
+    <div class="progress-text" id="prog-text"></div>
+    <div class="card">
+      <div class="question-num" id="q-num"></div>
+      <div class="pos-tag" id="pos-tag"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <button class="hint-btn" id="hint-btn" onclick="showHint()">ヒントを見る</button>
+      <div class="hint-text" id="hint-text"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQ()">次の問題 →</button>
+    </div>
+  </div>
+  <div class="result-card" id="result-card">
+    <h2 id="res-title"></h2>
+    <div class="score-big" id="res-score"></div>
+    <div class="score-msg" id="res-msg"></div>
+    <div class="btn-row">
+      <button class="restart-btn" onclick="restart()">もう一度</button>
+      <button class="next-set-btn" id="next-set-btn" onclick="goNext()">次のテスト →</button>
+    </div>
+  </div>
+</div>
+<script>
+const sets = [
+  { label:"①論理・思考", questions:[
+    { q:"「証拠・証明」を意味するドイツ語はどれか。", pos:"N", opts:["der Wandel", "das Verhältnis", "der Beweis", "die Konsequenz"], ans:2, hint:"einen Beweis liefern（証拠を示す）の形が典型的。", exp:"証拠・証明＝der Beweis。einen Beweis liefern（証拠を示す）の形が典型的。" },
+    { q:"「立場・見地」を意味するドイツ語はどれか。", pos:"N", opts:["der Kompromiss", "der Standpunkt", "der Einfluss", "der Schluss"], ans:1, hint:"von meinem Standpunkt aus（私の立場からは）の形でよく使う。", exp:"立場・見地＝der Standpunkt。von meinem Standpunkt aus（私の立場からは）の形でよく使う。" },
+    { q:"「見解」を意味するドイツ語はどれか。", pos:"N", opts:["die Folge", "das Verhältnis", "der Grund", "die Ansicht"], ans:3, hint:"meiner Ansicht nach は Meinung よりフォーマル。", exp:"見解＝die Ansicht。meiner Ansicht nach は Meinung よりフォーマル。" },
+    { q:"「仮定・前提」を意味するドイツ語はどれか。", pos:"N", opts:["die Annahme", "die Aussage", "das Ausmaß", "der Konflikt"], ans:0, hint:"von der Annahme ausgehen（〜という前提から出発する）の形でよく使う。", exp:"仮定・前提＝die Annahme。von der Annahme ausgehen（〜という前提から出発する）の形でよく使う。" },
+    { q:"「論理的な」を意味するドイツ語はどれか。", pos:"Adj", opts:["dringend", "öffentlich", "wesentlich", "logisch"], ans:3, hint:"Das ist nicht logisch.（それは論理的でない）の形が典型的。", exp:"論理的な＝logisch。Das ist nicht logisch.（それは論理的でない）の形が典型的。" },
+    { q:"「〜と思う・考える」を意味するドイツ語はどれか。", pos:"V", opts:["erreichen", "darstellen", "meinen", "beurteilen"], ans:2, hint:"Was meinen Sie dazu?（それについてどう思いますか）の形が典型的。", exp:"〜と思う・考える＝meinen。Was meinen Sie dazu?（それについてどう思いますか）の形が典型的。" },
+    { q:"「認識する・気づく」を意味するドイツ語はどれか。", pos:"V", opts:["erkennen", "steigern", "zunehmen", "vergleichen"], ans:0, hint:"ein Problem erkennen（問題に気づく）の形が典型的。", exp:"認識する・気づく＝erkennen。ein Problem erkennen（問題に気づく）の形が典型的。" },
+    { q:"「結論」を意味するドイツ語はどれか。", pos:"N", opts:["die Entwicklung", "der Schluss", "das Ausmaß", "der Konflikt"], ans:1, hint:"zu dem Schluss kommen（〜という結論に至る）の形が最頻出。", exp:"結論＝der Schluss。zu dem Schluss kommen（〜という結論に至る）の形が最頻出。" },
+    { q:"「原因」を意味するドイツ語はどれか。", pos:"N", opts:["die Erklärung", "die Ursache", "die Beziehung", "die Möglichkeit"], ans:1, hint:"die Ursache des Problems（問題の原因）の形が典型的。", exp:"原因＝die Ursache。die Ursache des Problems（問題の原因）の形が典型的。" },
+    { q:"「結果・影響」を意味するドイツ語はどれか。", pos:"N", opts:["der Rückgang", "der Mangel", "die Qualität", "die Folge"], ans:3, hint:"als Folge davon（その結果として）の形もよく使う。", exp:"結果・影響＝die Folge。als Folge davon（その結果として）の形もよく使う。" },
+    { q:"「考える・検討する」を意味するドイツ語はどれか。", pos:"V", opts:["feststellen", "darstellen", "überlegen", "überzeugen"], ans:2, hint:"sich etw. überlegen（〜をよく考える）の再帰形が最頻出。", exp:"考える・検討する＝überlegen。sich etw. überlegen（〜をよく考える）の再帰形が最頻出。" },
+    { q:"「しかしながら・ただし」を意味するドイツ語はどれか。", pos:"Adv", opts:["allerdings", "kaum", "im Vergleich zu", "auf der anderen Seite"], ans:0, hint:"前文の内容を認めつつも留保を加える副詞。文頭に置くことが多い。", exp:"しかしながら・ただし＝allerdings。前文の内容を認めつつも留保を加える副詞。文頭に置くことが多い。" },
+    { q:"「意見」を意味するドイツ語はどれか。", pos:"N", opts:["der Hinweis", "die Meinung", "die Herausforderung", "der Einfluss"], ans:1, hint:"meiner Meinung nach（私の意見では）の形が最頻出。", exp:"意見＝die Meinung。meiner Meinung nach（私の意見では）の形が最頻出。" },
+    { q:"「根拠を示す」を意味するドイツ語はどれか。", pos:"V", opts:["bewerten", "überzeugen", "begründen", "abnehmen"], ans:2, hint:"eine Entscheidung begründen（決定の根拠を示す）の形が典型的。", exp:"根拠を示す＝begründen。eine Entscheidung begründen（決定の根拠を示す）の形が典型的。" },
+    { q:"「理由・根拠」を意味するドイツ語はどれか。", pos:"N", opts:["der Grund", "die Folge", "der Nachteil", "die Lösung"], ans:0, hint:"Grund と Ursache はどちらも「理由・原因」だが、Grund は主観的な理由に使うことが多い。", exp:"理由・根拠＝der Grund。Grund と Ursache はどちらも「理由・原因」だが、Grund は主観的な理由に使うことが多い。" },
+    { q:"「関連・文脈」を意味するドイツ語はどれか。", pos:"N", opts:["der Hinweis", "die Verantwortung", "die Minderheit", "der Zusammenhang"], ans:3, hint:"in welchem Zusammenhang（どういう文脈で）の形が頻出。", exp:"関連・文脈＝der Zusammenhang。in welchem Zusammenhang（どういう文脈で）の形が頻出。" }
+  ]},
+  { label:"②変化・推移", questions:[
+    { q:"「改善する」を意味するドイツ語はどれか。", pos:"V", opts:["bewerten", "betonen", "meinen", "verbessern"], ans:3, hint:"die Situation verbessern（状況を改善する）の形が典型的。", exp:"改善する＝verbessern。die Situation verbessern（状況を改善する）の形が典型的。" },
+    { q:"「増加する」を意味するドイツ語はどれか。", pos:"V", opts:["reduzieren", "zunehmen", "beibehalten", "verhindern"], ans:1, hint:"Die Zahl nimmt zu.（数が増加する）の形が典型的。", exp:"増加する＝zunehmen。Die Zahl nimmt zu.（数が増加する）の形が典型的。" },
+    { q:"「進歩・進展」を意味するドイツ語はどれか。", pos:"N", opts:["der Fortschritt", "das Verhältnis", "der Grund", "der Mangel"], ans:0, hint:"Fortschritte machen（進歩する）の形が最頻出。", exp:"進歩・進展＝der Fortschritt。Fortschritte machen（進歩する）の形が最頻出。" },
+    { q:"「変容・変革（構造的）」を意味するドイツ語はどれか。", pos:"N", opts:["der Aspekt", "die Bedeutung", "der Wandel", "die Konsequenz"], ans:2, hint:"sozialer Wandel のように長期的・構造的な変化に使う。", exp:"変容・変革（構造的）＝der Wandel。sozialer Wandel のように長期的・構造的な変化に使う。" },
+    { q:"「発展・展開」を意味するドイツ語はどれか。", pos:"N", opts:["die Maßnahme", "das Gespräch", "die Information", "die Entwicklung"], ans:3, hint:"eine positive Entwicklung（前向きな発展）の形が典型的。", exp:"発展・展開＝die Entwicklung。eine positive Entwicklung（前向きな発展）の形が典型的。" },
+    { q:"「増加」を意味するドイツ語はどれか。", pos:"N", opts:["der Konflikt", "die Zunahme", "der Beweis", "der Unterschied"], ans:1, hint:"eine starke Zunahme（大幅な増加）の形が典型的。", exp:"増加＝die Zunahme。eine starke Zunahme（大幅な増加）の形が典型的。" },
+    { q:"「維持する・保つ」を意味するドイツ語はどれか。", pos:"V", opts:["verhindern", "verbessern", "beibehalten", "zunehmen"], ans:2, hint:"einen Kurs beibehalten（方針を維持する）の形が典型的。", exp:"維持する・保つ＝beibehalten。einen Kurs beibehalten（方針を維持する）の形が典型的。" },
+    { q:"「悪化する」を意味するドイツ語はどれか。", pos:"V", opts:["verschlechtern", "überlegen", "zusammenarbeiten", "abnehmen"], ans:0, hint:"sich verschlechtern（悪化する）の再帰形が最頻出。", exp:"悪化する＝verschlechtern。sich verschlechtern（悪化する）の再帰形が最頻出。" },
+    { q:"「減少する」を意味するドイツ語はどれか。", pos:"V", opts:["abnehmen", "feststellen", "zusammenarbeiten", "nachweisen"], ans:0, hint:"Die Nachfrage nimmt ab.（需要が減少する）の形が典型的。", exp:"減少する＝abnehmen。Die Nachfrage nimmt ab.（需要が減少する）の形が典型的。" },
+    { q:"「変化・変容」を意味するドイツ語はどれか。", pos:"N", opts:["das Ergebnis", "der Wert", "die Veränderung", "die Gleichheit"], ans:2, hint:"eine grundlegende Veränderung（根本的な変化）の形が典型的。", exp:"変化・変容＝die Veränderung。eine grundlegende Veränderung（根本的な変化）の形が典型的。" },
+    { q:"「減少・後退」を意味するドイツ語はどれか。", pos:"N", opts:["der Grund", "die Voraussetzung", "die Herausforderung", "der Rückgang"], ans:3, hint:"ein deutlicher Rückgang（顕著な減少）の形が典型的。", exp:"減少・後退＝der Rückgang。ein deutlicher Rückgang（顕著な減少）の形が典型的。" },
+    { q:"「徐々に」を意味するドイツ語はどれか。", pos:"Adv", opts:["zunehmend", "allmählich", "durchaus", "im Großen und Ganzen"], ans:1, hint:"allmählich besser werden（徐々によくなる）の形が典型的。", exp:"徐々に＝allmählich。allmählich besser werden（徐々によくなる）の形が典型的。" }
+  ]},
+  { label:"③評価・判断", questions:[
+    { q:"「重要な・著しい」を意味するドイツ語はどれか。", pos:"Adj", opts:["logisch", "erheblich", "deutlich", "bedeutend"], ans:3, hint:"eine bedeutende Rolle spielen（重要な役割を果たす）の形が典型的。", exp:"重要な・著しい＝bedeutend。eine bedeutende Rolle spielen（重要な役割を果たす）の形が典型的。" },
+    { q:"「比較」を意味するドイツ語はどれか。", pos:"N", opts:["der Vorteil", "der Vergleich", "die Minderheit", "die Beziehung"], ans:1, hint:"im Vergleich zu（〜と比較して）の形で最頻出。", exp:"比較＝der Vergleich。im Vergleich zu（〜と比較して）の形で最頻出。" },
+    { q:"「評価する」を意味するドイツ語はどれか。", pos:"V", opts:["steigern", "nachweisen", "bewerten", "berücksichtigen"], ans:2, hint:"etw. positiv bewerten（〜を肯定的に評価する）の形が典型的。", exp:"評価する＝bewerten。etw. positiv bewerten（〜を肯定的に評価する）の形が典型的。" },
+    { q:"「価値・価値観」を意味するドイツ語はどれか。", pos:"N", opts:["der Wert", "der Zusammenhang", "die Schwierigkeit", "die Gesellschaft"], ans:0, hint:"einen hohen Wert legen auf（〜を重視する）の形が典型的。", exp:"価値・価値観＝der Wert。einen hohen Wert legen auf（〜を重視する）の形が典型的。" },
+    { q:"「批判・批評」を意味するドイツ語はどれか。", pos:"N", opts:["die Toleranz", "die Herausforderung", "die Gleichheit", "die Kritik"], ans:3, hint:"Kritik üben an（〜を批判する）の形が典型的。", exp:"批判・批評＝die Kritik。Kritik üben an（〜を批判する）の形が典型的。" },
+    { q:"「欠点・短所」を意味するドイツ語はどれか。", pos:"N", opts:["der Nachteil", "die Gesellschaft", "die Ursache", "die Verantwortung"], ans:0, hint:"Nachteile in Kauf nehmen（欠点をやむなく受け入れる）の形も重要。", exp:"欠点・短所＝der Nachteil。Nachteile in Kauf nehmen（欠点をやむなく受け入れる）の形も重要。" },
+    { q:"「強調する」を意味するドイツ語はどれか。", pos:"V", opts:["steigern", "verschlechtern", "betonen", "erreichen"], ans:2, hint:"die Wichtigkeit betonen（重要性を強調する）の形が典型的。", exp:"強調する＝betonen。die Wichtigkeit betonen（重要性を強調する）の形が典型的。" },
+    { q:"「比較する」を意味するドイツ語はどれか。", pos:"V", opts:["feststellen", "vergleichen", "nachweisen", "verhindern"], ans:1, hint:"A mit B vergleichen（AとBを比較する）の形が典型的。", exp:"比較する＝vergleichen。A mit B vergleichen（AとBを比較する）の形が典型的。" },
+    { q:"「意味・重要性」を意味するドイツ語はどれか。", pos:"N", opts:["die Information", "die Lösung", "die Bedeutung", "die Verantwortung"], ans:2, hint:"von großer Bedeutung sein（大きな意味を持つ）の形が典型的。", exp:"意味・重要性＝die Bedeutung。von großer Bedeutung sein（大きな意味を持つ）の形が典型的。" },
+    { q:"「品質・質」を意味するドイツ語はどれか。", pos:"N", opts:["die Qualität", "die Bedeutung", "die Kritik", "die Ursache"], ans:0, hint:"auf Qualität achten（品質に気をつける）の形が典型的。", exp:"品質・質＝die Qualität。auf Qualität achten（品質に気をつける）の形が典型的。" },
+    { q:"「側面・観点」を意味するドイツ語はどれか。", pos:"N", opts:["der Nachteil", "der Aspekt", "das Problem", "der Standpunkt"], ans:1, hint:"alle Aspekte berücksichtigen（すべての側面を考慮する）の形が典型的。", exp:"側面・観点＝der Aspekt。alle Aspekte berücksichtigen（すべての側面を考慮する）の形が典型的。" },
+    { q:"「本質的な・重要な」を意味するドイツ語はどれか。", pos:"Adj", opts:["logisch", "bedeutend", "dringend", "wesentlich"], ans:3, hint:"ein wesentlicher Unterschied（本質的な差異）の形が典型的。", exp:"本質的な・重要な＝wesentlich。ein wesentlicher Unterschied（本質的な差異）の形が典型的。" },
+    { q:"「原則的に・基本的に」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Wesentlichen", "grundsätzlich", "im Großen und Ganzen", "im Gegenteil"], ans:1, hint:"grundsätzlich einverstanden sein（基本的に同意する）の形が典型的。", exp:"原則的に・基本的に＝grundsätzlich。grundsätzlich einverstanden sein（基本的に同意する）の形が典型的。" },
+    { q:"「利点・長所」を意味するドイツ語はどれか。", pos:"N", opts:["die Ursache", "der Wert", "der Vorteil", "die Beziehung"], ans:2, hint:"Vorteile und Nachteile のセットで覚えよう。", exp:"利点・長所＝der Vorteil。Vorteile und Nachteile のセットで覚えよう。" },
+    { q:"「判断する」を意味するドイツ語はどれか。", pos:"V", opts:["beurteilen", "lösen", "reduzieren", "zusammenarbeiten"], ans:0, hint:"die Lage beurteilen（状況を判断する）の形が典型的。", exp:"判断する＝beurteilen。die Lage beurteilen（状況を判断する）の形が典型的。" }
+  ]},
+  { label:"④社会・関係", questions:[
+    { q:"「社会」を意味するドイツ語はどれか。", pos:"N", opts:["die Herausforderung", "das Merkmal", "die Bedeutung", "die Gesellschaft"], ans:3, hint:"die moderne Gesellschaft（現代社会）の形が典型的。", exp:"社会＝die Gesellschaft。die moderne Gesellschaft（現代社会）の形が典型的。" },
+    { q:"「責任」を意味するドイツ語はどれか。", pos:"N", opts:["die Zunahme", "die Verantwortung", "die Qualität", "die Annahme"], ans:1, hint:"Verantwortung übernehmen（責任を引き受ける）の形が最頻出。", exp:"責任＝die Verantwortung。Verantwortung übernehmen（責任を引き受ける）の形が最頻出。" },
+    { q:"「関係・割合・比率」を意味するドイツ語はどれか。", pos:"N", opts:["die Information", "die Kritik", "das Verhältnis", "der Rückgang"], ans:2, hint:"das Verhältnis zwischen A und B（AとBの関係）の形が典型的。", exp:"関係・割合・比率＝das Verhältnis。das Verhältnis zwischen A und B（AとBの関係）の形が典型的。" },
+    { q:"「支援する」を意味するドイツ語はどれか。", pos:"V", opts:["unterstützen", "meinen", "erkennen", "begründen"], ans:0, hint:"jdn. bei etw. unterstützen（〜を支援する）の形が典型的。", exp:"支援する＝unterstützen。jdn. bei etw. unterstützen（〜を支援する）の形が典型的。" },
+    { q:"「影響を与える」を意味するドイツ語はどれか。", pos:"V", opts:["beurteilen", "beeinflussen", "erkennen", "reduzieren"], ans:1, hint:"die Entscheidung beeinflussen（決定に影響を与える）の形が典型的。", exp:"影響を与える＝beeinflussen。die Entscheidung beeinflussen（決定に影響を与える）の形が典型的。" },
+    { q:"「行動・振る舞い」を意味するドイツ語はどれか。", pos:"N", opts:["der Fortschritt", "die Gesellschaft", "das Verhalten", "das Ausmaß"], ans:2, hint:"das Verhalten ändern（行動を変える）の形が典型的。", exp:"行動・振る舞い＝das Verhalten。das Verhalten ändern（行動を変える）の形が典型的。" },
+    { q:"「共同の・一緒に」を意味するドイツ語はどれか。", pos:"Adv", opts:["gemeinsam", "im Prinzip", "kaum", "zunächst"], ans:0, hint:"gemeinsam handeln（共同して行動する）の形が典型的。", exp:"共同の・一緒に＝gemeinsam。gemeinsam handeln（共同して行動する）の形が典型的。" },
+    { q:"「共同体・集団」を意味するドイツ語はどれか。", pos:"N", opts:["die Gesellschaft", "der Mangel", "die Ursache", "die Gemeinschaft"], ans:3, hint:"eine internationale Gemeinschaft（国際共同体）の形が典型的。", exp:"共同体・集団＝die Gemeinschaft。eine internationale Gemeinschaft（国際共同体）の形が典型的。" },
+    { q:"「寛容・許容」を意味するドイツ語はどれか。", pos:"N", opts:["der Aspekt", "die Folge", "die Toleranz", "die Qualität"], ans:2, hint:"Toleranz zeigen（寛容さを示す）の形が典型的。", exp:"寛容・許容＝die Toleranz。Toleranz zeigen（寛容さを示す）の形が典型的。" },
+    { q:"「平等・同等性」を意味するドイツ語はどれか。", pos:"N", opts:["das Merkmal", "die Annahme", "der Kompromiss", "die Gleichheit"], ans:3, hint:"Gleichheit vor dem Gesetz（法の前の平等）の形が典型的。", exp:"平等・同等性＝die Gleichheit。Gleichheit vor dem Gesetz（法の前の平等）の形が典型的。" },
+    { q:"「協力する」を意味するドイツ語はどれか。", pos:"V", opts:["zusammenarbeiten", "betonen", "unterstützen", "beibehalten"], ans:0, hint:"eng zusammenarbeiten（緊密に協力する）の形が典型的。", exp:"協力する＝zusammenarbeiten。eng zusammenarbeiten（緊密に協力する）の形が典型的。" },
+    { q:"「関係・つながり」を意味するドイツ語はどれか。", pos:"N", opts:["die Meinung", "die Beziehung", "das Verhalten", "die Zunahme"], ans:1, hint:"eine gute Beziehung aufbauen（良い関係を築く）の形が典型的。", exp:"関係・つながり＝die Beziehung。eine gute Beziehung aufbauen（良い関係を築く）の形が典型的。" },
+    { q:"「社会的な」を意味するドイツ語はどれか。", pos:"Adj", opts:["sozial", "notwendig", "sachlich", "logisch"], ans:0, hint:"ein soziales Problem（社会的な問題）の形が典型的。", exp:"社会的な＝sozial。ein soziales Problem（社会的な問題）の形が典型的。" }
+  ]},
+  { label:"⑤問題・解決", questions:[
+    { q:"「課題・挑戦」を意味するドイツ語はどれか。", pos:"N", opts:["das Problem", "der Einfluss", "die Herausforderung", "die Gleichheit"], ans:2, hint:"eine Herausforderung annehmen（挑戦を受け入れる）の形が典型的。", exp:"課題・挑戦＝die Herausforderung。eine Herausforderung annehmen（挑戦を受け入れる）の形が典型的。" },
+    { q:"「前提条件・必要条件」を意味するドイツ語はどれか。", pos:"N", opts:["die Annahme", "die Voraussetzung", "die Qualität", "die Folge"], ans:1, hint:"eine wichtige Voraussetzung（重要な前提条件）の形が典型的。", exp:"前提条件・必要条件＝die Voraussetzung。eine wichtige Voraussetzung（重要な前提条件）の形が典型的。" },
+    { q:"「避ける」を意味するドイツ語はどれか。", pos:"V", opts:["vermeiden", "darstellen", "betonen", "berichten"], ans:0, hint:"Fehler vermeiden（ミスを避ける）の形が典型的。", exp:"避ける＝vermeiden。Fehler vermeiden（ミスを避ける）の形が典型的。" },
+    { q:"「妥協・妥協点」を意味するドイツ語はどれか。", pos:"N", opts:["die Beziehung", "der Grund", "die Verantwortung", "der Kompromiss"], ans:3, hint:"einen Kompromiss finden（妥協点を見つける）の形が典型的。", exp:"妥協・妥協点＝der Kompromiss。einen Kompromiss finden（妥協点を見つける）の形が典型的。" },
+    { q:"「必要な・不可欠な」を意味するドイツ語はどれか。", pos:"Adj", opts:["sachlich", "möglich", "entsprechend", "notwendig"], ans:3, hint:"notwendige Maßnahmen（必要な措置）の形が典型的。", exp:"必要な・不可欠な＝notwendig。notwendige Maßnahmen（必要な措置）の形が典型的。" },
+    { q:"「解決する」を意味するドイツ語はどれか。", pos:"V", opts:["lösen", "meinen", "unterstützen", "feststellen"], ans:0, hint:"ein Problem lösen（問題を解決する）の形が最頻出。", exp:"解決する＝lösen。ein Problem lösen（問題を解決する）の形が最頻出。" },
+    { q:"「解決策」を意味するドイツ語はどれか。", pos:"N", opts:["die Information", "die Möglichkeit", "die Lösung", "die Beziehung"], ans:2, hint:"eine Lösung finden（解決策を見つける）の形が最頻出。", exp:"解決策＝die Lösung。eine Lösung finden（解決策を見つける）の形が最頻出。" },
+    { q:"「措置・対策」を意味するドイツ語はどれか。", pos:"N", opts:["der Vorteil", "die Maßnahme", "der Beweis", "der Aspekt"], ans:1, hint:"Maßnahmen ergreifen（措置を講じる）の形が最頻出。", exp:"措置・対策＝die Maßnahme。Maßnahmen ergreifen（措置を講じる）の形が最頻出。" },
+    { q:"「緊急の・切迫した」を意味するドイツ語はどれか。", pos:"Adj", opts:["logisch", "dringend", "entsprechend", "bedeutend"], ans:1, hint:"dringender Handlungsbedarf（緊急の行動の必要性）の形が典型的。", exp:"緊急の・切迫した＝dringend。dringender Handlungsbedarf（緊急の行動の必要性）の形が典型的。" },
+    { q:"「困難・難しさ」を意味するドイツ語はどれか。", pos:"N", opts:["die Gesellschaft", "das Problem", "die Bedeutung", "die Schwierigkeit"], ans:3, hint:"Schwierigkeiten überwinden（困難を乗り越える）の形が典型的。", exp:"困難・難しさ＝die Schwierigkeit。Schwierigkeiten überwinden（困難を乗り越える）の形が典型的。" },
+    { q:"「可能な」を意味するドイツ語はどれか。", pos:"Adj", opts:["möglich", "notwendig", "wesentlich", "dringend"], ans:0, hint:"so schnell wie möglich（できるだけ早く）の形が最頻出。", exp:"可能な＝möglich。so schnell wie möglich（できるだけ早く）の形が最頻出。" },
+    { q:"「防ぐ・阻止する」を意味するドイツ語はどれか。", pos:"V", opts:["betonen", "bewerten", "verhindern", "nachweisen"], ans:2, hint:"etw. zu verhindern versuchen（〜を防ごうとする）の形が典型的。", exp:"防ぐ・阻止する＝verhindern。etw. zu verhindern versuchen（〜を防ごうとする）の形が典型的。" },
+    { q:"「問題」を意味するドイツ語はどれか。", pos:"N", opts:["die Schwierigkeit", "das Problem", "der Bericht", "die Mehrheit"], ans:1, hint:"ein Problem lösen（問題を解決する）の形が最頻出。", exp:"問題＝das Problem。ein Problem lösen（問題を解決する）の形が最頻出。" },
+    { q:"「対立・葛藤」を意味するドイツ語はどれか。", pos:"N", opts:["der Konflikt", "die Voraussetzung", "der Standpunkt", "die Gemeinschaft"], ans:0, hint:"einen Konflikt lösen（対立を解消する）の形が典型的。", exp:"対立・葛藤＝der Konflikt。einen Konflikt lösen（対立を解消する）の形が典型的。" }
+  ]},
+  { label:"⑥情報・コミュニケーション", questions:[
+    { q:"「発言・陳述」を意味するドイツ語はどれか。", pos:"N", opts:["die Maßnahme", "die Ansicht", "der Hinweis", "die Aussage"], ans:3, hint:"eine Aussage machen（発言する）の形が典型的。", exp:"発言・陳述＝die Aussage。eine Aussage machen（発言する）の形が典型的。" },
+    { q:"「明示的に・はっきりと」を意味するドイツ語はどれか。", pos:"Adv", opts:["insgesamt", "ausdrücklich", "durchaus", "gegenseitig"], ans:1, hint:"ausdrücklich darauf hinweisen（明示的に指摘する）の形が典型的。", exp:"明示的に・はっきりと＝ausdrücklich。ausdrücklich darauf hinweisen（明示的に指摘する）の形が典型的。" },
+    { q:"「通知・伝言」を意味するドイツ語はどれか。", pos:"N", opts:["der Bericht", "der Aspekt", "die Mitteilung", "der Vergleich"], ans:2, hint:"eine Mitteilung machen（通知する）の形が典型的。", exp:"通知・伝言＝die Mitteilung。eine Mitteilung machen（通知する）の形が典型的。" },
+    { q:"「説得する・納得させる」を意味するドイツ語はどれか。", pos:"V", opts:["überzeugen", "bewerten", "verschlechtern", "unterstützen"], ans:0, hint:"jdn. von etw. überzeugen（〜を納得させる）の形が典型的。", exp:"説得する・納得させる＝überzeugen。jdn. von etw. überzeugen（〜を納得させる）の形が典型的。" },
+    { q:"「報告・レポート」を意味するドイツ語はどれか。", pos:"N", opts:["die Kritik", "der Zusammenhang", "der Bericht", "die Mitteilung"], ans:2, hint:"einen Bericht erstellen（報告書を作成する）の形が典型的。", exp:"報告・レポート＝der Bericht。einen Bericht erstellen（報告書を作成する）の形が典型的。" },
+    { q:"「指摘・ヒント・注意」を意味するドイツ語はどれか。", pos:"N", opts:["die Ausnahme", "die Voraussetzung", "die Erklärung", "der Hinweis"], ans:3, hint:"einen Hinweis geben（ヒント・注意を与える）の形が典型的。", exp:"指摘・ヒント・注意＝der Hinweis。einen Hinweis geben（ヒント・注意を与える）の形が典型的。" },
+    { q:"「明確な・はっきりした」を意味するドイツ語はどれか。", pos:"Adj", opts:["deutlich", "logisch", "öffentlich", "wesentlich"], ans:0, hint:"deutlich machen（明確にする）の形が典型的。", exp:"明確な・はっきりした＝deutlich。deutlich machen（明確にする）の形が典型的。" },
+    { q:"「可能性・機会」を意味するドイツ語はどれか。", pos:"N", opts:["die Wirkung", "die Möglichkeit", "die Qualität", "der Unterschied"], ans:1, hint:"die Möglichkeit haben（〜する可能性がある）の形が典型的。", exp:"可能性・機会＝die Möglichkeit。die Möglichkeit haben（〜する可能性がある）の形が典型的。" },
+    { q:"「説明・解説」を意味するドイツ語はどれか。", pos:"N", opts:["die Erklärung", "das Ausmaß", "das Verhalten", "die Gleichheit"], ans:0, hint:"eine Erklärung abgeben（説明をする）の形が典型的。", exp:"説明・解説＝die Erklärung。eine Erklärung abgeben（説明をする）の形が典型的。" },
+    { q:"「説明する」を意味するドイツ語はどれか。", pos:"V", opts:["begründen", "nachweisen", "verbessern", "erklären"], ans:3, hint:"etw. genau erklären（〜を詳しく説明する）の形が典型的。", exp:"説明する＝erklären。etw. genau erklären（〜を詳しく説明する）の形が典型的。" },
+    { q:"「会話・話し合い」を意味するドイツ語はどれか。", pos:"N", opts:["die Ansicht", "das Gespräch", "die Herausforderung", "das Problem"], ans:1, hint:"ein Gespräch führen（話し合いを行う）の形が典型的。", exp:"会話・話し合い＝das Gespräch。ein Gespräch führen（話し合いを行う）の形が典型的。" },
+    { q:"「報告する・伝える」を意味するドイツ語はどれか。", pos:"V", opts:["nachweisen", "begründen", "berichten", "feststellen"], ans:2, hint:"über etw. berichten（〜について報告する）の形が典型的。", exp:"報告する・伝える＝berichten。über etw. berichten（〜について報告する）の形が典型的。" },
+    { q:"「情報」を意味するドイツ語はどれか。", pos:"N", opts:["das Merkmal", "das Problem", "die Information", "das Gespräch"], ans:2, hint:"Informationen weitergeben（情報を伝える）の形が典型的。", exp:"情報＝die Information。Informationen weitergeben（情報を伝える）の形が典型的。" },
+    { q:"「伝える・通知する」を意味するドイツ語はどれか。", pos:"V", opts:["mitteilen", "beurteilen", "beeinflussen", "verschlechtern"], ans:0, hint:"jdm. etw. mitteilen（〜に〜を伝える）の形が典型的。", exp:"伝える・通知する＝mitteilen。jdm. etw. mitteilen（〜に〜を伝える）の形が典型的。" },
+    { q:"「証明する・立証する」を意味するドイツ語はどれか。", pos:"V", opts:["meinen", "nachweisen", "zusammenarbeiten", "feststellen"], ans:1, hint:"wissenschaftlich nachweisen（科学的に証明する）の形が典型的。", exp:"証明する・立証する＝nachweisen。wissenschaftlich nachweisen（科学的に証明する）の形が典型的。" }
+  ]},
+  { label:"⑦量・程度", questions:[
+    { q:"「ほとんど〜ない」を意味するドイツ語はどれか。", pos:"Adv", opts:["in gewissem Maße", "in gewissem Sinne", "kaum", "im Prinzip"], ans:2, hint:"kaum möglich（ほとんど不可能）の形が典型的。", exp:"ほとんど〜ない＝kaum。kaum möglich（ほとんど不可能）の形が典型的。" },
+    { q:"「不足・欠如」を意味するドイツ語はどれか。", pos:"N", opts:["die Erklärung", "die Schwierigkeit", "die Gemeinschaft", "der Mangel"], ans:3, hint:"ein Mangel an Ressourcen（資源の不足）の形が典型的。", exp:"不足・欠如＝der Mangel。ein Mangel an Ressourcen（資源の不足）の形が典型的。" },
+    { q:"「まず・最初に」を意味するドイツ語はどれか。", pos:"Adv", opts:["zunächst", "im Gegensatz dazu", "aus diesem Grund", "folglich"], ans:0, hint:"zunächst möchte ich...（まず〜したい）の形が論述で頻出。", exp:"まず・最初に＝zunächst。zunächst möchte ich...（まず〜したい）の形が論述で頻出。" },
+    { q:"「多数・多数派」を意味するドイツ語はどれか。", pos:"N", opts:["der Bericht", "die Mehrheit", "die Voraussetzung", "der Vergleich"], ans:1, hint:"die Mehrheit der Bevölkerung（人口の多数）の形が典型的。", exp:"多数・多数派＝die Mehrheit。die Mehrheit der Bevölkerung（人口の多数）の形が典型的。" },
+    { q:"「大多数の・主として」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Hinblick auf", "auf der anderen Seite", "durchaus", "überwiegend"], ans:3, hint:"überwiegend positiv（大多数において肯定的）の形が典型的。", exp:"大多数の・主として＝überwiegend。überwiegend positiv（大多数において肯定的）の形が典型的。" },
+    { q:"「少なくとも」を意味するドイツ語はどれか。", pos:"Adv", opts:["zumindest", "im Gegenteil", "überwiegend", "unter anderem"], ans:0, hint:"zumindest versuchen（少なくとも試みる）の形が典型的。", exp:"少なくとも＝zumindest。zumindest versuchen（少なくとも試みる）の形が典型的。" },
+    { q:"「全体として・合計で」を意味するドイツ語はどれか。", pos:"Adv", opts:["gemeinsam", "folglich", "insgesamt", "gegenseitig"], ans:2, hint:"insgesamt gesehen（全体的に見て）の形が典型的。", exp:"全体として・合計で＝insgesamt。insgesamt gesehen（全体的に見て）の形が典型的。" },
+    { q:"「達成する・到達する」を意味するドイツ語はどれか。", pos:"V", opts:["meinen", "erreichen", "berücksichtigen", "vergleichen"], ans:1, hint:"ein Ziel erreichen（目標を達成する）の形が典型的。", exp:"達成する・到達する＝erreichen。ein Ziel erreichen（目標を達成する）の形が典型的。" },
+    { q:"「相当な・著しい」を意味するドイツ語はどれか。", pos:"Adj", opts:["erheblich", "dringend", "sozial", "notwendig"], ans:0, hint:"ein erheblicher Unterschied（著しい差異）の形が典型的。", exp:"相当な・著しい＝erheblich。ein erheblicher Unterschied（著しい差異）の形が典型的。" },
+    { q:"「高める・増やす」を意味するドイツ語はどれか。", pos:"V", opts:["beurteilen", "steigern", "verursachen", "erkennen"], ans:1, hint:"die Effizienz steigern（効率を高める）の形が典型的。", exp:"高める・増やす＝steigern。die Effizienz steigern（効率を高める）の形が典型的。" },
+    { q:"「割合・分担」を意味するドイツ語はどれか。", pos:"N", opts:["die Folge", "der Aspekt", "der Anteil", "der Bericht"], ans:2, hint:"einen hohen Anteil ausmachen（高い割合を占める）の形が典型的。", exp:"割合・分担＝der Anteil。einen hohen Anteil ausmachen（高い割合を占める）の形が典型的。" },
+    { q:"「大部分において」を意味するドイツ語はどれか。", pos:"Adv", opts:["aus diesem Grund", "im Gegensatz dazu", "kaum", "weitgehend"], ans:3, hint:"weitgehend gelöst（ほぼ解決した）の形が典型的。", exp:"大部分において＝weitgehend。weitgehend gelöst（ほぼ解決した）の形が典型的。" },
+    { q:"「少数・少数派」を意味するドイツ語はどれか。", pos:"N", opts:["die Minderheit", "der Unterschied", "der Mangel", "die Voraussetzung"], ans:0, hint:"eine sprachliche Minderheit（言語的少数派）の形が典型的。", exp:"少数・少数派＝die Minderheit。eine sprachliche Minderheit（言語的少数派）の形が典型的。" },
+    { q:"「減らす・削減する」を意味するドイツ語はどれか。", pos:"V", opts:["beeinflussen", "reduzieren", "begründen", "vermeiden"], ans:1, hint:"Kosten reduzieren（コストを削減する）の形が典型的。", exp:"減らす・削減する＝reduzieren。Kosten reduzieren（コストを削減する）の形が典型的。" },
+    { q:"「程度・規模」を意味するドイツ語はどれか。", pos:"N", opts:["der Zusammenhang", "die Verantwortung", "das Ausmaß", "die Gemeinschaft"], ans:2, hint:"das Ausmaß des Problems（問題の規模）の形が典型的。", exp:"程度・規模＝das Ausmaß。das Ausmaß des Problems（問題の規模）の形が典型的。" },
+    { q:"「特徴・特性」を意味するドイツ語はどれか。", pos:"N", opts:["die Beziehung", "die Gemeinschaft", "die Meinung", "das Merkmal"], ans:3, hint:"ein wesentliches Merkmal（本質的な特徴）の形が典型的。", exp:"特徴・特性＝das Merkmal。ein wesentliches Merkmal（本質的な特徴）の形が典型的。" }
+  ]},
+  { label:"⑧原因・結果・論述全般", questions:[
+    { q:"「表す・示す・描写する」を意味するドイツ語はどれか。", pos:"V", opts:["berichten", "darstellen", "mitteilen", "meinen"], ans:1, hint:"ein Problem darstellen（問題を示す）の形が典型的。", exp:"表す・示す・描写する＝darstellen。ein Problem darstellen（問題を示す）の形が典型的。" },
+    { q:"「そのため・したがって」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Grunde", "gemeinsam", "insgesamt", "daher"], ans:3, hint:"Daher ist eine Lösung notwendig. の形が典型的。", exp:"そのため・したがって＝daher。Daher ist eine Lösung notwendig. の形が典型的。" },
+    { q:"「したがって（論理的帰結として）」を意味するドイツ語はどれか。", pos:"Adv", opts:["kaum", "tatsächlich", "folglich", "zumindest"], ans:2, hint:"Folglich müssen wir handeln. の形が典型的。", exp:"したがって（論理的帰結として）＝folglich。Folglich müssen wir handeln. の形が典型的。" },
+    { q:"「結果・成果」を意味するドイツ語はどれか。", pos:"N", opts:["das Ergebnis", "die Kritik", "die Wirkung", "der Zusammenhang"], ans:0, hint:"zu einem Ergebnis kommen（結論に達する）の形が典型的。", exp:"結果・成果＝das Ergebnis。zu einem Ergebnis kommen（結論に達する）の形が典型的。" },
+    { q:"「次第に・ますます」を意味するドイツ語はどれか。", pos:"Adv", opts:["zunehmend", "zunächst", "im Hinblick auf", "in erster Linie"], ans:0, hint:"zunehmend wichtiger werden（次第に重要になる）の形が典型的。", exp:"次第に・ますます＝zunehmend。zunehmend wichtiger werden（次第に重要になる）の形が典型的。" },
+    { q:"「明らかに・明白な」を意味するドイツ語はどれか。", pos:"Adv", opts:["gegenseitig", "in erster Linie", "auf jeden Fall", "offensichtlich"], ans:3, hint:"Das ist offensichtlich falsch. の形が典型的。", exp:"明らかに・明白な＝offensichtlich。Das ist offensichtlich falsch. の形が典型的。" },
+    { q:"「差異・相違」を意味するドイツ語はどれか。", pos:"N", opts:["der Schluss", "die Gemeinschaft", "der Unterschied", "die Toleranz"], ans:2, hint:"einen Unterschied machen（差異をもたらす）の形が典型的。", exp:"差異・相違＝der Unterschied。einen Unterschied machen（差異をもたらす）の形が典型的。" },
+    { q:"「確認する・断言する」を意味するドイツ語はどれか。", pos:"V", opts:["überzeugen", "feststellen", "verhindern", "zusammenarbeiten"], ans:1, hint:"ein Problem feststellen（問題を確認する）の形が典型的。", exp:"確認する・断言する＝feststellen。ein Problem feststellen（問題を確認する）の形が典型的。" },
+    { q:"「公の・公開の」を意味するドイツ語はどれか。", pos:"Adj", opts:["möglich", "entsprechend", "öffentlich", "sozial"], ans:2, hint:"öffentliches Interesse（公の利益）の形が典型的。", exp:"公の・公開の＝öffentlich。öffentliches Interesse（公の利益）の形が典型的。" },
+    { q:"「影響」を意味するドイツ語はどれか。", pos:"N", opts:["der Einfluss", "die Kritik", "das Verhältnis", "die Zunahme"], ans:0, hint:"einen großen Einfluss haben auf（〜に大きな影響を持つ）の形が典型的。", exp:"影響＝der Einfluss。einen großen Einfluss haben auf（〜に大きな影響を持つ）の形が典型的。" },
+    { q:"「いずれにせよ・とにかく」を意味するドイツ語はどれか。", pos:"Adv", opts:["gemeinsam", "in gewissem Sinne", "allmählich", "jedenfalls"], ans:3, hint:"Jedenfalls müssen wir etwas tun. の形が典型的。", exp:"いずれにせよ・とにかく＝jedenfalls。Jedenfalls müssen wir etwas tun. の形が典型的。" },
+    { q:"「考慮する・踏まえる」を意味するドイツ語はどれか。", pos:"V", opts:["vermeiden", "berücksichtigen", "meinen", "berichten"], ans:1, hint:"alle Faktoren berücksichtigen の形が典型的。", exp:"考慮する・踏まえる＝berücksichtigen。alle Faktoren berücksichtigen の形が典型的。" },
+    { q:"「引き起こす・原因となる」を意味するドイツ語はどれか。", pos:"V", opts:["verursachen", "beibehalten", "erkennen", "beeinflussen"], ans:0, hint:"Schäden verursachen（損害を引き起こす）の形が典型的。", exp:"引き起こす・原因となる＝verursachen。Schäden verursachen（損害を引き起こす）の形が典型的。" },
+    { q:"「まったく・十分に」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Gegenteil", "durchaus", "tatsächlich", "weitgehend"], ans:1, hint:"durchaus möglich（十分に可能）の形が典型的。", exp:"まったく・十分に＝durchaus。durchaus möglich（十分に可能）の形が典型的。" },
+    { q:"「客観的な・事実に即した」を意味するドイツ語はどれか。", pos:"Adj", opts:["notwendig", "erheblich", "sachlich", "möglich"], ans:2, hint:"sachlich bleiben（客観的でいる）の形が典型的。", exp:"客観的な・事実に即した＝sachlich。sachlich bleiben（客観的でいる）の形が典型的。" },
+    { q:"「実際に・本当に」を意味するドイツ語はどれか。", pos:"Adv", opts:["allerdings", "in der Regel", "in erster Linie", "tatsächlich"], ans:3, hint:"Das ist tatsächlich ein Problem. の形が典型的。", exp:"実際に・本当に＝tatsächlich。Das ist tatsächlich ein Problem. の形が典型的。" },
+    { q:"「結果・論理的帰結」を意味するドイツ語はどれか。", pos:"N", opts:["der Fortschritt", "die Möglichkeit", "die Konsequenz", "die Ursache"], ans:2, hint:"Konsequenzen ziehen（結論を引き出す）の形が典型的。", exp:"結果・論理的帰結＝die Konsequenz。Konsequenzen ziehen（結論を引き出す）の形が典型的。" },
+    { q:"「それに応じた・相応の」を意味するドイツ語はどれか。", pos:"Adj", opts:["möglich", "sozial", "bedeutend", "entsprechend"], ans:3, hint:"entsprechende Maßnahmen（それに応じた措置）の形が典型的。", exp:"それに応じた・相応の＝entsprechend。entsprechende Maßnahmen（それに応じた措置）の形が典型的。" },
+    { q:"「互いの・相互の」を意味するドイツ語はどれか。", pos:"Adv", opts:["grundsätzlich", "gegenseitig", "in gewissem Sinne", "gemeinsam"], ans:1, hint:"sich gegenseitig helfen（互いに助け合う）の形が典型的。", exp:"互いの・相互の＝gegenseitig。sich gegenseitig helfen（互いに助け合う）の形が典型的。" },
+    { q:"「例外」を意味するドイツ語はどれか。", pos:"N", opts:["die Ausnahme", "der Bericht", "die Verantwortung", "der Wandel"], ans:0, hint:"eine Ausnahme machen（例外を設ける）の形が典型的。", exp:"例外＝die Ausnahme。eine Ausnahme machen（例外を設ける）の形が典型的。" },
+    { q:"「〜を可能にする」を意味するドイツ語はどれか。", pos:"V", opts:["ermöglichen", "berücksichtigen", "beeinflussen", "beurteilen"], ans:0, hint:"neue Möglichkeiten ermöglichen の形が典型的。", exp:"〜を可能にする＝ermöglichen。neue Möglichkeiten ermöglichen の形が典型的。" },
+    { q:"「たとえば」を意味するドイツ語はどれか。", pos:"Adv", opts:["in erster Linie", "mit anderen Worten", "beispielsweise", "allmählich"], ans:2, hint:"beispielsweise könnte man...（たとえば〜できる）の形が典型的。", exp:"たとえば＝beispielsweise。beispielsweise könnte man...（たとえば〜できる）の形が典型的。" },
+    { q:"「効果・作用」を意味するドイツ語はどれか。", pos:"N", opts:["der Wandel", "die Wirkung", "das Ausmaß", "die Beziehung"], ans:1, hint:"eine positive Wirkung haben（良い効果をもたらす）の形が典型的。", exp:"効果・作用＝die Wirkung。eine positive Wirkung haben（良い効果をもたらす）の形が典型的。" }
+  ]},
+  { label:"⑨定型表現", questions:[
+    { q:"「原則的には（基本的には）」を意味するドイツ語はどれか。", pos:"Adv", opts:["in Bezug auf", "insgesamt", "zum Teil", "im Prinzip"], ans:3, hint:"同意しつつも留保を加えるときに使う。", exp:"原則的には（基本的には）＝im Prinzip。同意しつつも留保を加えるときに使う。" },
+    { q:"「これに関連して」を意味するドイツ語はどれか。", pos:"Adv", opts:["ausdrücklich", "auf jeden Fall", "in diesem Zusammenhang", "insgesamt"], ans:2, hint:"前の話題に関連して新しい点を付け加えるときに使う。", exp:"これに関連して＝in diesem Zusammenhang。前の話題に関連して新しい点を付け加えるときに使う。" },
+    { q:"「いずれにせよ・必ず」を意味するドイツ語はどれか。", pos:"Adv", opts:["aus diesem Grund", "auf jeden Fall", "unter anderem", "beispielsweise"], ans:1, hint:"条件にかかわらず確実であることを強調する。", exp:"いずれにせよ・必ず＝auf jeden Fall。条件にかかわらず確実であることを強調する。" },
+    { q:"「とりわけ・なかでも」を意味するドイツ語はどれか。", pos:"Adv", opts:["unter anderem", "in gewissem Sinne", "zunehmend", "grundsätzlich"], ans:0, hint:"複数の例の中から代表的なものを挙げるときに使う。", exp:"とりわけ・なかでも＝unter anderem。複数の例の中から代表的なものを挙げるときに使う。" },
+    { q:"「部分的に・ある程度」を意味するドイツ語はどれか。", pos:"Adv", opts:["allerdings", "in gewissem Maße", "zum Teil", "im Wesentlichen"], ans:2, hint:"完全ではなく一部だけ当てはまることを示す。", exp:"部分的に・ある程度＝zum Teil。完全ではなく一部だけ当てはまることを示す。" },
+    { q:"「第一に・主として」を意味するドイツ語はどれか。", pos:"Adv", opts:["zum Teil", "in erster Linie", "im Hinblick auf", "jedenfalls"], ans:1, hint:"最も重要な点を最初に述べるときに使う。", exp:"第一に・主として＝in erster Linie。最も重要な点を最初に述べるときに使う。" },
+    { q:"「〜に関して」を意味するドイツ語はどれか。", pos:"Adv", opts:["in Bezug auf", "beispielsweise", "ausdrücklich", "zumindest"], ans:0, hint:"特定のテーマについて話を限定するときに使う。", exp:"〜に関して＝in Bezug auf。特定のテーマについて話を限定するときに使う。" },
+    { q:"「それどころか・反対に」を意味するドイツ語はどれか。", pos:"Adv", opts:["gegenseitig", "gemeinsam", "auf jeden Fall", "im Gegenteil"], ans:3, hint:"前文の内容を完全に否定して逆のことを述べるときに使う。", exp:"それどころか・反対に＝im Gegenteil。前文の内容を完全に否定して逆のことを述べるときに使う。" },
+    { q:"「ある意味では」を意味するドイツ語はどれか。", pos:"Adv", opts:["auf der anderen Seite", "in gewissem Sinne", "zum Teil", "tatsächlich"], ans:1, hint:"完全には同意できないが部分的には認めるときに使う。", exp:"ある意味では＝in gewissem Sinne。完全には同意できないが部分的には認めるときに使う。" },
+    { q:"「本質的には・主に」を意味するドイツ語はどれか。", pos:"Adv", opts:["zunächst", "grundsätzlich", "im Wesentlichen", "folglich"], ans:2, hint:"細部は省いて要点を述べるときに使う。", exp:"本質的には・主に＝im Wesentlichen。細部は省いて要点を述べるときに使う。" },
+    { q:"「〜の観点から・〜を見据えて」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Hinblick auf", "unter anderem", "tatsächlich", "gegenseitig"], ans:0, hint:"ある目的・視点から考えるときに使う。", exp:"〜の観点から・〜を見据えて＝im Hinblick auf。ある目的・視点から考えるときに使う。" },
+    { q:"「それとは対照的に」を意味するドイツ語はどれか。", pos:"Adv", opts:["beispielsweise", "in der Regel", "im Gegenteil", "im Gegensatz dazu"], ans:3, hint:"二つのものを対比するときに使う。", exp:"それとは対照的に＝im Gegensatz dazu。二つのものを対比するときに使う。" },
+    { q:"「他方では」を意味するドイツ語はどれか。", pos:"Adv", opts:["zumindest", "im Vergleich zu", "auf der anderen Seite", "im Gegenteil"], ans:2, hint:"einerseits...andererseits と同様に対比を示す。", exp:"他方では＝auf der anderen Seite。einerseits...andererseits と同様に対比を示す。" },
+    { q:"「概して・全体的に見て」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Großen und Ganzen", "im Gegenteil", "im Gegensatz dazu", "auf der anderen Seite"], ans:0, hint:"細かい点には触れず全体的な評価を述べるときに使う。", exp:"概して・全体的に見て＝im Großen und Ganzen。細かい点には触れず全体的な評価を述べるときに使う。" },
+    { q:"「〜と比較して」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Grunde", "zunächst", "beispielsweise", "im Vergleich zu"], ans:3, hint:"二つのものを比較するときに使う。", exp:"〜と比較して＝im Vergleich zu。二つのものを比較するときに使う。" },
+    { q:"「この理由から・したがって」を意味するドイツ語はどれか。", pos:"Adv", opts:["in erster Linie", "aus diesem Grund", "in gewissem Sinne", "im Gegenteil"], ans:1, hint:"前文の理由を受けて結論を述べるときに使う。", exp:"この理由から・したがって＝aus diesem Grund。前文の理由を受けて結論を述べるときに使う。" },
+    { q:"「通常・一般的に」を意味するドイツ語はどれか。", pos:"Adv", opts:["unter anderem", "in der Regel", "offensichtlich", "im Grunde"], ans:1, hint:"例外を認めつつも一般的な傾向を述べるときに使う。", exp:"通常・一般的に＝in der Regel。例外を認めつつも一般的な傾向を述べるときに使う。" },
+    { q:"「言い換えれば」を意味するドイツ語はどれか。", pos:"Adv", opts:["offensichtlich", "gemeinsam", "mit anderen Worten", "in der Regel"], ans:2, hint:"前文の内容を別の言い方で説明するときに使う。", exp:"言い換えれば＝mit anderen Worten。前文の内容を別の言い方で説明するときに使う。" },
+    { q:"「ある程度」を意味するドイツ語はどれか。", pos:"Adv", opts:["in gewissem Maße", "in Bezug auf", "gegenseitig", "allerdings"], ans:0, hint:"完全ではないが部分的に当てはまることを示す。", exp:"ある程度＝in gewissem Maße。完全ではないが部分的に当てはまることを示す。" },
+    { q:"「根本的には・つまるところ」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Gegenteil", "gemeinsam", "auf jeden Fall", "im Grunde"], ans:3, hint:"議論の核心を述べるときに使う。im Grunde genommen の形も頻出。", exp:"根本的には・つまるところ＝im Grunde。議論の核心を述べるときに使う。im Grunde genommen の形も頻出。" }
+  ]}
+];
+
+const allQuestions = [
+    { q:"「少なくとも」を意味するドイツ語はどれか。", pos:"Adv", opts:["grundsätzlich", "zumindest", "ausdrücklich", "auf der anderen Seite"], ans:1, hint:"zumindest versuchen（少なくとも試みる）の形が典型的。", exp:"少なくとも＝zumindest。zumindest versuchen（少なくとも試みる）の形が典型的。" },
+    { q:"「割合・分担」を意味するドイツ語はどれか。", pos:"N", opts:["das Gespräch", "die Gleichheit", "der Anteil", "der Fortschritt"], ans:2, hint:"einen hohen Anteil ausmachen（高い割合を占める）の形が典型的。", exp:"割合・分担＝der Anteil。einen hohen Anteil ausmachen（高い割合を占める）の形が典型的。" },
+    { q:"「前提条件・必要条件」を意味するドイツ語はどれか。", pos:"N", opts:["die Information", "die Toleranz", "die Beziehung", "die Voraussetzung"], ans:3, hint:"eine wichtige Voraussetzung（重要な前提条件）の形が典型的。", exp:"前提条件・必要条件＝die Voraussetzung。eine wichtige Voraussetzung（重要な前提条件）の形が典型的。" },
+    { q:"「結果・成果」を意味するドイツ語はどれか。", pos:"N", opts:["das Ergebnis", "der Anteil", "das Problem", "die Voraussetzung"], ans:0, hint:"zu einem Ergebnis kommen（結論に達する）の形が典型的。", exp:"結果・成果＝das Ergebnis。zu einem Ergebnis kommen（結論に達する）の形が典型的。" },
+    { q:"「それとは対照的に」を意味するドイツ語はどれか。", pos:"Adv", opts:["gemeinsam", "in gewissem Maße", "im Gegensatz dazu", "auf der anderen Seite"], ans:2, hint:"二つのものを対比するときに使う。", exp:"それとは対照的に＝im Gegensatz dazu。二つのものを対比するときに使う。" },
+    { q:"「可能な」を意味するドイツ語はどれか。", pos:"Adj", opts:["sozial", "deutlich", "entsprechend", "möglich"], ans:3, hint:"so schnell wie möglich（できるだけ早く）の形が最頻出。", exp:"可能な＝möglich。so schnell wie möglich（できるだけ早く）の形が最頻出。" },
+    { q:"「したがって（論理的帰結として）」を意味するドイツ語はどれか。", pos:"Adv", opts:["folglich", "im Hinblick auf", "kaum", "im Gegensatz dazu"], ans:0, hint:"Folglich müssen wir handeln. の形が典型的。", exp:"したがって（論理的帰結として）＝folglich。Folglich müssen wir handeln. の形が典型的。" },
+    { q:"「相当な・著しい」を意味するドイツ語はどれか。", pos:"Adj", opts:["sachlich", "erheblich", "möglich", "deutlich"], ans:1, hint:"ein erheblicher Unterschied（著しい差異）の形が典型的。", exp:"相当な・著しい＝erheblich。ein erheblicher Unterschied（著しい差異）の形が典型的。" },
+    { q:"「認識する・気づく」を意味するドイツ語はどれか。", pos:"V", opts:["erkennen", "ermöglichen", "beibehalten", "bewerten"], ans:0, hint:"ein Problem erkennen（問題に気づく）の形が典型的。", exp:"認識する・気づく＝erkennen。ein Problem erkennen（問題に気づく）の形が典型的。" },
+    { q:"「部分的に・ある程度」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Großen und Ganzen", "auf jeden Fall", "in gewissem Maße", "zum Teil"], ans:3, hint:"完全ではなく一部だけ当てはまることを示す。", exp:"部分的に・ある程度＝zum Teil。完全ではなく一部だけ当てはまることを示す。" },
+    { q:"「措置・対策」を意味するドイツ語はどれか。", pos:"N", opts:["die Annahme", "der Standpunkt", "die Maßnahme", "das Verhalten"], ans:2, hint:"Maßnahmen ergreifen（措置を講じる）の形が最頻出。", exp:"措置・対策＝die Maßnahme。Maßnahmen ergreifen（措置を講じる）の形が最頻出。" },
+    { q:"「避ける」を意味するドイツ語はどれか。", pos:"V", opts:["lösen", "vermeiden", "überzeugen", "berichten"], ans:1, hint:"Fehler vermeiden（ミスを避ける）の形が典型的。", exp:"避ける＝vermeiden。Fehler vermeiden（ミスを避ける）の形が典型的。" },
+    { q:"「欠点・短所」を意味するドイツ語はどれか。", pos:"N", opts:["die Information", "die Ansicht", "der Einfluss", "der Nachteil"], ans:3, hint:"Nachteile in Kauf nehmen（欠点をやむなく受け入れる）の形も重要。", exp:"欠点・短所＝der Nachteil。Nachteile in Kauf nehmen（欠点をやむなく受け入れる）の形も重要。" },
+    { q:"「関係・つながり」を意味するドイツ語はどれか。", pos:"N", opts:["der Einfluss", "die Lösung", "die Beziehung", "der Mangel"], ans:2, hint:"eine gute Beziehung aufbauen（良い関係を築く）の形が典型的。", exp:"関係・つながり＝die Beziehung。eine gute Beziehung aufbauen（良い関係を築く）の形が典型的。" },
+    { q:"「明示的に・はっきりと」を意味するドイツ語はどれか。", pos:"Adv", opts:["ausdrücklich", "im Großen und Ganzen", "im Prinzip", "im Hinblick auf"], ans:0, hint:"ausdrücklich darauf hinweisen（明示的に指摘する）の形が典型的。", exp:"明示的に・はっきりと＝ausdrücklich。ausdrücklich darauf hinweisen（明示的に指摘する）の形が典型的。" },
+    { q:"「行動・振る舞い」を意味するドイツ語はどれか。", pos:"N", opts:["der Grund", "das Verhalten", "die Veränderung", "das Ausmaß"], ans:1, hint:"das Verhalten ändern（行動を変える）の形が典型的。", exp:"行動・振る舞い＝das Verhalten。das Verhalten ändern（行動を変える）の形が典型的。" },
+    { q:"「課題・挑戦」を意味するドイツ語はどれか。", pos:"N", opts:["die Gesellschaft", "der Anteil", "die Herausforderung", "der Einfluss"], ans:2, hint:"eine Herausforderung annehmen（挑戦を受け入れる）の形が典型的。", exp:"課題・挑戦＝die Herausforderung。eine Herausforderung annehmen（挑戦を受け入れる）の形が典型的。" },
+    { q:"「説明する」を意味するドイツ語はどれか。", pos:"V", opts:["erklären", "nachweisen", "überlegen", "reduzieren"], ans:0, hint:"etw. genau erklären（〜を詳しく説明する）の形が典型的。", exp:"説明する＝erklären。etw. genau erklären（〜を詳しく説明する）の形が典型的。" },
+    { q:"「程度・規模」を意味するドイツ語はどれか。", pos:"N", opts:["die Ausnahme", "das Ausmaß", "der Beweis", "die Lösung"], ans:1, hint:"das Ausmaß des Problems（問題の規模）の形が典型的。", exp:"程度・規模＝das Ausmaß。das Ausmaß des Problems（問題の規模）の形が典型的。" },
+    { q:"「ある意味では」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Großen und Ganzen", "beispielsweise", "im Prinzip", "in gewissem Sinne"], ans:3, hint:"完全には同意できないが部分的には認めるときに使う。", exp:"ある意味では＝in gewissem Sinne。完全には同意できないが部分的には認めるときに使う。" },
+    { q:"「共同体・集団」を意味するドイツ語はどれか。", pos:"N", opts:["der Kompromiss", "die Gemeinschaft", "die Konsequenz", "das Problem"], ans:1, hint:"eine internationale Gemeinschaft（国際共同体）の形が典型的。", exp:"共同体・集団＝die Gemeinschaft。eine internationale Gemeinschaft（国際共同体）の形が典型的。" },
+    { q:"「見解」を意味するドイツ語はどれか。", pos:"N", opts:["die Annahme", "die Maßnahme", "das Verhältnis", "die Ansicht"], ans:3, hint:"meiner Ansicht nach は Meinung よりフォーマル。", exp:"見解＝die Ansicht。meiner Ansicht nach は Meinung よりフォーマル。" },
+    { q:"「改善する」を意味するドイツ語はどれか。", pos:"V", opts:["verbessern", "betonen", "nachweisen", "unterstützen"], ans:0, hint:"die Situation verbessern（状況を改善する）の形が典型的。", exp:"改善する＝verbessern。die Situation verbessern（状況を改善する）の形が典型的。" },
+    { q:"「根本的には・つまるところ」を意味するドイツ語はどれか。", pos:"Adv", opts:["in gewissem Maße", "in erster Linie", "im Grunde", "ausdrücklich"], ans:2, hint:"議論の核心を述べるときに使う。im Grunde genommen の形も頻出。", exp:"根本的には・つまるところ＝im Grunde。議論の核心を述べるときに使う。im Grunde genommen の形も頻出。" },
+    { q:"「〜の観点から・〜を見据えて」を意味するドイツ語はどれか。", pos:"Adv", opts:["gegenseitig", "im Hinblick auf", "folglich", "daher"], ans:1, hint:"ある目的・視点から考えるときに使う。", exp:"〜の観点から・〜を見据えて＝im Hinblick auf。ある目的・視点から考えるときに使う。" },
+    { q:"「高める・増やす」を意味するドイツ語はどれか。", pos:"V", opts:["steigern", "betonen", "nachweisen", "unterstützen"], ans:0, hint:"die Effizienz steigern（効率を高める）の形が典型的。", exp:"高める・増やす＝steigern。die Effizienz steigern（効率を高める）の形が典型的。" },
+    { q:"「ほとんど〜ない」を意味するドイツ語はどれか。", pos:"Adv", opts:["weitgehend", "folglich", "im Wesentlichen", "kaum"], ans:3, hint:"kaum möglich（ほとんど不可能）の形が典型的。", exp:"ほとんど〜ない＝kaum。kaum möglich（ほとんど不可能）の形が典型的。" },
+    { q:"「根拠を示す」を意味するドイツ語はどれか。", pos:"V", opts:["verbessern", "unterstützen", "begründen", "mitteilen"], ans:2, hint:"eine Entscheidung begründen（決定の根拠を示す）の形が典型的。", exp:"根拠を示す＝begründen。eine Entscheidung begründen（決定の根拠を示す）の形が典型的。" },
+    { q:"「説得する・納得させる」を意味するドイツ語はどれか。", pos:"V", opts:["verbessern", "erreichen", "überzeugen", "steigern"], ans:2, hint:"jdn. von etw. überzeugen（〜を納得させる）の形が典型的。", exp:"説得する・納得させる＝überzeugen。jdn. von etw. überzeugen（〜を納得させる）の形が典型的。" },
+    { q:"「全体として・合計で」を意味するドイツ語はどれか。", pos:"Adv", opts:["beispielsweise", "insgesamt", "im Großen und Ganzen", "gegenseitig"], ans:1, hint:"insgesamt gesehen（全体的に見て）の形が典型的。", exp:"全体として・合計で＝insgesamt。insgesamt gesehen（全体的に見て）の形が典型的。" },
+    { q:"「側面・観点」を意味するドイツ語はどれか。", pos:"N", opts:["der Aspekt", "der Bericht", "die Toleranz", "die Ursache"], ans:0, hint:"alle Aspekte berücksichtigen（すべての側面を考慮する）の形が典型的。", exp:"側面・観点＝der Aspekt。alle Aspekte berücksichtigen（すべての側面を考慮する）の形が典型的。" },
+    { q:"「結論」を意味するドイツ語はどれか。", pos:"N", opts:["der Wert", "die Verantwortung", "das Ergebnis", "der Schluss"], ans:3, hint:"zu dem Schluss kommen（〜という結論に至る）の形が最頻出。", exp:"結論＝der Schluss。zu dem Schluss kommen（〜という結論に至る）の形が最頻出。" },
+    { q:"「他方では」を意味するドイツ語はどれか。", pos:"Adv", opts:["in der Regel", "auf der anderen Seite", "insgesamt", "zum Teil"], ans:1, hint:"einerseits...andererseits と同様に対比を示す。", exp:"他方では＝auf der anderen Seite。einerseits...andererseits と同様に対比を示す。" },
+    { q:"「通常・一般的に」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Gegensatz dazu", "gemeinsam", "in der Regel", "im Prinzip"], ans:2, hint:"例外を認めつつも一般的な傾向を述べるときに使う。", exp:"通常・一般的に＝in der Regel。例外を認めつつも一般的な傾向を述べるときに使う。" },
+    { q:"「互いの・相互の」を意味するドイツ語はどれか。", pos:"Adv", opts:["gegenseitig", "tatsächlich", "in Bezug auf", "im Gegensatz dazu"], ans:0, hint:"sich gegenseitig helfen（互いに助け合う）の形が典型的。", exp:"互いの・相互の＝gegenseitig。sich gegenseitig helfen（互いに助け合う）の形が典型的。" },
+    { q:"「比較」を意味するドイツ語はどれか。", pos:"N", opts:["die Möglichkeit", "die Mehrheit", "der Anteil", "der Vergleich"], ans:3, hint:"im Vergleich zu（〜と比較して）の形で最頻出。", exp:"比較＝der Vergleich。im Vergleich zu（〜と比較して）の形で最頻出。" },
+    { q:"「比較する」を意味するドイツ語はどれか。", pos:"V", opts:["lösen", "nachweisen", "darstellen", "vergleichen"], ans:3, hint:"A mit B vergleichen（AとBを比較する）の形が典型的。", exp:"比較する＝vergleichen。A mit B vergleichen（AとBを比較する）の形が典型的。" },
+    { q:"「第一に・主として」を意味するドイツ語はどれか。", pos:"Adv", opts:["weitgehend", "in erster Linie", "in der Regel", "allmählich"], ans:1, hint:"最も重要な点を最初に述べるときに使う。", exp:"第一に・主として＝in erster Linie。最も重要な点を最初に述べるときに使う。" },
+    { q:"「問題」を意味するドイツ語はどれか。", pos:"N", opts:["das Problem", "die Verantwortung", "die Gleichheit", "die Qualität"], ans:0, hint:"ein Problem lösen（問題を解決する）の形が最頻出。", exp:"問題＝das Problem。ein Problem lösen（問題を解決する）の形が最頻出。" },
+    { q:"「いずれにせよ・必ず」を意味するドイツ語はどれか。", pos:"Adv", opts:["zum Teil", "im Grunde", "auf jeden Fall", "unter anderem"], ans:2, hint:"条件にかかわらず確実であることを強調する。", exp:"いずれにせよ・必ず＝auf jeden Fall。条件にかかわらず確実であることを強調する。" },
+    { q:"「次第に・ますます」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Prinzip", "zunehmend", "ausdrücklich", "daher"], ans:1, hint:"zunehmend wichtiger werden（次第に重要になる）の形が典型的。", exp:"次第に・ますます＝zunehmend。zunehmend wichtiger werden（次第に重要になる）の形が典型的。" },
+    { q:"「いずれにせよ・とにかく」を意味するドイツ語はどれか。", pos:"Adv", opts:["in gewissem Maße", "in gewissem Sinne", "im Großen und Ganzen", "jedenfalls"], ans:3, hint:"Jedenfalls müssen wir etwas tun. の形が典型的。", exp:"いずれにせよ・とにかく＝jedenfalls。Jedenfalls müssen wir etwas tun. の形が典型的。" },
+    { q:"「概して・全体的に見て」を意味するドイツ語はどれか。", pos:"Adv", opts:["grundsätzlich", "in erster Linie", "im Großen und Ganzen", "jedenfalls"], ans:2, hint:"細かい点には触れず全体的な評価を述べるときに使う。", exp:"概して・全体的に見て＝im Großen und Ganzen。細かい点には触れず全体的な評価を述べるときに使う。" },
+    { q:"「多数・多数派」を意味するドイツ語はどれか。", pos:"N", opts:["die Mehrheit", "die Minderheit", "der Nachteil", "die Meinung"], ans:0, hint:"die Mehrheit der Bevölkerung（人口の多数）の形が典型的。", exp:"多数・多数派＝die Mehrheit。die Mehrheit der Bevölkerung（人口の多数）の形が典型的。" },
+    { q:"「差異・相違」を意味するドイツ語はどれか。", pos:"N", opts:["der Unterschied", "der Grund", "der Wandel", "die Erklärung"], ans:0, hint:"einen Unterschied machen（差異をもたらす）の形が典型的。", exp:"差異・相違＝der Unterschied。einen Unterschied machen（差異をもたらす）の形が典型的。" },
+    { q:"「少数・少数派」を意味するドイツ語はどれか。", pos:"N", opts:["die Qualität", "die Wirkung", "die Minderheit", "die Annahme"], ans:2, hint:"eine sprachliche Minderheit（言語的少数派）の形が典型的。", exp:"少数・少数派＝die Minderheit。eine sprachliche Minderheit（言語的少数派）の形が典型的。" },
+    { q:"「まず・最初に」を意味するドイツ語はどれか。", pos:"Adv", opts:["tatsächlich", "zunächst", "in Bezug auf", "auf jeden Fall"], ans:1, hint:"zunächst möchte ich...（まず〜したい）の形が論述で頻出。", exp:"まず・最初に＝zunächst。zunächst möchte ich...（まず〜したい）の形が論述で頻出。" },
+    { q:"「例外」を意味するドイツ語はどれか。", pos:"N", opts:["die Bedeutung", "die Mitteilung", "das Verhältnis", "die Ausnahme"], ans:3, hint:"eine Ausnahme machen（例外を設ける）の形が典型的。", exp:"例外＝die Ausnahme。eine Ausnahme machen（例外を設ける）の形が典型的。" },
+    { q:"「重要な・著しい」を意味するドイツ語はどれか。", pos:"Adj", opts:["sachlich", "dringend", "bedeutend", "deutlich"], ans:2, hint:"eine bedeutende Rolle spielen（重要な役割を果たす）の形が典型的。", exp:"重要な・著しい＝bedeutend。eine bedeutende Rolle spielen（重要な役割を果たす）の形が典型的。" },
+    { q:"「明確な・はっきりした」を意味するドイツ語はどれか。", pos:"Adj", opts:["deutlich", "sachlich", "notwendig", "erheblich"], ans:0, hint:"deutlich machen（明確にする）の形が典型的。", exp:"明確な・はっきりした＝deutlich。deutlich machen（明確にする）の形が典型的。" },
+    { q:"「報告する・伝える」を意味するドイツ語はどれか。", pos:"V", opts:["steigern", "zusammenarbeiten", "vergleichen", "berichten"], ans:3, hint:"über etw. berichten（〜について報告する）の形が典型的。", exp:"報告する・伝える＝berichten。über etw. berichten（〜について報告する）の形が典型的。" },
+    { q:"「不足・欠如」を意味するドイツ語はどれか。", pos:"N", opts:["das Gespräch", "der Mangel", "die Wirkung", "der Vergleich"], ans:1, hint:"ein Mangel an Ressourcen（資源の不足）の形が典型的。", exp:"不足・欠如＝der Mangel。ein Mangel an Ressourcen（資源の不足）の形が典型的。" },
+    { q:"「社会」を意味するドイツ語はどれか。", pos:"N", opts:["die Erklärung", "die Gesellschaft", "der Zusammenhang", "das Ergebnis"], ans:1, hint:"die moderne Gesellschaft（現代社会）の形が典型的。", exp:"社会＝die Gesellschaft。die moderne Gesellschaft（現代社会）の形が典型的。" },
+    { q:"「結果・影響」を意味するドイツ語はどれか。", pos:"N", opts:["der Beweis", "das Merkmal", "die Lösung", "die Folge"], ans:3, hint:"als Folge davon（その結果として）の形もよく使う。", exp:"結果・影響＝die Folge。als Folge davon（その結果として）の形もよく使う。" },
+    { q:"「考える・検討する」を意味するドイツ語はどれか。", pos:"V", opts:["steigern", "lösen", "überlegen", "meinen"], ans:2, hint:"sich etw. überlegen（〜をよく考える）の再帰形が最頻出。", exp:"考える・検討する＝überlegen。sich etw. überlegen（〜をよく考える）の再帰形が最頻出。" },
+    { q:"「関係・割合・比率」を意味するドイツ語はどれか。", pos:"N", opts:["das Verhältnis", "die Ausnahme", "die Möglichkeit", "die Wirkung"], ans:0, hint:"das Verhältnis zwischen A und B（AとBの関係）の形が典型的。", exp:"関係・割合・比率＝das Verhältnis。das Verhältnis zwischen A und B（AとBの関係）の形が典型的。" },
+    { q:"「確認する・断言する」を意味するドイツ語はどれか。", pos:"V", opts:["feststellen", "überzeugen", "vergleichen", "steigern"], ans:0, hint:"ein Problem feststellen（問題を確認する）の形が典型的。", exp:"確認する・断言する＝feststellen。ein Problem feststellen（問題を確認する）の形が典型的。" },
+    { q:"「大多数の・主として」を意味するドイツ語はどれか。", pos:"Adv", opts:["durchaus", "überwiegend", "ausdrücklich", "kaum"], ans:1, hint:"überwiegend positiv（大多数において肯定的）の形が典型的。", exp:"大多数の・主として＝überwiegend。überwiegend positiv（大多数において肯定的）の形が典型的。" },
+    { q:"「証拠・証明」を意味するドイツ語はどれか。", pos:"N", opts:["die Kritik", "der Kompromiss", "die Wirkung", "der Beweis"], ans:3, hint:"einen Beweis liefern（証拠を示す）の形が典型的。", exp:"証拠・証明＝der Beweis。einen Beweis liefern（証拠を示す）の形が典型的。" },
+    { q:"「明らかに・明白な」を意味するドイツ語はどれか。", pos:"Adv", opts:["in gewissem Maße", "tatsächlich", "offensichtlich", "im Grunde"], ans:2, hint:"Das ist offensichtlich falsch. の形が典型的。", exp:"明らかに・明白な＝offensichtlich。Das ist offensichtlich falsch. の形が典型的。" },
+    { q:"「利点・長所」を意味するドイツ語はどれか。", pos:"N", opts:["das Verhalten", "der Anteil", "die Ursache", "der Vorteil"], ans:3, hint:"Vorteile und Nachteile のセットで覚えよう。", exp:"利点・長所＝der Vorteil。Vorteile und Nachteile のセットで覚えよう。" },
+    { q:"「言い換えれば」を意味するドイツ語はどれか。", pos:"Adv", opts:["mit anderen Worten", "im Vergleich zu", "kaum", "insgesamt"], ans:0, hint:"前文の内容を別の言い方で説明するときに使う。", exp:"言い換えれば＝mit anderen Worten。前文の内容を別の言い方で説明するときに使う。" },
+    { q:"「この理由から・したがって」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Vergleich zu", "aus diesem Grund", "unter anderem", "in diesem Zusammenhang"], ans:1, hint:"前文の理由を受けて結論を述べるときに使う。", exp:"この理由から・したがって＝aus diesem Grund。前文の理由を受けて結論を述べるときに使う。" },
+    { q:"「〜と思う・考える」を意味するドイツ語はどれか。", pos:"V", opts:["verhindern", "beibehalten", "meinen", "betonen"], ans:2, hint:"Was meinen Sie dazu?（それについてどう思いますか）の形が典型的。", exp:"〜と思う・考える＝meinen。Was meinen Sie dazu?（それについてどう思いますか）の形が典型的。" },
+    { q:"「意見」を意味するドイツ語はどれか。", pos:"N", opts:["die Minderheit", "die Mitteilung", "die Meinung", "die Schwierigkeit"], ans:2, hint:"meiner Meinung nach（私の意見では）の形が最頻出。", exp:"意見＝die Meinung。meiner Meinung nach（私の意見では）の形が最頻出。" },
+    { q:"「大部分において」を意味するドイツ語はどれか。", pos:"Adv", opts:["weitgehend", "allerdings", "im Großen und Ganzen", "durchaus"], ans:0, hint:"weitgehend gelöst（ほぼ解決した）の形が典型的。", exp:"大部分において＝weitgehend。weitgehend gelöst（ほぼ解決した）の形が典型的。" },
+    { q:"「発展・展開」を意味するドイツ語はどれか。", pos:"N", opts:["die Möglichkeit", "der Grund", "der Rückgang", "die Entwicklung"], ans:3, hint:"eine positive Entwicklung（前向きな発展）の形が典型的。", exp:"発展・展開＝die Entwicklung。eine positive Entwicklung（前向きな発展）の形が典型的。" },
+    { q:"「客観的な・事実に即した」を意味するドイツ語はどれか。", pos:"Adj", opts:["notwendig", "sachlich", "logisch", "erheblich"], ans:1, hint:"sachlich bleiben（客観的でいる）の形が典型的。", exp:"客観的な・事実に即した＝sachlich。sachlich bleiben（客観的でいる）の形が典型的。" },
+    { q:"「立場・見地」を意味するドイツ語はどれか。", pos:"N", opts:["die Minderheit", "die Wirkung", "der Vorteil", "der Standpunkt"], ans:3, hint:"von meinem Standpunkt aus（私の立場からは）の形でよく使う。", exp:"立場・見地＝der Standpunkt。von meinem Standpunkt aus（私の立場からは）の形でよく使う。" },
+    { q:"「効果・作用」を意味するドイツ語はどれか。", pos:"N", opts:["die Wirkung", "die Aussage", "die Kritik", "das Gespräch"], ans:0, hint:"eine positive Wirkung haben（良い効果をもたらす）の形が典型的。", exp:"効果・作用＝die Wirkung。eine positive Wirkung haben（良い効果をもたらす）の形が典型的。" },
+    { q:"「判断する」を意味するドイツ語はどれか。", pos:"V", opts:["mitteilen", "beurteilen", "reduzieren", "verschlechtern"], ans:1, hint:"die Lage beurteilen（状況を判断する）の形が典型的。", exp:"判断する＝beurteilen。die Lage beurteilen（状況を判断する）の形が典型的。" },
+    { q:"「ある程度」を意味するドイツ語はどれか。", pos:"Adv", opts:["grundsätzlich", "überwiegend", "in gewissem Maße", "durchaus"], ans:2, hint:"完全ではないが部分的に当てはまることを示す。", exp:"ある程度＝in gewissem Maße。完全ではないが部分的に当てはまることを示す。" },
+    { q:"「徐々に」を意味するドイツ語はどれか。", pos:"Adv", opts:["allmählich", "insgesamt", "allerdings", "im Gegenteil"], ans:0, hint:"allmählich besser werden（徐々によくなる）の形が典型的。", exp:"徐々に＝allmählich。allmählich besser werden（徐々によくなる）の形が典型的。" },
+    { q:"「実際に・本当に」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Gegensatz dazu", "im Hinblick auf", "tatsächlich", "durchaus"], ans:2, hint:"Das ist tatsächlich ein Problem. の形が典型的。", exp:"実際に・本当に＝tatsächlich。Das ist tatsächlich ein Problem. の形が典型的。" },
+    { q:"「まったく・十分に」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Prinzip", "auf jeden Fall", "aus diesem Grund", "durchaus"], ans:3, hint:"durchaus möglich（十分に可能）の形が典型的。", exp:"まったく・十分に＝durchaus。durchaus möglich（十分に可能）の形が典型的。" },
+    { q:"「緊急の・切迫した」を意味するドイツ語はどれか。", pos:"Adj", opts:["sachlich", "dringend", "notwendig", "erheblich"], ans:1, hint:"dringender Handlungsbedarf（緊急の行動の必要性）の形が典型的。", exp:"緊急の・切迫した＝dringend。dringender Handlungsbedarf（緊急の行動の必要性）の形が典型的。" },
+    { q:"「悪化する」を意味するドイツ語はどれか。", pos:"V", opts:["berücksichtigen", "verhindern", "verschlechtern", "berichten"], ans:2, hint:"sich verschlechtern（悪化する）の再帰形が最頻出。", exp:"悪化する＝verschlechtern。sich verschlechtern（悪化する）の再帰形が最頻出。" },
+    { q:"「社会的な」を意味するドイツ語はどれか。", pos:"Adj", opts:["möglich", "wesentlich", "deutlich", "sozial"], ans:3, hint:"ein soziales Problem（社会的な問題）の形が典型的。", exp:"社会的な＝sozial。ein soziales Problem（社会的な問題）の形が典型的。" },
+    { q:"「維持する・保つ」を意味するドイツ語はどれか。", pos:"V", opts:["vermeiden", "beibehalten", "beurteilen", "berücksichtigen"], ans:1, hint:"einen Kurs beibehalten（方針を維持する）の形が典型的。", exp:"維持する・保つ＝beibehalten。einen Kurs beibehalten（方針を維持する）の形が典型的。" },
+    { q:"「増加する」を意味するドイツ語はどれか。", pos:"V", opts:["zunehmen", "meinen", "vermeiden", "erreichen"], ans:0, hint:"Die Zahl nimmt zu.（数が増加する）の形が典型的。", exp:"増加する＝zunehmen。Die Zahl nimmt zu.（数が増加する）の形が典型的。" },
+    { q:"「結果・論理的帰結」を意味するドイツ語はどれか。", pos:"N", opts:["die Beziehung", "die Konsequenz", "das Verhältnis", "der Vorteil"], ans:1, hint:"Konsequenzen ziehen（結論を引き出す）の形が典型的。", exp:"結果・論理的帰結＝die Konsequenz。Konsequenzen ziehen（結論を引き出す）の形が典型的。" },
+    { q:"「強調する」を意味するドイツ語はどれか。", pos:"V", opts:["steigern", "überlegen", "betonen", "verursachen"], ans:2, hint:"die Wichtigkeit betonen（重要性を強調する）の形が典型的。", exp:"強調する＝betonen。die Wichtigkeit betonen（重要性を強調する）の形が典型的。" },
+    { q:"「困難・難しさ」を意味するドイツ語はどれか。", pos:"N", opts:["die Meinung", "das Ergebnis", "das Gespräch", "die Schwierigkeit"], ans:3, hint:"Schwierigkeiten überwinden（困難を乗り越える）の形が典型的。", exp:"困難・難しさ＝die Schwierigkeit。Schwierigkeiten überwinden（困難を乗り越える）の形が典型的。" },
+    { q:"「解決する」を意味するドイツ語はどれか。", pos:"V", opts:["lösen", "abnehmen", "reduzieren", "beurteilen"], ans:0, hint:"ein Problem lösen（問題を解決する）の形が最頻出。", exp:"解決する＝lösen。ein Problem lösen（問題を解決する）の形が最頻出。" },
+    { q:"「伝える・通知する」を意味するドイツ語はどれか。", pos:"V", opts:["reduzieren", "lösen", "mitteilen", "nachweisen"], ans:2, hint:"jdm. etw. mitteilen（〜に〜を伝える）の形が典型的。", exp:"伝える・通知する＝mitteilen。jdm. etw. mitteilen（〜に〜を伝える）の形が典型的。" },
+    { q:"「原則的に・基本的に」を意味するドイツ語はどれか。", pos:"Adv", opts:["grundsätzlich", "beispielsweise", "in erster Linie", "folglich"], ans:0, hint:"grundsätzlich einverstanden sein（基本的に同意する）の形が典型的。", exp:"原則的に・基本的に＝grundsätzlich。grundsätzlich einverstanden sein（基本的に同意する）の形が典型的。" },
+    { q:"「原因」を意味するドイツ語はどれか。", pos:"N", opts:["die Gesellschaft", "die Ursache", "die Folge", "der Rückgang"], ans:1, hint:"die Ursache des Problems（問題の原因）の形が典型的。", exp:"原因＝die Ursache。die Ursache des Problems（問題の原因）の形が典型的。" },
+    { q:"「必要な・不可欠な」を意味するドイツ語はどれか。", pos:"Adj", opts:["logisch", "dringend", "sozial", "notwendig"], ans:3, hint:"notwendige Maßnahmen（必要な措置）の形が典型的。", exp:"必要な・不可欠な＝notwendig。notwendige Maßnahmen（必要な措置）の形が典型的。" },
+    { q:"「仮定・前提」を意味するドイツ語はどれか。", pos:"N", opts:["der Grund", "die Annahme", "die Erklärung", "das Merkmal"], ans:1, hint:"von der Annahme ausgehen（〜という前提から出発する）の形でよく使う。", exp:"仮定・前提＝die Annahme。von der Annahme ausgehen（〜という前提から出発する）の形でよく使う。" },
+    { q:"「〜を可能にする」を意味するドイツ語はどれか。", pos:"V", opts:["reduzieren", "erreichen", "vermeiden", "ermöglichen"], ans:3, hint:"neue Möglichkeiten ermöglichen の形が典型的。", exp:"〜を可能にする＝ermöglichen。neue Möglichkeiten ermöglichen の形が典型的。" },
+    { q:"「妥協・妥協点」を意味するドイツ語はどれか。", pos:"N", opts:["der Kompromiss", "der Grund", "der Schluss", "die Folge"], ans:0, hint:"einen Kompromiss finden（妥協点を見つける）の形が典型的。", exp:"妥協・妥協点＝der Kompromiss。einen Kompromiss finden（妥協点を見つける）の形が典型的。" },
+    { q:"「変化・変容」を意味するドイツ語はどれか。", pos:"N", opts:["die Wirkung", "der Mangel", "die Veränderung", "die Schwierigkeit"], ans:2, hint:"eine grundlegende Veränderung（根本的な変化）の形が典型的。", exp:"変化・変容＝die Veränderung。eine grundlegende Veränderung（根本的な変化）の形が典型的。" },
+    { q:"「価値・価値観」を意味するドイツ語はどれか。", pos:"N", opts:["die Aussage", "das Merkmal", "die Verantwortung", "der Wert"], ans:3, hint:"einen hohen Wert legen auf（〜を重視する）の形が典型的。", exp:"価値・価値観＝der Wert。einen hohen Wert legen auf（〜を重視する）の形が典型的。" },
+    { q:"「これに関連して」を意味するドイツ語はどれか。", pos:"Adv", opts:["überwiegend", "in diesem Zusammenhang", "allmählich", "ausdrücklich"], ans:1, hint:"前の話題に関連して新しい点を付け加えるときに使う。", exp:"これに関連して＝in diesem Zusammenhang。前の話題に関連して新しい点を付け加えるときに使う。" },
+    { q:"「支援する」を意味するドイツ語はどれか。", pos:"V", opts:["verhindern", "überzeugen", "unterstützen", "feststellen"], ans:2, hint:"jdn. bei etw. unterstützen（〜を支援する）の形が典型的。", exp:"支援する＝unterstützen。jdn. bei etw. unterstützen（〜を支援する）の形が典型的。" },
+    { q:"「引き起こす・原因となる」を意味するドイツ語はどれか。", pos:"V", opts:["verursachen", "steigern", "meinen", "berichten"], ans:0, hint:"Schäden verursachen（損害を引き起こす）の形が典型的。", exp:"引き起こす・原因となる＝verursachen。Schäden verursachen（損害を引き起こす）の形が典型的。" },
+    { q:"「論理的な」を意味するドイツ語はどれか。", pos:"Adj", opts:["sachlich", "erheblich", "logisch", "möglich"], ans:2, hint:"Das ist nicht logisch.（それは論理的でない）の形が典型的。", exp:"論理的な＝logisch。Das ist nicht logisch.（それは論理的でない）の形が典型的。" },
+    { q:"「防ぐ・阻止する」を意味するドイツ語はどれか。", pos:"V", opts:["berichten", "betonen", "beeinflussen", "verhindern"], ans:3, hint:"etw. zu verhindern versuchen（〜を防ごうとする）の形が典型的。", exp:"防ぐ・阻止する＝verhindern。etw. zu verhindern versuchen（〜を防ごうとする）の形が典型的。" },
+    { q:"「減らす・削減する」を意味するドイツ語はどれか。", pos:"V", opts:["reduzieren", "beurteilen", "beibehalten", "berichten"], ans:0, hint:"Kosten reduzieren（コストを削減する）の形が典型的。", exp:"減らす・削減する＝reduzieren。Kosten reduzieren（コストを削減する）の形が典型的。" },
+    { q:"「表す・示す・描写する」を意味するドイツ語はどれか。", pos:"V", opts:["nachweisen", "darstellen", "lösen", "beurteilen"], ans:1, hint:"ein Problem darstellen（問題を示す）の形が典型的。", exp:"表す・示す・描写する＝darstellen。ein Problem darstellen（問題を示す）の形が典型的。" },
+    { q:"「〜に関して」を意味するドイツ語はどれか。", pos:"Adv", opts:["zunehmend", "in gewissem Maße", "in Bezug auf", "zumindest"], ans:2, hint:"特定のテーマについて話を限定するときに使う。", exp:"〜に関して＝in Bezug auf。特定のテーマについて話を限定するときに使う。" },
+    { q:"「情報」を意味するドイツ語はどれか。", pos:"N", opts:["die Minderheit", "die Information", "die Folge", "der Einfluss"], ans:1, hint:"Informationen weitergeben（情報を伝える）の形が典型的。", exp:"情報＝die Information。Informationen weitergeben（情報を伝える）の形が典型的。" },
+    { q:"「関連・文脈」を意味するドイツ語はどれか。", pos:"N", opts:["die Qualität", "die Mehrheit", "die Kritik", "der Zusammenhang"], ans:3, hint:"in welchem Zusammenhang（どういう文脈で）の形が頻出。", exp:"関連・文脈＝der Zusammenhang。in welchem Zusammenhang（どういう文脈で）の形が頻出。" },
+    { q:"「〜と比較して」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Vergleich zu", "auf der anderen Seite", "im Gegensatz dazu", "zunehmend"], ans:0, hint:"二つのものを比較するときに使う。", exp:"〜と比較して＝im Vergleich zu。二つのものを比較するときに使う。" },
+    { q:"「達成する・到達する」を意味するドイツ語はどれか。", pos:"V", opts:["zusammenarbeiten", "verhindern", "verursachen", "erreichen"], ans:3, hint:"ein Ziel erreichen（目標を達成する）の形が典型的。", exp:"達成する・到達する＝erreichen。ein Ziel erreichen（目標を達成する）の形が典型的。" },
+    { q:"「考慮する・踏まえる」を意味するドイツ語はどれか。", pos:"V", opts:["betonen", "berücksichtigen", "zusammenarbeiten", "verbessern"], ans:1, hint:"alle Faktoren berücksichtigen の形が典型的。", exp:"考慮する・踏まえる＝berücksichtigen。alle Faktoren berücksichtigen の形が典型的。" },
+    { q:"「特徴・特性」を意味するドイツ語はどれか。", pos:"N", opts:["das Merkmal", "die Toleranz", "die Wirkung", "die Herausforderung"], ans:0, hint:"ein wesentliches Merkmal（本質的な特徴）の形が典型的。", exp:"特徴・特性＝das Merkmal。ein wesentliches Merkmal（本質的な特徴）の形が典型的。" },
+    { q:"「減少する」を意味するドイツ語はどれか。", pos:"V", opts:["lösen", "steigern", "abnehmen", "nachweisen"], ans:2, hint:"Die Nachfrage nimmt ab.（需要が減少する）の形が典型的。", exp:"減少する＝abnehmen。Die Nachfrage nimmt ab.（需要が減少する）の形が典型的。" },
+    { q:"「証明する・立証する」を意味するドイツ語はどれか。", pos:"V", opts:["erkennen", "nachweisen", "lösen", "überzeugen"], ans:1, hint:"wissenschaftlich nachweisen（科学的に証明する）の形が典型的。", exp:"証明する・立証する＝nachweisen。wissenschaftlich nachweisen（科学的に証明する）の形が典型的。" },
+    { q:"「説明・解説」を意味するドイツ語はどれか。", pos:"N", opts:["das Problem", "der Unterschied", "das Gespräch", "die Erklärung"], ans:3, hint:"eine Erklärung abgeben（説明をする）の形が典型的。", exp:"説明・解説＝die Erklärung。eine Erklärung abgeben（説明をする）の形が典型的。" },
+    { q:"「それどころか・反対に」を意味するドイツ語はどれか。", pos:"Adv", opts:["im Gegenteil", "in der Regel", "auf der anderen Seite", "aus diesem Grund"], ans:0, hint:"前文の内容を完全に否定して逆のことを述べるときに使う。", exp:"それどころか・反対に＝im Gegenteil。前文の内容を完全に否定して逆のことを述べるときに使う。" },
+    { q:"「影響」を意味するドイツ語はどれか。", pos:"N", opts:["die Erklärung", "der Rückgang", "der Einfluss", "der Bericht"], ans:2, hint:"einen großen Einfluss haben auf（〜に大きな影響を持つ）の形が典型的。", exp:"影響＝der Einfluss。einen großen Einfluss haben auf（〜に大きな影響を持つ）の形が典型的。" },
+    { q:"「意味・重要性」を意味するドイツ語はどれか。", pos:"N", opts:["die Bedeutung", "der Zusammenhang", "die Lösung", "der Vergleich"], ans:0, hint:"von großer Bedeutung sein（大きな意味を持つ）の形が典型的。", exp:"意味・重要性＝die Bedeutung。von großer Bedeutung sein（大きな意味を持つ）の形が典型的。" },
+    { q:"「共同の・一緒に」を意味するドイツ語はどれか。", pos:"Adv", opts:["auf jeden Fall", "in diesem Zusammenhang", "im Prinzip", "gemeinsam"], ans:3, hint:"gemeinsam handeln（共同して行動する）の形が典型的。", exp:"共同の・一緒に＝gemeinsam。gemeinsam handeln（共同して行動する）の形が典型的。" },
+    { q:"「通知・伝言」を意味するドイツ語はどれか。", pos:"N", opts:["der Zusammenhang", "die Annahme", "die Mitteilung", "die Lösung"], ans:2, hint:"eine Mitteilung machen（通知する）の形が典型的。", exp:"通知・伝言＝die Mitteilung。eine Mitteilung machen（通知する）の形が典型的。" },
+    { q:"「原則的には（基本的には）」を意味するドイツ語はどれか。", pos:"Adv", opts:["in der Regel", "im Prinzip", "insgesamt", "daher"], ans:1, hint:"同意しつつも留保を加えるときに使う。", exp:"原則的には（基本的には）＝im Prinzip。同意しつつも留保を加えるときに使う。" },
+    { q:"「本質的には・主に」を意味するドイツ語はどれか。", pos:"Adv", opts:["zumindest", "offensichtlich", "durchaus", "im Wesentlichen"], ans:3, hint:"細部は省いて要点を述べるときに使う。", exp:"本質的には・主に＝im Wesentlichen。細部は省いて要点を述べるときに使う。" },
+    { q:"「対立・葛藤」を意味するドイツ語はどれか。", pos:"N", opts:["das Verhältnis", "der Einfluss", "der Konflikt", "die Ansicht"], ans:2, hint:"einen Konflikt lösen（対立を解消する）の形が典型的。", exp:"対立・葛藤＝der Konflikt。einen Konflikt lösen（対立を解消する）の形が典型的。" },
+    { q:"「理由・根拠」を意味するドイツ語はどれか。", pos:"N", opts:["der Grund", "der Rückgang", "die Gemeinschaft", "der Zusammenhang"], ans:0, hint:"Grund と Ursache はどちらも「理由・原因」だが、Grund は主観的な理由に使うことが多い。", exp:"理由・根拠＝der Grund。Grund と Ursache はどちらも「理由・原因」だが、Grund は主観的な理由に使うことが多い。" },
+    { q:"「協力する」を意味するドイツ語はどれか。", pos:"V", opts:["erreichen", "zusammenarbeiten", "feststellen", "verursachen"], ans:1, hint:"eng zusammenarbeiten（緊密に協力する）の形が典型的。", exp:"協力する＝zusammenarbeiten。eng zusammenarbeiten（緊密に協力する）の形が典型的。" },
+    { q:"「減少・後退」を意味するドイツ語はどれか。", pos:"N", opts:["der Rückgang", "der Vergleich", "die Meinung", "die Gleichheit"], ans:0, hint:"ein deutlicher Rückgang（顕著な減少）の形が典型的。", exp:"減少・後退＝der Rückgang。ein deutlicher Rückgang（顕著な減少）の形が典型的。" },
+    { q:"「それに応じた・相応の」を意味するドイツ語はどれか。", pos:"Adj", opts:["wesentlich", "entsprechend", "sozial", "erheblich"], ans:1, hint:"entsprechende Maßnahmen（それに応じた措置）の形が典型的。", exp:"それに応じた・相応の＝entsprechend。entsprechende Maßnahmen（それに応じた措置）の形が典型的。" },
+    { q:"「指摘・ヒント・注意」を意味するドイツ語はどれか。", pos:"N", opts:["das Merkmal", "die Verantwortung", "der Hinweis", "die Qualität"], ans:2, hint:"einen Hinweis geben（ヒント・注意を与える）の形が典型的。", exp:"指摘・ヒント・注意＝der Hinweis。einen Hinweis geben（ヒント・注意を与える）の形が典型的。" },
+    { q:"「評価する」を意味するドイツ語はどれか。", pos:"V", opts:["verursachen", "reduzieren", "betonen", "bewerten"], ans:3, hint:"etw. positiv bewerten（〜を肯定的に評価する）の形が典型的。", exp:"評価する＝bewerten。etw. positiv bewerten（〜を肯定的に評価する）の形が典型的。" },
+    { q:"「たとえば」を意味するドイツ語はどれか。", pos:"Adv", opts:["beispielsweise", "im Hinblick auf", "tatsächlich", "in Bezug auf"], ans:0, hint:"beispielsweise könnte man...（たとえば〜できる）の形が典型的。", exp:"たとえば＝beispielsweise。beispielsweise könnte man...（たとえば〜できる）の形が典型的。" },
+    { q:"「会話・話し合い」を意味するドイツ語はどれか。", pos:"N", opts:["die Verantwortung", "das Merkmal", "der Nachteil", "das Gespräch"], ans:3, hint:"ein Gespräch führen（話し合いを行う）の形が典型的。", exp:"会話・話し合い＝das Gespräch。ein Gespräch führen（話し合いを行う）の形が典型的。" },
+    { q:"「とりわけ・なかでも」を意味するドイツ語はどれか。", pos:"Adv", opts:["kaum", "jedenfalls", "unter anderem", "daher"], ans:2, hint:"複数の例の中から代表的なものを挙げるときに使う。", exp:"とりわけ・なかでも＝unter anderem。複数の例の中から代表的なものを挙げるときに使う。" },
+    { q:"「責任」を意味するドイツ語はどれか。", pos:"N", opts:["die Mitteilung", "die Verantwortung", "die Qualität", "der Anteil"], ans:1, hint:"Verantwortung übernehmen（責任を引き受ける）の形が最頻出。", exp:"責任＝die Verantwortung。Verantwortung übernehmen（責任を引き受ける）の形が最頻出。" },
+    { q:"「影響を与える」を意味するドイツ語はどれか。", pos:"V", opts:["beurteilen", "darstellen", "beeinflussen", "meinen"], ans:2, hint:"die Entscheidung beeinflussen（決定に影響を与える）の形が典型的。", exp:"影響を与える＝beeinflussen。die Entscheidung beeinflussen（決定に影響を与える）の形が典型的。" },
+    { q:"「発言・陳述」を意味するドイツ語はどれか。", pos:"N", opts:["das Ergebnis", "der Grund", "die Bedeutung", "die Aussage"], ans:3, hint:"eine Aussage machen（発言する）の形が典型的。", exp:"発言・陳述＝die Aussage。eine Aussage machen（発言する）の形が典型的。" },
+    { q:"「変容・変革（構造的）」を意味するドイツ語はどれか。", pos:"N", opts:["die Gemeinschaft", "der Wandel", "die Minderheit", "die Verantwortung"], ans:1, hint:"sozialer Wandel のように長期的・構造的な変化に使う。", exp:"変容・変革（構造的）＝der Wandel。sozialer Wandel のように長期的・構造的な変化に使う。" },
+    { q:"「そのため・したがって」を意味するドイツ語はどれか。", pos:"Adv", opts:["daher", "im Hinblick auf", "insgesamt", "in der Regel"], ans:0, hint:"Daher ist eine Lösung notwendig. の形が典型的。", exp:"そのため・したがって＝daher。Daher ist eine Lösung notwendig. の形が典型的。" },
+    { q:"「公の・公開の」を意味するドイツ語はどれか。", pos:"Adj", opts:["entsprechend", "wesentlich", "bedeutend", "öffentlich"], ans:3, hint:"öffentliches Interesse（公の利益）の形が典型的。", exp:"公の・公開の＝öffentlich。öffentliches Interesse（公の利益）の形が典型的。" },
+    { q:"「増加」を意味するドイツ語はどれか。", pos:"N", opts:["das Ergebnis", "das Ausmaß", "die Zunahme", "die Mitteilung"], ans:2, hint:"eine starke Zunahme（大幅な増加）の形が典型的。", exp:"増加＝die Zunahme。eine starke Zunahme（大幅な増加）の形が典型的。" },
+    { q:"「しかしながら・ただし」を意味するドイツ語はどれか。", pos:"Adv", opts:["allerdings", "in erster Linie", "zumindest", "zum Teil"], ans:0, hint:"前文の内容を認めつつも留保を加える副詞。文頭に置くことが多い。", exp:"しかしながら・ただし＝allerdings。前文の内容を認めつつも留保を加える副詞。文頭に置くことが多い。" },
+    { q:"「解決策」を意味するドイツ語はどれか。", pos:"N", opts:["die Voraussetzung", "die Lösung", "die Zunahme", "der Beweis"], ans:1, hint:"eine Lösung finden（解決策を見つける）の形が最頻出。", exp:"解決策＝die Lösung。eine Lösung finden（解決策を見つける）の形が最頻出。" },
+    { q:"「報告・レポート」を意味するドイツ語はどれか。", pos:"N", opts:["der Bericht", "das Ergebnis", "der Grund", "die Folge"], ans:0, hint:"einen Bericht erstellen（報告書を作成する）の形が典型的。", exp:"報告・レポート＝der Bericht。einen Bericht erstellen（報告書を作成する）の形が典型的。" },
+    { q:"「平等・同等性」を意味するドイツ語はどれか。", pos:"N", opts:["das Merkmal", "die Gleichheit", "der Vorteil", "die Mehrheit"], ans:1, hint:"Gleichheit vor dem Gesetz（法の前の平等）の形が典型的。", exp:"平等・同等性＝die Gleichheit。Gleichheit vor dem Gesetz（法の前の平等）の形が典型的。" },
+    { q:"「可能性・機会」を意味するドイツ語はどれか。", pos:"N", opts:["die Beziehung", "der Wert", "die Wirkung", "die Möglichkeit"], ans:3, hint:"die Möglichkeit haben（〜する可能性がある）の形が典型的。", exp:"可能性・機会＝die Möglichkeit。die Möglichkeit haben（〜する可能性がある）の形が典型的。" },
+    { q:"「寛容・許容」を意味するドイツ語はどれか。", pos:"N", opts:["die Annahme", "die Aussage", "die Toleranz", "die Gesellschaft"], ans:2, hint:"Toleranz zeigen（寛容さを示す）の形が典型的。", exp:"寛容・許容＝die Toleranz。Toleranz zeigen（寛容さを示す）の形が典型的。" },
+    { q:"「批判・批評」を意味するドイツ語はどれか。", pos:"N", opts:["die Annahme", "die Kritik", "das Gespräch", "der Vergleich"], ans:1, hint:"Kritik üben an（〜を批判する）の形が典型的。", exp:"批判・批評＝die Kritik。Kritik üben an（〜を批判する）の形が典型的。" },
+    { q:"「進歩・進展」を意味するドイツ語はどれか。", pos:"N", opts:["der Fortschritt", "die Folge", "die Voraussetzung", "die Toleranz"], ans:0, hint:"Fortschritte machen（進歩する）の形が最頻出。", exp:"進歩・進展＝der Fortschritt。Fortschritte machen（進歩する）の形が最頻出。" },
+    { q:"「本質的な・重要な」を意味するドイツ語はどれか。", pos:"Adj", opts:["sachlich", "erheblich", "wesentlich", "notwendig"], ans:2, hint:"ein wesentlicher Unterschied（本質的な差異）の形が典型的。", exp:"本質的な・重要な＝wesentlich。ein wesentlicher Unterschied（本質的な差異）の形が典型的。" },
+    { q:"「品質・質」を意味するドイツ語はどれか。", pos:"N", opts:["die Erklärung", "der Aspekt", "die Konsequenz", "die Qualität"], ans:3, hint:"auf Qualität achten（品質に気をつける）の形が典型的。", exp:"品質・質＝die Qualität。auf Qualität achten（品質に気をつける）の形が典型的。" }
+];
+const RANDOM_COUNT = 20;
+const posLabel = { N:"名詞", V:"動詞", Adj:"形容詞", Adv:"副詞" };
+
+function shuffle(arr) {
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function buildRandomSet() {
+  return shuffle(allQuestions).slice(0, RANDOM_COUNT);
+}
+
+let currentQuestions=[], cur=0, score=0, answered=false, curSetIdx=0;
+const NAV_SETS = sets.map(s=>s.label).concat(["ランダム"]);
+
+function initNav() {
+  const nav=document.getElementById('set-nav');
+  NAV_SETS.forEach((label,i)=>{
+    const b=document.createElement('button');
+    const isR=label==="ランダム";
+    b.className='set-btn'+(isR?' random-btn':'')+(i===0?' active':'');
+    b.textContent=label;
+    b.onclick=()=>selectSet(i);
+    nav.appendChild(b);
+  });
+}
+
+function selectSet(i) {
+  curSetIdx=i; cur=0; score=0; answered=false;
+  document.querySelectorAll('.set-btn').forEach((b,j)=>{
+    const isR=NAV_SETS[j]==="ランダム";
+    b.className='set-btn'+(isR?' random-btn':'')+(j===i?' active':'');
+  });
+  currentQuestions=NAV_SETS[i]==="ランダム"?buildRandomSet():sets[i].questions;
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  render();
+}
+
+function render() {
+  const q=currentQuestions[cur];
+  document.getElementById('prog-bar').style.width=((cur+1)/currentQuestions.length*100)+'%';
+  document.getElementById('prog-text').textContent='問'+(cur+1)+' / '+currentQuestions.length;
+  document.getElementById('q-num').textContent='問'+(cur+1);
+  const tag=document.getElementById('pos-tag');
+  tag.textContent='【'+posLabel[q.pos]+'】';
+  tag.className='pos-tag pos-'+q.pos;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('hint-text').textContent=q.hint;
+  document.getElementById('hint-text').style.display='none';
+  document.getElementById('hint-btn').style.display='inline';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('next-btn').style.display='none';
+  answered=false;
+  const opts=document.getElementById('q-options');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='option-btn'; b.textContent=o; b.onclick=()=>select(i);
+    opts.appendChild(b);
+  });
+}
+
+function showHint(){
+  const h=document.getElementById('hint-text');
+  h.style.display=h.style.display==='none'?'block':'none';
+}
+
+function select(i){
+  if(answered)return;
+  answered=true;
+  const q=currentQuestions[cur];
+  const btns=document.querySelectorAll('.option-btn');
+  btns.forEach(b=>b.disabled=true);
+  document.getElementById('hint-btn').style.display='none';
+  document.getElementById('hint-text').style.display='none';
+  const fb=document.getElementById('feedback');
+  if(i===q.ans){
+    score++;
+    btns[i].classList.add('correct');
+    fb.className='feedback correct';
+    fb.textContent='✓ 正解！　'+q.exp;
+  }else{
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('reveal');
+    fb.className='feedback wrong';
+    fb.textContent='✗ 不正解。　'+q.exp;
+  }
+  const nb=document.getElementById('next-btn');
+  nb.style.display='block';
+  nb.textContent=cur+1<currentQuestions.length?'次の問題 →':'結果を見る';
+}
+
+function nextQ(){cur++;if(cur<currentQuestions.length)render();else showResult();}
+
+function showResult(){
+  document.getElementById('quiz-area').style.display='none';
+  document.getElementById('result-card').style.display='block';
+  const total=currentQuestions.length,pct=Math.round(score/total*100);
+  document.getElementById('res-title').textContent=NAV_SETS[curSetIdx]+'　終了';
+  document.getElementById('res-score').textContent=score+' / '+total;
+  const msgs=['語彙リストをもう一度確認してから再挑戦しましょう。','もう少しです。リストを見直してから再挑戦しましょう。','よくできました。間違えた語を復習しましょう。','素晴らしい！ほぼ完璧です。'];
+  document.getElementById('res-msg').textContent='正答率 '+pct+'%　'+msgs[pct>=90?3:pct>=70?2:pct>=50?1:0];
+  const nb=document.getElementById('next-set-btn');
+  const nx=curSetIdx+1;
+  if(nx<NAV_SETS.length){nb.style.display='inline-block';nb.textContent=NAV_SETS[nx]+' →';}
+  else nb.style.display='none';
+}
+
+function restart(){
+  cur=0;score=0;
+  if(NAV_SETS[curSetIdx]==="ランダム")currentQuestions=buildRandomSet();
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  render();
+}
+
+function goNext(){selectSet(curSetIdx+1);}
+
+currentQuestions=sets[0].questions;
+initNav();
+render();
+</script>
+</body>
+</html>

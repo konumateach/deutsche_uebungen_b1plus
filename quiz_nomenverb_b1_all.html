@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>名詞＋動詞表現テスト A2〜B1前半</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 700px; margin: 0 auto; }
+  header { margin-bottom: 1.5rem; }
+  header h1 { font-size: 21px; font-weight: 500; margin-bottom: 4px; }
+  header p { font-size: 14px; color: #666; }
+  .set-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .set-btn { padding: 6px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 13px; font-family: inherit; transition: background 0.15s; }
+  .set-btn:hover { background: #f0f0f0; }
+  .set-btn.random-btn { border-color: #185FA5; color: #185FA5; }
+  .set-btn.random-btn.active { background: #185FA5; color: #fff; }
+  .set-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .progress-bar-wrap { background: #ddd; border-radius: 4px; height: 4px; margin-bottom: 6px; }
+  .progress-bar { background: #185FA5; height: 4px; border-radius: 4px; transition: width 0.3s; }
+  .progress-text { font-size: 13px; color: #666; margin-bottom: 1.2rem; }
+  .card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 1.5rem; margin-bottom: 1rem; }
+  .question-num { font-size: 12px; color: #999; margin-bottom: 8px; }
+  .question-text { font-size: 19px; font-weight: 500; margin-bottom: 1.25rem; line-height: 1.7; font-family: "Segoe UI", "Candara", sans-serif; font-style: italic; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { text-align: left; padding: 10px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 16px; font-family: "Segoe UI", "Candara", sans-serif; font-weight: 500; transition: background 0.15s, border-color 0.15s; }
+  .option-btn:hover:not(:disabled) { background: #f0f0f0; border-color: #999; }
+  .option-btn.correct { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn.wrong   { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+  .option-btn.reveal  { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn:disabled { cursor: default; }
+  .feedback { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.7; display: none; font-family: "Segoe UI", "Candara", sans-serif; }
+  .feedback.correct { background: #e1f5ee; color: #085041; display: block; }
+  .feedback.wrong    { background: #fcebeb; color: #791f1f; display: block; }
+  .hint-btn { margin-top: 10px; font-size: 13px; color: #185FA5; background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; text-decoration: underline; }
+  .hint-text { font-size: 13px; color: #666; margin-top: 6px; display: none; }
+  .next-btn { margin-top: 1.25rem; padding: 10px 20px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; display: none; }
+  .next-btn:hover { background: #333; }
+  .result-card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 2rem; text-align: center; display: none; }
+  .result-card h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+  .score-big { font-size: 48px; font-weight: 500; color: #185FA5; margin: 1rem 0; }
+  .score-msg { font-size: 15px; color: #555; margin-bottom: 1.5rem; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .restart-btn { padding: 10px 24px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .restart-btn:hover { background: #333; }
+  .next-set-btn { padding: 10px 24px; border-radius: 8px; background: #185FA5; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .next-set-btn:hover { background: #0c447c; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>名詞＋動詞表現テスト　A2〜B1前半</h1>
+    <p>空欄に入る動詞の形を選びなさい。（各テスト10問）</p>
+  </header>
+  <div class="set-nav" id="set-nav"></div>
+  <div id="quiz-area">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar"></div></div>
+    <div class="progress-text" id="prog-text"></div>
+    <div class="card">
+      <div class="question-num" id="q-num"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <button class="hint-btn" id="hint-btn" onclick="showHint()">ヒントを見る</button>
+      <div class="hint-text" id="hint-text"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQ()">次の問題 →</button>
+    </div>
+  </div>
+  <div class="result-card" id="result-card">
+    <h2 id="res-title"></h2>
+    <div class="score-big" id="res-score"></div>
+    <div class="score-msg" id="res-msg"></div>
+    <div class="btn-row">
+      <button class="restart-btn" onclick="restart()">このテストをもう一度</button>
+      <button class="next-set-btn" id="next-set-btn" onclick="goNext()">次のテストへ →</button>
+    </div>
+  </div>
+</div>
+<script>
+const sets = [
+  { label:"テストA", questions:[
+    { q:"Bitte _____ Sie Platz.", opts:["nehmen", "bleiben", "spielen", "haben"], ans:0, hint:"Platz + nehmen（席に着く）", exp:"Platz nehmen＝席に着く。正答は「Nehmen」。" },
+    { q:"Ich _____ noch eine Frage.", opts:["zeige", "erledige", "habe", "treibe"], ans:2, hint:"eine Frage + haben（質問がある）", exp:"eine Frage haben＝質問がある。正答は「habe」。" },
+    { q:"Darf ich einen Vorschlag _____?", opts:["machen", "haben", "geben", "erledigen"], ans:0, hint:"einen Vorschlag + machen（提案をする）", exp:"einen Vorschlag machen＝提案をする。正答は「machen」。" },
+    { q:"Wir wollen auch nach dem Kurs in Kontakt _____.", opts:["finden", "wecken", "bleiben", "spielen"], ans:2, hint:"in Kontakt + bleiben（連絡を保ち続ける）", exp:"in Kontakt bleiben＝連絡を保ち続ける。正答は「bleiben」。" },
+    { q:"Jeder _____ manchmal Fehler.", opts:["macht", "bleibt", "hält", "erledigt"], ans:0, hint:"einen Fehler + machen（間違いをする）", exp:"einen Fehler machen＝間違いをする。正答は「macht」。" },
+    { q:"Mit dieser Methode _____ sie großen Erfolg.", opts:["zieht", "gibt", "hat", "macht"], ans:2, hint:"Erfolg + haben（成功する）", exp:"Erfolg haben＝成功する。正答は「hat」。" },
+    { q:"Ihre Worte haben mir Mut _____.", opts:["gegeben", "gemacht", "erledigt", "gefunden"], ans:1, hint:"Mut + machen（勇気づける・励ます）", exp:"Mut machen＝勇気づける・励ます。正答は「gemacht」。" },
+    { q:"Sie _____ morgen einen Vortrag.", opts:["hält", "erledigt", "legt", "zeigt"], ans:0, hint:"einen Vortrag + halten（講演をする）", exp:"einen Vortrag halten＝講演をする。正答は「hält」。" },
+    { q:"Aus den Ergebnissen lassen sich Schlüsse _____.", opts:["halten", "geben", "ziehen", "legen"], ans:2, hint:"Schlüsse + ziehen（結論を引き出す）", exp:"Schlüsse ziehen＝結論を引き出す。正答は「ziehen」。" },
+    { q:"_____ mir bitte Bescheid, wann du ankommst.", opts:["Halt", "Find", "Zieh", "Gib"], ans:3, hint:"Bescheid + geben（知らせる・返事をする）", exp:"Bescheid geben＝知らせる・返事をする。正答は「Gib」。" }
+  ]},
+  { label:"テストB", questions:[
+    { q:"Wir _____ kurz eine Pause.", opts:["zeigen", "machen", "halten", "wecken"], ans:1, hint:"eine Pause + machen（休憩する）", exp:"eine Pause machen＝休憩する。正答は「machen」。" },
+    { q:"Das Thema hat großes Interesse _____.", opts:["geweckt", "gegeben", "genommen", "vertreten"], ans:0, hint:"Interesse + wecken（関心を呼び起こす）", exp:"Interesse wecken＝関心を呼び起こす。正答は「geweckt」。" },
+    { q:"Er _____ eine klare Meinung dazu.", opts:["erledigt", "treibt", "vertritt", "nimmt"], ans:2, hint:"eine Meinung + vertreten（意見を主張する）", exp:"eine Meinung vertreten＝意見を主張する。正答は「vertritt」。" },
+    { q:"Die Band _____ nächste Woche ein Konzert.", opts:["treibt", "weckt", "bleibt", "gibt"], ans:3, hint:"ein Konzert + geben（コンサートを開く）", exp:"ein Konzert geben＝コンサートを開く。正答は「gibt」。" },
+    { q:"Er _____ Angst vor der Prüfung.", opts:["vertritt", "weckt", "zeigt", "hat"], ans:3, hint:"Angst + haben（怖い・不安だ）", exp:"Angst haben＝怖い・不安だ。正答は「hat」。" },
+    { q:"Wir _____ regelmäßig Kontakt.", opts:["bleiben", "ziehen", "halten", "spielen"], ans:2, hint:"Kontakt + halten（連絡を保つ）", exp:"Kontakt halten＝連絡を保つ。正答は「halten」。" },
+    { q:"Du musst mehr Geduld _____.", opts:["haben", "geben", "wecken", "halten"], ans:0, hint:"Geduld + haben（忍耐がある）", exp:"Geduld haben＝忍耐がある。正答は「haben」。" },
+    { q:"Sie _____ großen Wert auf Pünktlichkeit.", opts:["treibt", "legt", "spielt", "macht"], ans:1, hint:"Wert auf +A + legen（〜を重視する）", exp:"Wert auf +A legen＝〜を重視する。正答は「legt」。" },
+    { q:"_____ Sie heute Zeit für mich?", opts:["Halten", "Haben", "Ziehen", "Vertreten"], ans:1, hint:"Zeit + haben（時間がある）", exp:"Zeit haben＝時間がある。正答は「Haben」。" },
+    { q:"Sie _____ ihre Aufgaben immer pünktlich.", opts:["gibt", "erledigt", "treibt", "spielt"], ans:1, hint:"Aufgaben + erledigen（用事をこなす）", exp:"Aufgaben erledigen＝用事をこなす。正答は「erledigt」。" }
+  ]},
+  { label:"テストC", questions:[
+    { q:"Nächste Woche muss ich ein Referat _____.", opts:["vertreten", "geben", "halten", "erledigen"], ans:2, hint:"ein Referat + halten（発表をする）", exp:"ein Referat halten＝発表をする。正答は「halten」。" },
+    { q:"Bitte _____ keinen Lärm!", opts:["zieh", "vertritt", "mach", "bleib"], ans:2, hint:"Lärm + machen（騒音を立てる）", exp:"Lärm machen＝騒音を立てる。正答は「Mach」。" },
+    { q:"Ich _____ großen Hunger.", opts:["habe", "bleibe", "gebe", "halte"], ans:0, hint:"Hunger + haben（お腹が空いている）", exp:"Hunger haben＝お腹が空いている。正答は「habe」。" },
+    { q:"Diesmal _____ wir eine Ausnahme.", opts:["machen", "finden", "spielen", "wecken"], ans:0, hint:"eine Ausnahme + machen（例外を設ける）", exp:"eine Ausnahme machen＝例外を設ける。正答は「machen」。" },
+    { q:"Er _____ mir immer gute Ratschläge.", opts:["hat", "nimmt", "gibt", "vertritt"], ans:2, hint:"Ratschläge + geben（アドバイスをする）", exp:"Ratschläge geben＝アドバイスをする。正答は「gibt」。" },
+    { q:"Wir _____ jeden Abend einen Spaziergang.", opts:["ziehen", "machen", "treiben", "bleiben"], ans:1, hint:"einen Spaziergang + machen（散歩する）", exp:"einen Spaziergang machen＝散歩する。正答は「machen」。" },
+    { q:"Nach dem Sport _____ ich immer Durst.", opts:["halte", "bleibe", "wecke", "habe"], ans:3, hint:"Durst + haben（喉が渇いている）", exp:"Durst haben＝喉が渇いている。正答は「habe」。" },
+    { q:"Im Sommer _____ wir Urlaub in Italien.", opts:["wecken", "machen", "nehmen", "zeigen"], ans:1, hint:"Urlaub + machen（休暇を過ごす）", exp:"Urlaub machen＝休暇を過ごす。正答は「machen」。" },
+    { q:"Der Chef _____ Verständnis für die Situation.", opts:["blieb", "legte", "nahm", "zeigte"], ans:3, hint:"Verständnis + zeigen（理解を示す）", exp:"Verständnis zeigen＝理解を示す。正答は「zeigte」。" },
+    { q:"Hast du deine Hausaufgaben _____?", opts:["gegeben", "gefunden", "geweckt", "gemacht"], ans:3, hint:"Hausaufgaben + machen（宿題をする）", exp:"Hausaufgaben machen＝宿題をする。正答は「gemacht」。" }
+  ]},
+  { label:"テストD", questions:[
+    { q:"Es ist wichtig, regelmäßig Sport zu _____.", opts:["zeigen", "treiben", "ziehen", "spielen"], ans:1, hint:"Sport + treiben（スポーツをする）", exp:"Sport treiben＝スポーツをする。正答は「treiben」。" },
+    { q:"Du _____ recht, das war mein Fehler.", opts:["weckst", "nimmst", "hast", "machst"], ans:2, hint:"Recht + haben（正しい・正論だ）", exp:"Recht haben＝正しい・正論だ。正答は「hast」。" },
+    { q:"Er _____ gerne Fotos von der Natur.", opts:["spielt", "nimmt", "treibt", "macht"], ans:3, hint:"Fotos + machen（写真を撮る）", exp:"Fotos machen＝写真を撮る。正答は「macht」。" },
+    { q:"Ich _____ heute Abend eine Verabredung.", opts:["habe", "wecke", "gebe", "erledige"], ans:0, hint:"eine Verabredung + haben（約束がある）", exp:"eine Verabredung haben＝約束がある。正答は「habe」。" },
+    { q:"Sie _____ jeden Abend ein Bad.", opts:["gibt", "erledigt", "treibt", "nimmt"], ans:3, hint:"ein Bad + nehmen（入浴する）", exp:"ein Bad nehmen＝入浴する。正答は「nimmt」。" },
+    { q:"Die Erfahrung _____ eine wichtige Rolle.", opts:["zieht", "zeigt", "bleibt", "spielt"], ans:3, hint:"eine Rolle + spielen（役割を果たす）", exp:"eine Rolle spielen＝役割を果たす。正答は「spielt」。" },
+    { q:"_____ du Lust, ins Kino zu gehen?", opts:["Legst", "Nimmst", "Gibst", "Hast"], ans:3, hint:"Lust + haben（〜したい気分だ）", exp:"Lust haben＝〜したい気分だ。正答は「Hast」。" },
+    { q:"Er muss täglich Medikamente _____.", opts:["bleiben", "nehmen", "vertreten", "machen"], ans:1, hint:"Medikamente + nehmen（薬を飲む）", exp:"Medikamente nehmen＝薬を飲む。正答は「nehmen」。" },
+    { q:"Er _____ Probleme mit dem neuen System.", opts:["hat", "legt", "findet", "macht"], ans:0, hint:"Probleme + haben（問題を抱えている）", exp:"Probleme haben＝問題を抱えている。正答は「hat」。" },
+    { q:"Er _____ großen Gefallen an seiner Arbeit.", opts:["legt", "findet", "nimmt", "macht"], ans:1, hint:"Gefallen an +D + finden（〜に楽しみを見出す）", exp:"Gefallen an +D finden＝〜に楽しみを見出す。正答は「findet」。" }
+  ]}
+];
+const RANDOM_COUNT = 10;
+function shuffle(arr) {
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function getAllQ() {
+  const all=[];
+  sets.forEach(s=>{ if(s.label!=="ランダム") s.questions.forEach(q=>all.push(q)); });
+  return all;
+}
+function buildRandom() {
+  return { label:"ランダム", questions: shuffle(getAllQ()).slice(0, RANDOM_COUNT) };
+}
+
+let currentQ=[], cur=0, score=0, answered=false, curSetIdx=0;
+const NAV = sets.map(s=>s.label).concat(["ランダム"]);
+
+function initNav() {
+  const nav=document.getElementById('set-nav');
+  NAV.forEach((label,i)=>{
+    const b=document.createElement('button');
+    const isR=label==="ランダム";
+    b.className='set-btn'+(isR?' random-btn':'')+(i===0?' active':'');
+    b.textContent=label;
+    b.onclick=()=>selectSet(i);
+    nav.appendChild(b);
+  });
+}
+
+function selectSet(i) {
+  curSetIdx=i; cur=0; score=0; answered=false;
+  document.querySelectorAll('.set-btn').forEach((b,j)=>{
+    const isR=NAV[j]==="ランダム";
+    b.className='set-btn'+(isR?' random-btn':'')+(j===i?' active':'');
+  });
+  currentQ=NAV[i]==="ランダム"?buildRandom().questions:sets[i].questions;
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  render();
+}
+
+function render() {
+  const q=currentQ[cur];
+  document.getElementById('prog-bar').style.width=((cur+1)/currentQ.length*100)+'%';
+  document.getElementById('prog-text').textContent='問'+(cur+1)+' / '+currentQ.length;
+  document.getElementById('q-num').textContent='問'+(cur+1);
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('hint-text').textContent=q.hint;
+  document.getElementById('hint-text').style.display='none';
+  document.getElementById('hint-btn').style.display='inline';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('next-btn').style.display='none';
+  answered=false;
+  const opts=document.getElementById('q-options');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='option-btn'; b.textContent=o; b.onclick=()=>select(i);
+    opts.appendChild(b);
+  });
+}
+
+function showHint(){
+  const h=document.getElementById('hint-text');
+  h.style.display=h.style.display==='none'?'block':'none';
+}
+
+function select(i){
+  if(answered)return;
+  answered=true;
+  const q=currentQ[cur];
+  const btns=document.querySelectorAll('.option-btn');
+  btns.forEach(b=>b.disabled=true);
+  document.getElementById('hint-btn').style.display='none';
+  document.getElementById('hint-text').style.display='none';
+  const fb=document.getElementById('feedback');
+  if(i===q.ans){
+    score++;
+    btns[i].classList.add('correct');
+    fb.className='feedback correct';
+    fb.textContent='✓ 正解！　'+q.exp;
+  }else{
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('reveal');
+    fb.className='feedback wrong';
+    fb.textContent='✗ 不正解。　'+q.exp;
+  }
+  const nb=document.getElementById('next-btn');
+  nb.style.display='block';
+  nb.textContent=cur+1<currentQ.length?'次の問題 →':'結果を見る';
+}
+
+function nextQ(){cur++;if(cur<currentQ.length)render();else showResult();}
+
+function showResult(){
+  document.getElementById('quiz-area').style.display='none';
+  document.getElementById('result-card').style.display='block';
+  const total=currentQ.length,pct=Math.round(score/total*100);
+  document.getElementById('res-title').textContent=NAV[curSetIdx]+'　終了';
+  document.getElementById('res-score').textContent=score+' / '+total;
+  const msgs=['リストをもう一度確認してから再挑戦しましょう。','もう少しです。リストを見直してから再挑戦しましょう。','よくできました。間違えた表現を復習しましょう。','素晴らしい！ほぼ完璧です。'];
+  document.getElementById('res-msg').textContent='正答率 '+pct+'%　'+msgs[pct>=90?3:pct>=70?2:pct>=50?1:0];
+  const nb=document.getElementById('next-set-btn');
+  const nx=curSetIdx+1;
+  if(nx<NAV.length){nb.style.display='inline-block';nb.textContent=NAV[nx]+' →';}
+  else nb.style.display='none';
+}
+
+function restart(){
+  cur=0;score=0;
+  if(NAV[curSetIdx]==="ランダム")currentQ=buildRandom().questions;
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  render();
+}
+function goNext(){selectSet(curSetIdx+1);}
+
+currentQ=sets[0].questions;
+initNav();
+render();
+</script>
+</body>
+</html>
