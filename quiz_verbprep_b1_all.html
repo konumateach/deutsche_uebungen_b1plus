@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動詞コロケーションテスト B1レベル</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif; background: #f5f5f3; color: #1a1a18; min-height: 100vh; padding: 2rem 1rem; }
+  .container { max-width: 700px; margin: 0 auto; }
+  header { margin-bottom: 1.5rem; }
+  header h1 { font-size: 21px; font-weight: 500; margin-bottom: 4px; }
+  header p { font-size: 14px; color: #666; }
+  .set-nav { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+  .set-btn { padding: 6px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 13px; font-family: inherit; transition: background 0.15s; }
+  .set-btn:hover { background: #f0f0f0; }
+  .set-btn.random-btn { border-color: #185FA5; color: #185FA5; }
+  .set-btn.random-btn.active { background: #185FA5; color: #fff; border-color: #185FA5; }
+  .set-btn.active { background: #1a1a18; color: #fff; border-color: #1a1a18; }
+  .progress-bar-wrap { background: #ddd; border-radius: 4px; height: 4px; margin-bottom: 6px; }
+  .progress-bar { background: #185FA5; height: 4px; border-radius: 4px; transition: width 0.3s; }
+  .progress-text { font-size: 13px; color: #666; margin-bottom: 1.2rem; }
+  .card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 1.5rem; margin-bottom: 1rem; }
+  .question-num { font-size: 12px; color: #999; margin-bottom: 8px; }
+  .question-text { font-size: 19px; font-weight: 500; margin-bottom: 1.25rem; line-height: 1.7; font-family: "Segoe UI", "Candara", sans-serif; font-style: italic; }
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option-btn { text-align: left; padding: 10px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fafafa; cursor: pointer; font-size: 16px; font-family: "Segoe UI", "Candara", sans-serif; font-weight: 500; transition: background 0.15s, border-color 0.15s; }
+  .option-btn:hover:not(:disabled) { background: #f0f0f0; border-color: #999; }
+  .option-btn.correct { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn.wrong   { background: #fcebeb; border-color: #a32d2d; color: #791f1f; }
+  .option-btn.reveal  { background: #e1f5ee; border-color: #0f6e56; color: #085041; }
+  .option-btn:disabled { cursor: default; }
+  .feedback { margin-top: 1rem; padding: 10px 14px; border-radius: 8px; font-size: 14px; line-height: 1.7; display: none; font-family: "Segoe UI", "Candara", sans-serif; }
+  .feedback.correct { background: #e1f5ee; color: #085041; display: block; }
+  .feedback.wrong    { background: #fcebeb; color: #791f1f; display: block; }
+  .hint-btn { margin-top: 10px; font-size: 13px; color: #185FA5; background: none; border: none; cursor: pointer; padding: 0; font-family: inherit; text-decoration: underline; }
+  .hint-text { font-size: 13px; color: #666; margin-top: 6px; display: none; }
+  .next-btn { margin-top: 1.25rem; padding: 10px 20px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; display: none; }
+  .next-btn:hover { background: #333; }
+  .result-card { background: #fff; border-radius: 12px; border: 0.5px solid #ddd; padding: 2rem; text-align: center; display: none; }
+  .result-card h2 { font-size: 20px; font-weight: 500; margin-bottom: 8px; }
+  .score-big { font-size: 48px; font-weight: 500; color: #185FA5; margin: 1rem 0; }
+  .score-msg { font-size: 15px; color: #555; margin-bottom: 1.5rem; }
+  .btn-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .restart-btn { padding: 10px 24px; border-radius: 8px; background: #1a1a18; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .restart-btn:hover { background: #333; }
+  .next-set-btn { padding: 10px 24px; border-radius: 8px; background: #185FA5; color: #fff; border: none; cursor: pointer; font-size: 14px; font-family: inherit; font-weight: 500; }
+  .next-set-btn:hover { background: #0c447c; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>動詞コロケーションテスト　B1レベル</h1>
+    <p>空欄に入る前置詞を選びなさい。（各テスト10問）</p>
+  </header>
+  <div style="margin-bottom:1rem;"><a href="index_b1.html" style="display:inline-block;padding:7px 16px;border-radius:8px;border:0.5px solid #ccc;background:#fafafa;color:#1a1a18;text-decoration:none;font-size:13px;font-family:inherit;">← 戻る</a></div>
+  <div class="set-nav" id="set-nav"></div>
+  <div id="quiz-area">
+    <div class="progress-bar-wrap"><div class="progress-bar" id="prog-bar" style="width:11%"></div></div>
+    <div class="progress-text" id="prog-text"></div>
+    <div class="card">
+      <div class="question-num" id="q-num"></div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <button class="hint-btn" id="hint-btn" onclick="showHint()">ヒントを見る</button>
+      <div class="hint-text" id="hint-text"></div>
+      <div class="feedback" id="feedback"></div>
+      <button class="next-btn" id="next-btn" onclick="nextQ()">次の問題 →</button>
+    </div>
+  </div>
+  <div class="result-card" id="result-card">
+    <h2 id="res-title"></h2>
+    <div class="score-big" id="res-score"></div>
+    <div class="score-msg" id="res-msg"></div>
+    <div class="btn-row">
+      <button class="restart-btn" onclick="restart()">このテストをもう一度</button>
+      <button class="next-set-btn" id="next-set-btn" onclick="goNext()">次のテストへ →</button>
+    </div>
+  </div>
+</div>
+<script>
+const sets = [
+  { label:"テストA", questions:[
+    { q:"Er verzichtet _____ Alkohol.", opts:["über", "gegen", "an", "auf"], ans:3, hint:"「verzichten auf +A」（〜を断念する・諦める）", exp:"verzichten auf +A＝〜を断念する・諦める。前置詞は auf（4格）。" },
+    { q:"Diese Farbe passt gut _____ dir.", opts:["an", "zu", "vor", "von"], ans:1, hint:"「passen zu +D」（〜に合う・〜に似合う）", exp:"passen zu +D＝〜に合う・〜に似合う。前置詞は zu（3格）。" },
+    { q:"Sie sucht _____ einer Lösung.", opts:["an", "nach", "vor", "mit"], ans:1, hint:"「suchen nach +D」（〜を探す）", exp:"suchen nach +D＝〜を探す。前置詞は nach（3格）。" },
+    { q:"Das Kind fürchtet sich _____ der Dunkelheit.", opts:["mit", "vor", "von", "an"], ans:1, hint:"「sich fürchten vor +D」（〜を恐れる）", exp:"sich fürchten vor +D＝〜を恐れる。前置詞は vor（3格）。" },
+    { q:"Er entschuldigte sich _____ den Fehler.", opts:["gegen", "für", "über", "an"], ans:1, hint:"「sich entschuldigen für +A」（〜を謝る）", exp:"sich entschuldigen für +A＝〜を謝る。前置詞は für（4格）。" },
+    { q:"Das Team besteht _____ zehn Personen.", opts:["von", "nach", "vor", "aus"], ans:3, hint:"「bestehen aus +D」（〜から成る）", exp:"bestehen aus +D＝〜から成る。前置詞は aus（3格）。" },
+    { q:"Ich bedanke mich _____ Ihre Hilfe.", opts:["an", "für", "über", "um"], ans:1, hint:"「sich bedanken für +A」（〜に感謝する）", exp:"sich bedanken für +A＝〜に感謝する。前置詞は für（4格）。" },
+    { q:"Er kümmert sich _____ seine Eltern.", opts:["für", "an", "um", "gegen"], ans:2, hint:"「sich kümmern um +A」（〜の世話をする・気を配る）", exp:"sich kümmern um +A＝〜の世話をする・気を配る。前置詞は um（4格）。" },
+    { q:"Er interessiert sich _____ Geschichte.", opts:["an", "auf", "um", "für"], ans:3, hint:"「sich interessieren für +A」（〜に興味を持つ）", exp:"sich interessieren für +A＝〜に興味を持つ。前置詞は für（4格）。" },
+    { q:"Sie beschwerte sich _____ den Lärm.", opts:["auf", "gegen", "um", "über"], ans:3, hint:"「sich beschweren über +A」（〜について不満を言う）", exp:"sich beschweren über +A＝〜について不満を言う。前置詞は über（4格）。" }
+  ]},
+  { label:"テストB", questions:[
+    { q:"Er ist _____ dem Ergebnis zufrieden.", opts:["mit", "von", "aus", "nach"], ans:0, hint:"「zufrieden sein mit +D」（〜に満足している）", exp:"zufrieden sein mit +D＝〜に満足している。前置詞は mit（3格）。" },
+    { q:"Er ärgert sich _____ die Verspätung.", opts:["auf", "gegen", "über", "in"], ans:2, hint:"「sich ärgern über +A」（〜に腹を立てる）", exp:"sich ärgern über +A＝〜に腹を立てる。前置詞は über（4格）。" },
+    { q:"Er bezieht sich _____ den letzten Bericht.", opts:["in", "auf", "gegen", "an"], ans:1, hint:"「sich beziehen auf +A」（〜に関係する・言及する）", exp:"sich beziehen auf +A＝〜に関係する・言及する。前置詞は auf（4格）。" },
+    { q:"Wir sollten _____ das Problem nachdenken.", opts:["über", "gegen", "auf", "für"], ans:0, hint:"「nachdenken über +A」（〜についてよく考える）", exp:"nachdenken über +A＝〜についてよく考える。前置詞は über（4格）。" },
+    { q:"Stress kann _____ Krankheiten führen.", opts:["mit", "nach", "zu", "von"], ans:2, hint:"「führen zu +D」（〜につながる・引き起こす）", exp:"führen zu +D＝〜につながる・引き起こす。前置詞は zu（3格）。" },
+    { q:"Sie gilt _____ Expertin auf diesem Gebiet.", opts:["als", "an", "für", "von"], ans:0, hint:"「gelten als」（〜とみなされる）", exp:"gelten als＝〜とみなされる。前置詞は als（als）。" },
+    { q:"Ich treffe mich morgen _____ ihr.", opts:["an", "vor", "nach", "mit"], ans:3, hint:"「sich treffen mit +D」（〜と会う）", exp:"sich treffen mit +D＝〜と会う。前置詞は mit（3格）。" },
+    { q:"Sonnencreme schützt _____ UV-Strahlen.", opts:["an", "mit", "von", "vor"], ans:3, hint:"「schützen vor +D」（〜から守る）", exp:"schützen vor +D＝〜から守る。前置詞は vor（3格）。" },
+    { q:"Ich bin damit einverstanden.", opts:["mit", "zu", "aus", "von"], ans:0, hint:"「einverstanden sein mit +D」（〜に同意する）", exp:"einverstanden sein mit +D＝〜に同意する。前置詞は mit（3格）。" },
+    { q:"Sie bereitet sich _____ die Prüfung vor.", opts:["gegen", "um", "auf", "an"], ans:2, hint:"「sich vorbereiten auf +A」（〜に備える）", exp:"sich vorbereiten auf +A＝〜に備える。前置詞は auf（4格）。" }
+  ]},
+  { label:"テストC", questions:[
+    { q:"Die Zahl nimmt _____ Bedeutung zu.", opts:["zu", "von", "an", "aus"], ans:2, hint:"「zunehmen an +D」（〜が増す・〜において増す）", exp:"zunehmen an +D＝〜が増す・〜において増す。前置詞は an（3格）。" },
+    { q:"Sie lud ihn _____ einem Gespräch ein.", opts:["von", "nach", "zu", "aus"], ans:2, hint:"「einladen zu +D」（〜に招待する）", exp:"einladen zu +D＝〜に招待する。前置詞は zu（3格）。" },
+    { q:"Sie ist _____ Kunst interessiert.", opts:["an", "nach", "aus", "zu"], ans:0, hint:"「interessiert sein an +D」（〜に関心がある）", exp:"interessiert sein an +D＝〜に関心がある。前置詞は an（3格）。" },
+    { q:"Die Bürger protestierten _____ das Gesetz.", opts:["gegen", "auf", "um", "für"], ans:0, hint:"「protestieren gegen +A」（〜に抗議する）", exp:"protestieren gegen +A＝〜に抗議する。前置詞は gegen（4格）。" },
+    { q:"Bitte gehen Sie _____ meine Frage ein.", opts:["auf", "an", "für", "über"], ans:0, hint:"「eingehen auf +A」（〜に応じる・〜を掘り下げる）", exp:"eingehen auf +A＝〜に応じる・〜を掘り下げる。前置詞は auf（4格）。" },
+    { q:"Hier handelt es sich _____ ein Missverständnis.", opts:["um", "an", "in", "auf"], ans:0, hint:"「es handelt sich um +A」（〜に関わる・〜が問題である）", exp:"es handelt sich um +A＝〜に関わる・〜が問題である。前置詞は um（4格）。" },
+    { q:"Man bezeichnet das _____ Fortschritt.", opts:["an", "für", "als", "von"], ans:2, hint:"「bezeichnen als」（〜と呼ぶ・〜と称する）", exp:"bezeichnen als＝〜と呼ぶ・〜と称する。前置詞は als（als）。" },
+    { q:"Probleme ergeben sich _____ dem Missverständnis.", opts:["von", "aus", "mit", "vor"], ans:1, hint:"「sich ergeben aus +D」（〜から生じる・結果として現れる）", exp:"sich ergeben aus +D＝〜から生じる・結果として現れる。前置詞は aus（3格）。" },
+    { q:"Pass _____ dich auf!", opts:["an", "über", "für", "auf"], ans:3, hint:"「aufpassen auf +A」（〜に気をつける・世話をする）", exp:"aufpassen auf +A＝〜に気をつける・世話をする。前置詞は auf（4格）。" },
+    { q:"Er fragte _____ dem Weg.", opts:["von", "nach", "an", "aus"], ans:1, hint:"「fragen nach +D」（〜について尋ねる）", exp:"fragen nach +D＝〜について尋ねる。前置詞は nach（3格）。" }
+  ]},
+  { label:"テストD", questions:[
+    { q:"Das Wort stammt _____ dem Lateinischen.", opts:["nach", "mit", "aus", "an"], ans:2, hint:"「stammen aus +D」（〜の出身・〜に由来する）", exp:"stammen aus +D＝〜の出身・〜に由来する。前置詞は aus（3格）。" },
+    { q:"Hör endlich _____ dem Rauchen auf!", opts:["von", "zu", "aus", "mit"], ans:3, hint:"「aufhören mit +D」（〜をやめる）", exp:"aufhören mit +D＝〜をやめる。前置詞は mit（3格）。" },
+    { q:"Er hat sich _____ die neue Situation gewöhnt.", opts:["auf", "an", "für", "über"], ans:1, hint:"「sich gewöhnen an +A」（〜に慣れる）", exp:"sich gewöhnen an +A＝〜に慣れる。前置詞は an（4格）。" },
+    { q:"Das hängt _____ der Situation ab.", opts:["an", "nach", "von", "zu"], ans:2, hint:"「abhängen von +D」（〜に依存する・〜次第）", exp:"abhängen von +D＝〜に依存する・〜次第。前置詞は von（3格）。" },
+    { q:"Es mangelt _____ Zeit und Geld.", opts:["aus", "vor", "mit", "an"], ans:3, hint:"「mangeln an +D」（〜が不足している）", exp:"mangeln an +D＝〜が不足している。前置詞は an（3格）。" },
+    { q:"Ich freue mich _____ die Ferien.", opts:["über", "um", "an", "auf"], ans:3, hint:"「sich freuen auf +A」（〜を楽しみにする）", exp:"sich freuen auf +A＝〜を楽しみにする。前置詞は auf（4格）。" },
+    { q:"Er glaubt _____ die Zukunft.", opts:["über", "an", "für", "um"], ans:1, hint:"「glauben an +A」（〜を信じる）", exp:"glauben an +A＝〜を信じる。前置詞は an（4格）。" },
+    { q:"Sie freut sich _____ das Geschenk.", opts:["an", "auf", "über", "gegen"], ans:2, hint:"「sich freuen über +A」（〜を喜ぶ）", exp:"sich freuen über +A＝〜を喜ぶ。前置詞は über（4格）。" },
+    { q:"Ich halte das _____ eine gute Idee.", opts:["gegen", "für", "in", "an"], ans:1, hint:"「etw. für +A halten」（〜を〜と思う・みなす）", exp:"etw. für +A halten＝〜を〜と思う・みなす。前置詞は für（4格）。" },
+    { q:"Er hat sich _____ sie verliebt.", opts:["in", "an", "gegen", "um"], ans:0, hint:"「sich verlieben in +A」（〜に恋をする）", exp:"sich verlieben in +A＝〜に恋をする。前置詞は in（4格）。" }
+  ]},
+  { label:"テストE", questions:[
+    { q:"Sie wehrte sich _____ die Kritik.", opts:["gegen", "für", "in", "über"], ans:0, hint:"「sich wehren gegen +A」（〜に抵抗する）", exp:"sich wehren gegen +A＝〜に抵抗する。前置詞は gegen（4格）。" },
+    { q:"Er hat sich _____ den Job entschieden.", opts:["an", "für", "um", "über"], ans:1, hint:"「sich entscheiden für +A」（〜に決める）", exp:"sich entscheiden für +A＝〜に決める。前置詞は für（4格）。" },
+    { q:"Ich erinnere mich _____ unsere Reise.", opts:["an", "in", "auf", "über"], ans:0, hint:"「sich erinnern an +A」（〜を思い出す）", exp:"sich erinnern an +A＝〜を思い出す。前置詞は an（4格）。" },
+    { q:"Sie träumt _____ einer besseren Welt.", opts:["an", "nach", "mit", "von"], ans:3, hint:"「träumen von +D」（〜を夢見る）", exp:"träumen von +D＝〜を夢見る。前置詞は von（3格）。" },
+    { q:"Sie ist stolz _____ ihre Arbeit.", opts:["gegen", "in", "auf", "um"], ans:2, hint:"「stolz sein auf +A」（〜を誇りに思う）", exp:"stolz sein auf +A＝〜を誇りに思う。前置詞は auf（4格）。" },
+    { q:"Dieses Modell unterscheidet sich _____ dem alten.", opts:["vor", "zu", "aus", "von"], ans:3, hint:"「sich unterscheiden von +D」（〜と異なる）", exp:"sich unterscheiden von +D＝〜と異なる。前置詞は von（3格）。" },
+    { q:"Wir müssen _____ das Problem sprechen.", opts:["in", "für", "über", "gegen"], ans:2, hint:"「sprechen über +A」（〜について話す・議論する）", exp:"sprechen über +A＝〜について話す・議論する。前置詞は über（4格）。" },
+    { q:"Wie geht man _____ Stress um?", opts:["mit", "aus", "an", "zu"], ans:0, hint:"「umgehen mit +D」（〜を扱う・〜に対処する）", exp:"umgehen mit +D＝〜を扱う・〜に対処する。前置詞は mit（3格）。" },
+    { q:"Das gehört _____ meinen Aufgaben.", opts:["zu", "vor", "an", "von"], ans:0, hint:"「gehören zu +D」（〜に属する・〜の一部である）", exp:"gehören zu +D＝〜に属する・〜の一部である。前置詞は zu（3格）。" },
+    { q:"Es geht _____ eine wichtige Entscheidung.", opts:["auf", "um", "in", "über"], ans:1, hint:"「es geht um +A」（〜が問題だ・〜に関わる）", exp:"es geht um +A＝〜が問題だ・〜に関わる。前置詞は um（4格）。" }
+  ]}
+];
+const RANDOM_COUNT = 9;
+function shuffle(arr) {
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+function getAllQ() {
+  const all=[];
+  sets.forEach(s=>{ if(s.label!=="ランダム") s.questions.forEach(q=>all.push(q)); });
+  return all;
+}
+function buildRandom() {
+  return { label:"ランダム", questions: shuffle(getAllQ()).slice(0, RANDOM_COUNT) };
+}
+buildRandom();
+
+let currentSet=0, cur=0, score=0, answered=false;
+const NAV = sets.map(s=>s.label).concat(["ランダム"]);
+
+function initNav() {
+  const nav=document.getElementById('set-nav');
+  NAV.forEach((label,i)=>{
+    const b=document.createElement('button');
+    const isR=label==="ランダム";
+    b.className='set-btn'+(isR?' random-btn':'')+(i===0?' active':'');
+    b.textContent=label;
+    b.onclick=()=>selectSet(i);
+    nav.appendChild(b);
+  });
+}
+
+let currentQ=[];
+function selectSet(i) {
+  currentSet=i; cur=0; score=0; answered=false;
+  document.querySelectorAll('.set-btn').forEach((b,j)=>{
+    const isR=NAV[j]==="ランダム";
+    b.className='set-btn'+(isR?' random-btn':'')+(j===i?' active':'');
+  });
+  currentQ = NAV[i]==="ランダム" ? buildRandom().questions : sets[i].questions;
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  render();
+}
+
+function render() {
+  const q=currentQ[cur];
+  document.getElementById('prog-bar').style.width=((cur+1)/currentQ.length*100)+'%';
+  document.getElementById('prog-text').textContent='問'+(cur+1)+' / '+currentQ.length;
+  document.getElementById('q-num').textContent='問'+(cur+1);
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('hint-text').textContent=q.hint;
+  document.getElementById('hint-text').style.display='none';
+  document.getElementById('hint-btn').style.display='inline';
+  document.getElementById('feedback').className='feedback';
+  document.getElementById('feedback').textContent='';
+  document.getElementById('next-btn').style.display='none';
+  answered=false;
+  const opts=document.getElementById('q-options');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='option-btn'; b.textContent=o; b.onclick=()=>select(i);
+    opts.appendChild(b);
+  });
+}
+
+function showHint(){
+  const h=document.getElementById('hint-text');
+  h.style.display=h.style.display==='none'?'block':'none';
+}
+
+function select(i){
+  if(answered)return;
+  answered=true;
+  const q=currentQ[cur];
+  const btns=document.querySelectorAll('.option-btn');
+  btns.forEach(b=>b.disabled=true);
+  document.getElementById('hint-btn').style.display='none';
+  document.getElementById('hint-text').style.display='none';
+  const fb=document.getElementById('feedback');
+  if(i===q.ans){
+    score++;
+    btns[i].classList.add('correct');
+    fb.className='feedback correct';
+    fb.textContent='✓ 正解！　'+q.exp;
+  }else{
+    btns[i].classList.add('wrong');
+    btns[q.ans].classList.add('reveal');
+    fb.className='feedback wrong';
+    fb.textContent='✗ 不正解。　'+q.exp;
+  }
+  const nb=document.getElementById('next-btn');
+  nb.style.display='block';
+  nb.textContent=cur+1<currentQ.length?'次の問題 →':'結果を見る';
+}
+
+function nextQ(){cur++;if(cur<currentQ.length)render();else showResult();}
+
+function showResult(){
+  document.getElementById('quiz-area').style.display='none';
+  document.getElementById('result-card').style.display='block';
+  const total=currentQ.length,pct=Math.round(score/total*100);
+  document.getElementById('res-title').textContent=NAV[currentSet]+'　終了';
+  document.getElementById('res-score').textContent=score+' / '+total;
+  const msgs=['コロケーションリストをもう一度確認してから再挑戦しましょう。','もう少しです。リストを見直してから再挑戦しましょう。','よくできました。間違えた表現を復習しましょう。','素晴らしい！ほぼ完璧です。'];
+  document.getElementById('res-msg').textContent='正答率 '+pct+'%　'+msgs[pct>=90?3:pct>=70?2:pct>=50?1:0];
+  const nb=document.getElementById('next-set-btn');
+  const nx=currentSet+1;
+  if(nx<NAV.length){nb.style.display='inline-block';nb.textContent=NAV[nx]+' →';}
+  else nb.style.display='none';
+}
+
+function restart(){
+  cur=0;score=0;
+  if(NAV[currentSet]==="ランダム") currentQ=buildRandom().questions;
+  document.getElementById('result-card').style.display='none';
+  document.getElementById('quiz-area').style.display='block';
+  render();
+}
+function goNext(){selectSet(currentSet+1);}
+
+currentQ=sets[0].questions;
+initNav();
+render();
+</script>
+</body>
+</html>
